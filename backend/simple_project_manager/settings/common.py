@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -27,10 +26,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
-INSTALLED_APPS = [
+INTERNAL_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +36,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+EXTERNAL_APPS = [
+    'graphene_django',
+] 
+
+MY_APPS = ['apps.core']
+
+INSTALLED_APPS = INTERNAL_APPS + EXTERNAL_APPS + MY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,6 +56,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'simple_project_manager.urls'
+
+GRAPHENE = {
+    'SCHEMA': 'simple_project_manager.schema.schema'
+}
 
 TEMPLATES = [
     {
@@ -68,19 +78,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'simple_project_manager.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-DATABASES = {
-  'default': {
-    'ENGINE': 'django.db.backends.postgresql',
-    'NAME': 'postgres',
-    'USER': 'postgres',
-    'HOST': 'database',
-    'PORT': 5432,
-  }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -104,9 +101,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Fortaleza'
 
 USE_I18N = True
 
