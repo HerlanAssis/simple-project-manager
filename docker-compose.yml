@@ -1,0 +1,43 @@
+version: '3'
+
+volumes:
+  data:
+
+services:
+  database:
+    build: database/
+    volumes:
+      # Volume dos dados
+      - data:/var/lib/postgresql/data
+      # Scripts
+      - ./database/scripts:/scripts
+      - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+  backend:
+    build: backend/
+    command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"
+    #command: bash -c "python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"
+    #command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/simple_project_manager
+    depends_on:
+      - database
+    #ports:
+    #  - "8000:8000"
+    expose:
+      - "8000"
+  backend_server:
+    build: backend_server/
+    volumes:
+      - ./backend_server/config/nginx:/etc/nginx/conf.d
+    ports:
+      - "3000:8000"
+    depends_on:
+      - backend
+  frontend:
+    build: frontend/
+    volumes:
+      - ./frontend/build/:/usr/share/nginx/html
+    ports:
+      - "80:80"
+    depends_on:
+      - backend_server
