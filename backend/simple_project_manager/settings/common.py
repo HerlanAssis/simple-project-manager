@@ -38,10 +38,22 @@ INTERNAL_APPS = [
 ]
 
 EXTERNAL_APPS = [
-    'graphene_django',
-] 
+    'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken', 
+    'social_django',
+    'rest_social_auth',
 
-MY_APPS = ['apps.core']
+    'oauth2_provider', 
+    'rest_framework_social_oauth2',
+
+    'graphene_django',
+]
+
+MY_APPS = [
+    'apps.core',
+    'apps.api'
+]
 
 INSTALLED_APPS = INTERNAL_APPS + EXTERNAL_APPS + MY_APPS
 
@@ -53,6 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'simple_project_manager.urls'
@@ -72,10 +86,25 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                #
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_GITHUB_KEY = '8901c488fe417622fbc3'
+SOCIAL_AUTH_GITHUB_SECRET = 'f777a2e51567343318aa0b1377e85cbf463cb287'
+SOCIAL_AUTH_GITHUB_SCOPE = ['read:user', 'user:email', 'repo']
+
+REST_SOCIAL_OAUTH_REDIRECT_URI = '/'
 
 WSGI_APPLICATION = 'simple_project_manager.wsgi.application'
 
@@ -97,6 +126,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+SOCIALACCOUNT_QUERY_EMAIL = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/

@@ -1,6 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from graphene_django.views import GraphQLView
+from django.shortcuts import render
 
-class PrivateGraphQLView(LoginRequiredMixin, GraphQLView):
-    """Adds a login requirement to graphQL API access via main endpoint."""
-    pass
+def home(request):
+     return render(request, 'core/home.html')

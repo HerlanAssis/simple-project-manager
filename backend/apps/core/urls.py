@@ -1,7 +1,8 @@
-from django.urls import path
-from .views import PrivateGraphQLView
+from django.urls import path, include
+from apps import api
+from .views import home
 
-urlpatterns = [
-  # some other urls
-  path('', PrivateGraphQLView.as_view(graphiql=True)),
+urlpatterns = [    
+    path('', home),
+    path('api/', include('apps.api.urls')),    
 ]

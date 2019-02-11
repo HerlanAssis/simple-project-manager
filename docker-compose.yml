@@ -28,7 +28,7 @@ services:
   backend_server:
     build: backend_server/
     volumes:
-      - ./backend/staticfiles:/simple_project_manager/staticfiles/
+      - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/
       - ./backend_server/config/nginx:/etc/nginx/conf.d
     ports:
       - "3000:8000"
