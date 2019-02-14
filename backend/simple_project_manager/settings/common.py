@@ -66,7 +66,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'simple_project_manager.urls'
@@ -86,13 +85,21 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                #
+                # Social contexts
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework_social_oauth2.authentication.SocialAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
@@ -102,9 +109,11 @@ AUTHENTICATION_BACKENDS = (
 
 SOCIAL_AUTH_GITHUB_KEY = '8901c488fe417622fbc3'
 SOCIAL_AUTH_GITHUB_SECRET = 'f777a2e51567343318aa0b1377e85cbf463cb287'
-SOCIAL_AUTH_GITHUB_SCOPE = ['read:user', 'user:email', 'repo']
 
-REST_SOCIAL_OAUTH_REDIRECT_URI = '/'
+#DJANGO OAUTH TOOLKIT EXPIRATION SECONDS  - DEFAULT IS 36000 WHICH IS 10 hours
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 36000,
+}
 
 WSGI_APPLICATION = 'simple_project_manager.wsgi.application'
 
@@ -126,26 +135,28 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
-SOCIALACCOUNT_EMAIL_REQUIRED = False
-SOCIALACCOUNT_QUERY_EMAIL = True
-
-# Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
-
 LANGUAGE_CODE = 'pt-br'
-
 TIME_ZONE = 'America/Fortaleza'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
-
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+# When using PostgreSQL, it’s recommended to use the built-in JSONB field to store the extracted extra_data.
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+
+#CORS CONFIGURATIONS
+CORS_ORIGIN_WHITELIST = (
+    'frontend',
+    'backend_server',
+    'localhost',
+)
+
+CORS_ALLOW_CREDENTIALS = True
