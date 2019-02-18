@@ -16,6 +16,17 @@ class GithubAPIView(APIView):
         return Github(access_token)
 
 
-class ExampleView(GithubAPIView):
+class User(GithubAPIView):
     def get(self, request, format=None):
         return Response(self.github(request).get_user().raw_data)
+
+
+class Repos(GithubAPIView):
+    def get(self, request, format=None):
+        repos = []
+
+        # Then play with your Github objects:
+        for repo in self.github(request).get_user().get_repos():
+            repos.append(repo.raw_data)
+
+        return Response(repos)

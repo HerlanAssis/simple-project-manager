@@ -26,6 +26,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CLIENT_ID = 'ub0ATyOfrikLwA698Y0SwHDXjIwgsmnbHNNilS3Y'
+CLIENT_SECRET = 'z7T6ds3Cy235aATpvVsaBUbsTtbtc9XN1Ql6fEnFjzK6z3yw85MbwID4rRKmaAOADcUrWh0sVC2YCfBMteYODp3MrOVEk5Q2SvsAOJgUaC7qZq3GG1zBusnBxJu3Mi3R'
+
 # Application definition
 
 INTERNAL_APPS = [
@@ -40,11 +43,11 @@ INTERNAL_APPS = [
 EXTERNAL_APPS = [
     'corsheaders',
     'rest_framework',
-    'rest_framework.authtoken', 
+    'rest_framework.authtoken',
     'social_django',
     'rest_social_auth',
 
-    'oauth2_provider', 
+    'oauth2_provider',
     'rest_framework_social_oauth2',
 
     'graphene_django',
@@ -60,12 +63,12 @@ INSTALLED_APPS = INTERNAL_APPS + EXTERNAL_APPS + MY_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'simple_project_manager.urls'
@@ -102,15 +105,15 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.github.GithubOAuth2',
     'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    'social_core.backends.github.GithubOAuth2',  # for Github authentication
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_GITHUB_KEY = '8901c488fe417622fbc3'
-SOCIAL_AUTH_GITHUB_SECRET = 'f777a2e51567343318aa0b1377e85cbf463cb287'
+SOCIAL_AUTH_GITHUB_KEY = 'c3f39f63ffb0d5ca5b9d'
+SOCIAL_AUTH_GITHUB_SECRET = '2df19646ab5b3a247246cae191d55029c5eb740b'
 
-#DJANGO OAUTH TOOLKIT EXPIRATION SECONDS  - DEFAULT IS 36000 WHICH IS 10 hours
+# DJANGO OAUTH TOOLKIT EXPIRATION SECONDS  - DEFAULT IS 36000 WHICH IS 10 hours
 OAUTH2_PROVIDER = {
     'ACCESS_TOKEN_EXPIRE_SECONDS': 36000,
 }
@@ -152,11 +155,25 @@ STATICFILES_DIRS = (
 # When using PostgreSQL, it’s recommended to use the built-in JSONB field to store the extracted extra_data.
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 
-#CORS CONFIGURATIONS
 CORS_ORIGIN_WHITELIST = (
-    'frontend',
-    'backend_server',
-    'localhost',
+    'localhost:3000',
+    'localhost:3001',
 )
 
 CORS_ALLOW_CREDENTIALS = True
+SOCIAL_AUTH_RAISE_EXCEPTIONS = True
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+# LOGIN_REDIRECT_URL = '/'
+# REST_SOCIAL_OAUTH_REDIRECT_URI = '/'
+# REST_SOCIAL_DOMAIN_FROM_ORIGIN = False
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)

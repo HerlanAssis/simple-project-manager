@@ -1,8 +1,7 @@
 from django.urls import path, include
 from apps import api
-from .views import home
+from .views import ExampleView
 
 urlpatterns = [    
-    path('', home),
-    path('api/', include('apps.api.urls')),    
+    path('', ExampleView.as_view()),    
 ]

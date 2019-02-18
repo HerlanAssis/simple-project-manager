@@ -10,6 +10,6 @@ DATABASES = {
 }
 
 
-MY_APPS = ['apps.cookbook']
+MY_APPS = ['apps.github']
 
 INSTALLED_APPS += MY_APPS
