@@ -20,9 +20,7 @@ class GithubAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def github(self, request):
-        access_token = request.user.social_auth.get(
-            id=request.user.id).extra_data['access_token']
-
+        access_token = request.user.social_auth.get(provider='github').extra_data['access_token']
         return Github(access_token)
 
 

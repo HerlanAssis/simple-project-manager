@@ -4,7 +4,7 @@ import {
 } from 'react-router-dom';
 
 import { Api } from '../../services';
-import { setInterval } from 'core-js';
+import { URLS } from '../../constants';
 
 class Home extends React.Component {
     componentDidMount() {
@@ -18,15 +18,14 @@ class Home extends React.Component {
         if (state && state === localState) {
             Api.BackendServer.post('login/social/token_user/github/', {
                 code,
-                redirect_uri: 'http://localhost/home#/',
+                client_id:'c3f39f63ffb0d5ca5b9d',
+                redirect_uri: URLS.GITHUB_REDIRECT_URL,
             }).then(response => {
                 console.log("RESPONSE", response);
                 Api.BackendServer.defaults.headers.Authorization = `Token ${response.data.token}`
 
-                setInterval(() => {
-                    Api.BackendServer.get('github/user/repos', {
-                    }).then(e => console.log("REPOS", e))
-                }, 5000)
+                Api.BackendServer.get('github/user/repos', {
+                }).then(e => console.log("REPOS", e))
             })
         } else {
             console.log("STATE DIFERENTS")

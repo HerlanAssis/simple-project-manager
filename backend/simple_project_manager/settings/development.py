@@ -9,7 +9,8 @@ DATABASES = {
     }
 }
 
+EXTERNAL_APPS = [
+    'debug_toolbar',
+]
 
-MY_APPS = ['apps.github']
-
-INSTALLED_APPS += MY_APPS
+INSTALLED_APPS += + EXTERNAL_APPS

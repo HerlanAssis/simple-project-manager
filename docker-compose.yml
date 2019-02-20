@@ -44,6 +44,7 @@ services:
     build: frontend/
     volumes:
       - ./frontend/build/:/usr/share/nginx/html
+      - ./frontend/config/nginx:/etc/nginx/conf.d
     ports:
       - "80:80"
     depends_on:

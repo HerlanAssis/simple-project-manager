@@ -1,1 +1,1 @@
-cd frontend/ && yarn run build && cd ../ && docker-compose restart
+cd frontend/ && yarn && yarn run build && cd ../ && docker-compose restart

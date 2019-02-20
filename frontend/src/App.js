@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  BrowserRouter as Router, 
+  BrowserRouter as Router,
   Switch,
   Route,
 } from 'react-router-dom'
@@ -12,8 +12,8 @@ class App extends Component {
     return (
       <Router>
         <Switch>
+          <Route exact path="/home" component={Home} />
           <Route path="/" component={Login} />
-          <Route path="/home" component={Home} />
         </Switch>
       </Router>
     );
