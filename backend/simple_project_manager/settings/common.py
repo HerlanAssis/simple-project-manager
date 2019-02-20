@@ -96,6 +96,14 @@ TEMPLATES = [
     },
 ]
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'cache:11211',
+        'KEY_PREFIX': 'backend',
+    }
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
@@ -156,8 +164,8 @@ STATICFILES_DIRS = (
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 
 CORS_ORIGIN_WHITELIST = (
+    'localhost',
     'localhost:3000',
-    'localhost:3001',
 )
 
 CORS_ALLOW_CREDENTIALS = True

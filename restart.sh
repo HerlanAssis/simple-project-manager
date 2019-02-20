@@ -1,0 +1,1 @@
+cd frontend/ && yarn run build && cd ../ && docker-compose restart

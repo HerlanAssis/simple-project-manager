@@ -12,6 +12,11 @@ services:
       # Scripts
       - ./database/scripts:/scripts
       - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+  cache:
+    build: cache/            
+    command: memcached -m 64
+    ports:
+     - "11211:11211"
   backend:
     build: backend/
     command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"
@@ -21,17 +26,18 @@ services:
       - ./backend:/simple_project_manager
     depends_on:
       - database
+      - cache
     #ports:
     #  - "8000:8000"
     expose:
       - "8000"
-  backend_server:
-    build: backend_server/
+  server:
+    build: server/
     volumes:
       - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/
-      - ./backend_server/config/nginx:/etc/nginx/conf.d
+      - ./server/config/nginx:/etc/nginx/conf.d
     ports:
-      - "3000:8000"
+      - "8080:8000"
     depends_on:
       - backend
   frontend:
@@ -41,4 +47,4 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend_server
+      - server
