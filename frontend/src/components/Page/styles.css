@@ -1,0 +1,14 @@
+.content {           
+    flex: 1;        
+    display: flex;
+}
+
+.spin {
+    flex: 1;               
+    align-items: center;
+}
+
+.page {           
+    flex: 1;        
+    display: flex;    
+}

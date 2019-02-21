@@ -12,6 +12,8 @@ services:
       # Scripts
       - ./database/scripts:/scripts
       - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+     - "5432:5432"
   cache:
     build: cache/            
     command: memcached -m 64
