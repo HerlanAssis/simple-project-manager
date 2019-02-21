@@ -4,6 +4,7 @@ import {
     Redirect
 } from 'react-router-dom';
 import { KEYS } from '../../constants';
+import { Page } from '../../components';
 
 class ErrorBoundary extends React.Component {
     constructor(props) {
@@ -23,7 +24,11 @@ class ErrorBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             // You can render any custom fallback UI
-            return <h1>Something went wrong.</h1>;
+            return (
+                <Page>
+                    <h1>Something went wrong.</h1>
+                </Page>
+            );
         }
         return this.props.children;
     }
@@ -43,12 +48,12 @@ const Private = ({ component: Component, ...rest }) => (
         <Route
             {...rest}
             render={props =>
-                window.localStorage.getItem(KEYS.TOKEN_KEY) ? (                    
+                window.localStorage.getItem(KEYS.TOKEN_KEY) ? (
                     <Component {...props} />
                 ) : (
                         <Redirect
                             to={{
-                                pathname: "/login",                                
+                                pathname: "/login",
                             }}
                         />
                     )

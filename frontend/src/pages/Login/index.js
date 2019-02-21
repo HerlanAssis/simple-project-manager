@@ -53,6 +53,7 @@ class Login extends React.Component {
                 redirect_uri: URLS.GITHUB_REDIRECT_URL,
             }).then(response => {
                 const token = `Token ${response.data.token}`
+                console.log('RESPONSE', response);
                 Api.BackendServer.defaults.headers.Authorization = token;
                 window.localStorage.setItem(KEYS.TOKEN_KEY, token);
                 // and redirects

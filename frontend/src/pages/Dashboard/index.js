@@ -5,12 +5,14 @@ import {
 } from 'antd';
 import './styles.css';
 import { Route } from '../../components';
+import { Api } from '../../services';
 import {
     Home,
     Projetos,
     Tarefas,
     Colaboradores,
 } from './subpages';
+import { KEYS } from '../../constants';
 
 const {
     Header, Footer, Sider,
@@ -32,6 +34,11 @@ class Dashboard extends React.Component {
 
     onCollapse = (collapsed) => {
         this.setState({ collapsed });
+    }
+
+    componentDidMount() {
+        const token = window.localStorage.getItem(KEYS.TOKEN_KEY);
+        Api.BackendServer.defaults.headers.Authorization = token;
     }
 
     render() {
