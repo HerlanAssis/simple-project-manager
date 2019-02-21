@@ -18,7 +18,7 @@ class App extends Component {
       <Router>
         <Switch>
           <Route.Custom exact={true} path="/login" component={Login} />
-          <Route.Private path="/" component={Dashboard} />
+          <Route.Custom path="/" component={Dashboard} />
         </Switch>
       </Router>
     );

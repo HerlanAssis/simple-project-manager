@@ -1,4 +1,5 @@
 import React from 'react';
+import { Row, Col } from 'antd';
 import { Page } from '../../../../components';
 import { Api } from '../../../../services';
 import './styles.css';
@@ -14,8 +15,8 @@ class Projetos extends React.Component {
     }
 
     componentDidMount() {
-        Api.BackendServer.post('github/user/repos/').then(response => {
-            console.log(response);
+        Api.BackendServer.get('github/user/repos/').then(response => {
+            this.setState({ projetos: response.data });
         })
     }
 
@@ -23,7 +24,24 @@ class Projetos extends React.Component {
 
         return (
             <Page>
-                This is a Projetos
+                {/* <Row gutter={16}>
+                    <Col className="gutter-row" span={6}>
+                        <div className="gutter-box">col-6</div>
+                    </Col>
+                    <Col className="gutter-row" span={6}>
+                        <div className="gutter-box">col-6</div>
+                    </Col>
+                    <Col className="gutter-row" span={6}>
+                        <div className="gutter-box">col-6</div>
+                    </Col>
+                    <Col className="gutter-row" span={6}>
+                        <div className="gutter-box">col-6</div>
+                    </Col>
+                </Row> */}
+
+                {this.state.projetos.map(value => (
+                    <p>{value.name}</p>
+                ))}
             </Page>
         );
     }

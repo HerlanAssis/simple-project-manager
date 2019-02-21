@@ -23,7 +23,7 @@ class Page extends React.PureComponent {
             <Content style={this.props.style} className='content'>
                 <Spin wrapperClassName={'spin'} spinning={this.props.loading} size={'large'}>
                     <Content style={this.props.style} className='page'>
-                        <div style={{ minHeight: '70vh', width: '100%', padding: 24, background: '#fff' }}>
+                        <div style={{ overflowY: 'auto', height: '70vh', maxHeight: '70vh', width: '100%', padding: 24, background: '#fff' }}>
                             {this.props.children}
                         </div>
                     </Content>
