@@ -1,6 +1,9 @@
 .content {           
-    flex: 1;        
     display: flex;
+    flex: 1;        
+    margin: 0 8px;
+    justify-content: center;
+    align-items: center;            
 }
 
 .spin {
@@ -8,7 +11,10 @@
     align-items: center;
 }
 
-.page {           
-    flex: 1;        
-    display: flex;    
+.page { 
+    background-color: white;
+    height: 70vh;    
+    overflow-y: auto;
+    width: auto;
+    padding: 8px;    
 }

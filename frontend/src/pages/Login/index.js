@@ -53,7 +53,6 @@ class Login extends React.Component {
                 redirect_uri: URLS.GITHUB_REDIRECT_URL,
             }).then(response => {
                 const token = `Token ${response.data.token}`
-                console.log('RESPONSE', response);
                 Api.BackendServer.defaults.headers.Authorization = token;
                 window.localStorage.setItem(KEYS.TOKEN_KEY, token);
                 // and redirects
@@ -69,7 +68,7 @@ class Login extends React.Component {
 
     render() {
         return (
-            <Page style={{ flex: 1, height: '100vh', width: '100vw' }} loading={this.state.loading}>
+            <Page style={{ flex: 1, display: 'flex', height: '100vh', width: '100vw', padding: 0, margin: 0, alignItems: 'center', justifyContent: 'center' }} loading={this.state.loading}>
                 <Button onClick={() => this.setState({ loading: true })} href={this.state.url} type="primary" icon="github" size={'large'}>Entrar com o Github</Button>
             </Page>
         );

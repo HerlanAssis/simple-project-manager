@@ -1,0 +1,19 @@
+* {
+    box-sizing: border-box;  
+}
+  
+.project-head {
+    display: flex;    
+    height: '30px';    
+    text-align: center;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.oneLineP {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;    
+    text-transform: capitalize;    
+}

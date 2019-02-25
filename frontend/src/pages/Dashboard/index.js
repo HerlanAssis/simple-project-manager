@@ -5,14 +5,14 @@ import {
 } from 'antd';
 import './styles.css';
 import { Route } from '../../components';
-import { Api } from '../../services';
 import {
     Home,
     Projetos,
     Tarefas,
     Colaboradores,
 } from './subpages';
-import { KEYS } from '../../constants';
+import { Api } from '../../services';
+import moment from 'moment';
 
 const {
     Header, Footer, Sider,
@@ -20,44 +20,42 @@ const {
 
 
 const PAGES = [
-    { 'key': 1, iconName: 'pie-chart', name: 'Home', path: '/' },
-    { 'key': 2, iconName: 'project', name: 'Projetos', path: '/projetos' },
-    { 'key': 3, iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas' },
-    { 'key': 4, iconName: 'robot', name: 'Colaboradores', path: '/colaboradores' },
+    { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
+    { iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos },
+    { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
+    { iconName: 'robot', name: 'Colaboradores', path: '/colaboradores', component: Colaboradores },
 ];
-
 
 class Dashboard extends React.Component {
     state = {
-        collapsed: false,
+        collapsed: true,
+        rate_limit: null,
     };
 
-    onCollapse = (collapsed) => {
-        this.setState({ collapsed });
-    }
-
     componentDidMount() {
-        const token = window.localStorage.getItem(KEYS.TOKEN_KEY);
-        Api.BackendServer.defaults.headers.Authorization = token;
+        Api.BackendServer.get('github/').then(response => {
+            this.setState({ rate_limit: response.data });
+        })
     }
 
     render() {
+
         return (
             <Layout style={{ minHeight: '100vh' }}>
                 <Sider
-                    collapsible
                     collapsed={this.state.collapsed}
-                    onCollapse={this.onCollapse}
+                    collapsible={false}
                 >
                     <div style={{ height: '60px', width: '100%', padding: 10 }}>
-                        <div className="logo" style={{ width: '100%', height: '100%', backgroundColor: 'gray' }} />
+                        <div className="logo" style={{ display: 'flex', height: '100%', width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'gray' }} >
+                        </div>
                     </div>
 
-                    <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
+                    <Menu theme="dark" defaultSelectedKeys={[this.props.location.pathname]} mode="inline">
                         {PAGES.map(value => (
                             <Menu.Item
                                 onClick={() => this.props.history.push(value.path)}
-                                key={value.key}
+                                key={value.path}
                             >
                                 <Icon type={value.iconName} />
                                 <span>{value.name}</span>
@@ -68,12 +66,13 @@ class Dashboard extends React.Component {
                 </Sider>
 
                 <Layout style={{ flex: 1 }} >
-                    <Header style={{ background: '#fff', padding: 0 }} />
+                    <Header style={{ background: '#fff', padding: 0 }}>
+                        {this.state.rate_limit && <p>ApiGithub - {this.state.rate_limit.core.remaining}/{this.state.rate_limit.core.limit} | Renova em {moment.unix(this.state.rate_limit.core.reset).format("DD/MM/YYYY HH:mm:ss")}</p>}
+                    </Header>
 
-                    <Route.Custom exact path="/projetos" component={Projetos} />
-                    <Route.Custom exact path="/tarefas" component={Tarefas} />
-                    <Route.Custom exact path="/colaboradores" component={Colaboradores} />
-                    <Route.Custom exact path="/" component={Home} />
+                    {PAGES.map(value => (
+                        <Route.Custom key={value.path} exact path={value.path} component={value.component} />
+                    ))}
 
                     <Footer style={{ textAlign: 'center' }}>
                         Ant Design ©2018 Created by Ant UED

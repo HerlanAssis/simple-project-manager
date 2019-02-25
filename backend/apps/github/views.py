@@ -20,8 +20,14 @@ class GithubAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def github(self, request):
-        access_token = request.user.social_auth.get(provider='github').extra_data['access_token']
+        access_token = request.user.social_auth.get(
+            provider='github').extra_data['access_token']
         return Github(access_token)
+
+
+class OverView(GithubAPIView):
+    def get(self, request, format=None):                        
+        return Response(self.github(request).get_rate_limit().raw_data)
 
 
 class User(GithubAPIView):
@@ -38,7 +44,7 @@ class User(GithubAPIView):
 class Repos(GithubAPIView):
     def get(self, request, format=None):
         repos = []
-        cached_repos = cache.get('repos')
+        cached_repos = cache.get(key='repos', default=[])
 
         if not cached_repos:
             cached_repos = self.github(request).get_user().get_repos()
@@ -49,3 +55,30 @@ class Repos(GithubAPIView):
             repos.append(repo.raw_data)
 
         return Response(repos)
+
+
+class Contributors(GithubAPIView):
+    def get(self, request, format=None):
+        cached_repos = cache.get(key='repos', default=[])
+        cached_contributors = cache.get(key='contributors', default=[])
+
+        if not cached_repos:
+            cached_repos = self.github(request).get_user().get_repos()
+            cache.set('repos', cached_repos, CACHE_LEVEL['THREE'])
+
+        if not cached_contributors:
+            for repo in cached_repos:
+                for contributor in repo.get_contributors():
+                    cached_contributors.append(contributor.raw_data)
+                    cache.set('contributors', cached_contributors,
+                              CACHE_LEVEL['THREE'])
+
+        # return a colection of unique colaborators
+        unique_colaborators = {}
+        try:
+            unique_colaborators = list(
+                {v['id']: v for v in cached_contributors}.values())
+        except:
+            pass
+
+        return Response(unique_colaborators)

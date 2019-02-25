@@ -1,9 +1,7 @@
 import React from 'react';
-import { Row, Col } from 'antd';
-import { Page } from '../../../../components';
+import { Page, ProjectList } from '../../../../components';
 import { Api } from '../../../../services';
 import './styles.css';
-
 
 class Projetos extends React.Component {
 
@@ -11,37 +9,23 @@ class Projetos extends React.Component {
         super(props);
         this.state = {
             projetos: [],
+            loading: false,
         }
     }
 
     componentDidMount() {
-        Api.BackendServer.get('github/user/repos/').then(response => {
-            this.setState({ projetos: response.data });
+        this.setState({ loading: true });
+        Api.BackendServer.get('github/repos/').then(response => {
+            console.log(response);
+            this.setState({ projetos: response.data, loading: false });
         })
     }
 
     render() {
 
         return (
-            <Page>
-                {/* <Row gutter={16}>
-                    <Col className="gutter-row" span={6}>
-                        <div className="gutter-box">col-6</div>
-                    </Col>
-                    <Col className="gutter-row" span={6}>
-                        <div className="gutter-box">col-6</div>
-                    </Col>
-                    <Col className="gutter-row" span={6}>
-                        <div className="gutter-box">col-6</div>
-                    </Col>
-                    <Col className="gutter-row" span={6}>
-                        <div className="gutter-box">col-6</div>
-                    </Col>
-                </Row> */}
-
-                {this.state.projetos.map(value => (
-                    <p>{value.name}</p>
-                ))}
+            <Page loading={this.state.loading}>
+                <ProjectList projects={this.state.projetos} />
             </Page>
         );
     }
