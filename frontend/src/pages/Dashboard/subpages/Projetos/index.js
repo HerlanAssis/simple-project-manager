@@ -15,9 +15,9 @@ class Projetos extends React.Component {
 
     componentDidMount() {
         this.setState({ loading: true });
-        Api.BackendServer.get('github/repos/').then(response => {
+        Api.BackendServer.get('github/teste/').then(response => {
             console.log(response);
-            this.setState({ projetos: response.data, loading: false });
+            // this.setState({ projetos: response.data, loading: false });            
         })
     }
 

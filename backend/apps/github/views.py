@@ -4,6 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from github import Github
 from django.core.cache import cache, caches
+import json
+
+
+class ComplexEncoder(json.JSONEncoder):
+    def default(self, obj):
+        return obj.raw_data
 
 
 CACHE_LEVEL = {
@@ -24,61 +30,84 @@ class GithubAPIView(APIView):
             provider='github').extra_data['access_token']
         return Github(access_token)
 
+    def user(self, request):
+        user = cache.get('user', None)
+
+        if not user:
+            user = self.github(request).get_user()
+            cache.set('user', user, CACHE_LEVEL['THREE'])
+        return user
+
+    def repos(self, request):
+        repos = cache.get(key='repos', default=[])
+
+        if not repos:
+            repos = self.github(request).get_user().get_repos()
+            cache.set('repos', repos, CACHE_LEVEL['THREE'])
+
+        return repos
+
+    def contributors(self, request):
+        repos = self.repos(request)
+        contributors = cache.get(key='contributors', default=[])
+
+        if not contributors:
+            for repo in repos:
+                contributors += [
+                    contributor for contributor in repo.get_contributors()]
+            cache.set('contributors', contributors,
+                      CACHE_LEVEL['THREE'])
+
+        return contributors
+
+    def limits(self, request):
+        return self.github(request).get_rate_limit()
+
 
 class OverView(GithubAPIView):
-    def get(self, request, format=None):                        
+    def get(self, request, format=None):
         return Response(self.github(request).get_rate_limit().raw_data)
 
 
 class User(GithubAPIView):
     def get(self, request, format=None):
-        cached_user = cache.get('user')
+        user = self.user(request)
+        return Response(user.raw_data)
 
-        if not cached_user:
-            cached_user = self.github(request).get_user()
-            cache.set('user', cached_user, CACHE_LEVEL['THREE'])
 
-        return Response(cached_user.raw_data)
+class Home(GithubAPIView):
+    def get(self, request, format=None):
+        user = self.github(request).get_user()
+        limits = self.limits(request)
+        projects = []
+
+        for repo in user.get_repos():
+            contributors = [
+                contributor for contributor in repo.get_contributors()]
+            projects.append({'repo': repo, 'contributors': contributors})
+
+        data = {'user': user, 'limits': limits,
+                'projects': projects}
+
+        return Response(json.loads(json.dumps(data, cls=ComplexEncoder)))
 
 
 class Repos(GithubAPIView):
     def get(self, request, format=None):
-        repos = []
-        cached_repos = cache.get(key='repos', default=[])
+        repos = self.repos(request)
+        raw_repos = [repo.raw_data for repo in repos]
 
-        if not cached_repos:
-            cached_repos = self.github(request).get_user().get_repos()
-            cache.set('repos', cached_repos, CACHE_LEVEL['THREE'])
-
-        # Then play with your Github objects:
-        for repo in cached_repos:
-            repos.append(repo.raw_data)
-
-        return Response(repos)
+        return Response(raw_repos)
 
 
 class Contributors(GithubAPIView):
     def get(self, request, format=None):
-        cached_repos = cache.get(key='repos', default=[])
-        cached_contributors = cache.get(key='contributors', default=[])
-
-        if not cached_repos:
-            cached_repos = self.github(request).get_user().get_repos()
-            cache.set('repos', cached_repos, CACHE_LEVEL['THREE'])
-
-        if not cached_contributors:
-            for repo in cached_repos:
-                for contributor in repo.get_contributors():
-                    cached_contributors.append(contributor.raw_data)
-                    cache.set('contributors', cached_contributors,
-                              CACHE_LEVEL['THREE'])
+        contributors = self.contributors(request)
+        raw_contributors = [
+            contributor.raw_data for contributor in contributors]
 
         # return a colection of unique colaborators
-        unique_colaborators = {}
-        try:
-            unique_colaborators = list(
-                {v['id']: v for v in cached_contributors}.values())
-        except:
-            pass
+        # unique_colaborators = list(
+        #     {contributor['id']: contributor for contributor in raw_contributors}.values())
 
-        return Response(unique_colaborators)
+        return Response(raw_contributors)

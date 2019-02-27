@@ -42,12 +42,12 @@ services:
       - "8080:8000"
     depends_on:
       - backend
-  frontend:
-    build: frontend/
-    volumes:
-      - ./frontend/build/:/usr/share/nginx/html
-      - ./frontend/config/nginx:/etc/nginx/conf.d
-    ports:
-      - "80:80"
-    depends_on:
-      - server
+  # frontend:
+  #   build: frontend/
+  #   volumes:
+  #     - ./frontend/build/:/usr/share/nginx/html
+  #     - ./frontend/config/nginx:/etc/nginx/conf.d
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - server
