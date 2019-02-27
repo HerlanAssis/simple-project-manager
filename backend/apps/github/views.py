@@ -1,15 +1,11 @@
+from rest_framework import renderers
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from github import Github
+from rest_framework.utils import encoders
 from django.core.cache import cache, caches
-import json
-
-
-class ComplexEncoder(json.JSONEncoder):
-    def default(self, obj):
-        return obj.raw_data
+from github import Github, GithubObject
 
 
 CACHE_LEVEL = {
@@ -21,9 +17,21 @@ CACHE_LEVEL = {
 }
 
 
+class ComplexEncoder(encoders.JSONEncoder):
+    def default(self, obj):        
+        if isinstance(obj, GithubObject.GithubObject):
+            return obj.raw_data
+        return super().default(obj)
+
+
+class CustomJSONRenderer(renderers.JSONRenderer):
+    encoder_class = ComplexEncoder 
+
+
 class GithubAPIView(APIView):
     authentication_classes = (TokenAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
+    renderer_classes = (CustomJSONRenderer, )
 
     def github(self, request):
         access_token = request.user.social_auth.get(
@@ -88,8 +96,8 @@ class Home(GithubAPIView):
 
         data = {'user': user, 'limits': limits,
                 'projects': projects}
-
-        return Response(json.loads(json.dumps(data, cls=ComplexEncoder)))
+                
+        return Response(data)      
 
 
 class Repos(GithubAPIView):
