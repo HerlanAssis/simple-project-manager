@@ -19,10 +19,10 @@ class ProjectList extends React.Component {
         return (
             <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
                 {projects.map(project => (
-                    <div key={project.id} style={{ display: 'flex', flex: 1, flexDirection: 'column', height: '200px', width: '100%', marginBottom: '30px' }}>
+                    <div key={project.repo.id} style={{ display: 'flex', flex: 1, flexDirection: 'column', height: '200px', width: '100%', marginBottom: '30px' }}>
                         {/* Nome do projeto */}
                         <div className='project-head'>
-                            <p>{project.name}</p>
+                            <p>{project.repo.name}</p>
                         </div>
 
                         {/* Dados de gráfico */}

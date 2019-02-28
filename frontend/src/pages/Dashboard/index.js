@@ -33,8 +33,16 @@ class Dashboard extends React.Component {
     };
 
     componentDidMount() {
-        Api.BackendServer.get('github/').then(response => {
+        this.getLimits()
+    }
+
+    getLimits() {
+        Api.BackendServer.get('github/limits/').then(response => {
             this.setState({ rate_limit: response.data });
+
+            setTimeout(() => {
+                this.getLimits()
+            }, 5000);
         })
     }
 

@@ -1,121 +1,98 @@
-from rest_framework import renderers
+from github import Github
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.utils import encoders
-from django.core.cache import cache, caches
-from github import Github, GithubObject
+from django.core.cache import cache
+from django.conf import settings
+from .utils import PyGithubJSONRenderer, manual_dump
 
 
-CACHE_LEVEL = {
-    'ONE': 60,  # 1 minuto
-    'TWO': 60 * 5,  # 5 minutos
-    'THREE': 60 * 60,  # 1 hora
-    'FOUR': 60 * 60 * 5,  # 5 horas
-    'FIVE': 60 * 60 * 24,  # um dia
-}
-
-
-class ComplexEncoder(encoders.JSONEncoder):
-    def default(self, obj):        
-        if isinstance(obj, GithubObject.GithubObject):
-            return obj.raw_data
-        return super().default(obj)
-
-
-class CustomJSONRenderer(renderers.JSONRenderer):
-    encoder_class = ComplexEncoder 
+CACHE_LEVEL = settings.CACHE_LEVEL['THREE']
 
 
 class GithubAPIView(APIView):
     authentication_classes = (TokenAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
-    renderer_classes = (CustomJSONRenderer, )
+    renderer_classes = (PyGithubJSONRenderer, )
 
     def github(self, request):
         access_token = request.user.social_auth.get(
             provider='github').extra_data['access_token']
         return Github(access_token)
 
-    def user(self, request):
-        user = cache.get('user', None)
+    def github_cache(self, request):
 
-        if not user:
+        github_cache = cache.get(key='github_cache', default=None)
+
+        if not github_cache:
             user = self.github(request).get_user()
-            cache.set('user', user, CACHE_LEVEL['THREE'])
-        return user
+            projects = []
 
-    def repos(self, request):
-        repos = cache.get(key='repos', default=[])
-
-        if not repos:
-            repos = self.github(request).get_user().get_repos()
-            cache.set('repos', repos, CACHE_LEVEL['THREE'])
-
-        return repos
-
-    def contributors(self, request):
-        repos = self.repos(request)
-        contributors = cache.get(key='contributors', default=[])
-
-        if not contributors:
-            for repo in repos:
-                contributors += [
+            for repo in user.get_repos():
+                contributors = [
                     contributor for contributor in repo.get_contributors()]
-            cache.set('contributors', contributors,
-                      CACHE_LEVEL['THREE'])
+                projects.append({'repo': repo, 'contributors': contributors})
 
-        return contributors
+            github_cache = manual_dump({'user': user, 'projects': projects})
 
-    def limits(self, request):
-        return self.github(request).get_rate_limit()
+            cache.set('github_cache', github_cache, CACHE_LEVEL)
 
-
-class OverView(GithubAPIView):
-    def get(self, request, format=None):
-        return Response(self.github(request).get_rate_limit().raw_data)
+        return github_cache
 
 
 class User(GithubAPIView):
     def get(self, request, format=None):
-        user = self.user(request)
-        return Response(user.raw_data)
+        github_cache = self.github_cache(request)
+        user = github_cache['user']
+        return Response(user)
 
 
-class Home(GithubAPIView):
+class Projects(GithubAPIView):
     def get(self, request, format=None):
-        user = self.github(request).get_user()
-        limits = self.limits(request)
-        projects = []
+        github_cache = self.github_cache(request)
+        projects = github_cache['projects']
 
-        for repo in user.get_repos():
-            contributors = [
-                contributor for contributor in repo.get_contributors()]
-            projects.append({'repo': repo, 'contributors': contributors})
-
-        data = {'user': user, 'limits': limits,
-                'projects': projects}
-                
-        return Response(data)      
-
-
-class Repos(GithubAPIView):
-    def get(self, request, format=None):
-        repos = self.repos(request)
-        raw_repos = [repo.raw_data for repo in repos]
-
-        return Response(raw_repos)
+        return Response(projects)
 
 
 class Contributors(GithubAPIView):
     def get(self, request, format=None):
-        contributors = self.contributors(request)
-        raw_contributors = [
-            contributor.raw_data for contributor in contributors]
+        github_cache = self.github_cache(request)
+        projects = github_cache['projects']
+        contributors = []
 
-        # return a colection of unique colaborators
-        # unique_colaborators = list(
-        #     {contributor['id']: contributor for contributor in raw_contributors}.values())
+        # Extrair a lista de contibuidores de cada repositório
+        for project in projects:
+            contributors += project['contributors']
 
-        return Response(raw_contributors)
+        # # Converter a lista para json
+        # raw_contributors = [
+        #     contributor.raw_data for contributor in contributors]
+
+        # Eliminar os elementos repetidos
+        unique_contributors = list(
+            {contributor['id']: contributor for contributor in contributors}.values())
+
+        # Iterar sobre todos os repositórios
+        for project in projects:
+            # Iterar sobre todos os contribuidores únicos
+            for unique_contributor in contributors:
+                # Iterar sobre cada contribuidor em cada projeto
+                for contributor in project['contributors']:
+                    # Caso o contribuidor (que agora é unico) faça parte deste projecto, adiciona-lo
+                    # a lista de reposítorios deste contribuidor
+                    if unique_contributor['id'] == contributor['id']:
+                        # Cria uma nova lista caso seja vazio ou adiciona um novo elemento
+                        unique_contributor.setdefault(
+                            'repos', []).append(project['repo'])
+
+        return Response(unique_contributors)
+
+
+class Limits(GithubAPIView):
+    def get(self, request, format=None):
+        limits = self.github(request).get_rate_limit()
+
+        return Response(limits)

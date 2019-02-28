@@ -106,6 +106,14 @@ CACHES = {
     }
 }
 
+CACHE_LEVEL = {
+    'ONE': 60,  # 1 minuto
+    'TWO': 60 * 5,  # 5 minutos
+    'THREE': 60 * 60,  # 1 hora
+    'FOUR': 60 * 60 * 5,  # 5 horas
+    'FIVE': 60 * 60 * 24,  # um dia
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
