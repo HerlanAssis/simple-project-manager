@@ -10,6 +10,8 @@ import {
     Projetos,
     Tarefas,
     Colaboradores,
+    Relatorios,
+    Notificacoes,
 } from './subpages';
 import { Api } from '../../services';
 import moment from 'moment';
@@ -24,6 +26,8 @@ const PAGES = [
     { iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos },
     { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
     { iconName: 'robot', name: 'Colaboradores', path: '/colaboradores', component: Colaboradores },
+    { iconName: 'file-pdf', name: 'Relatórios', path: '/relatorios', component: Relatorios },
+    { iconName: 'notification', name: 'Notificações', path: '/notificacoes', component: Notificacoes },
 ];
 
 class Dashboard extends React.Component {
