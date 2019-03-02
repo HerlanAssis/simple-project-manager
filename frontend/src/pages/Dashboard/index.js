@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-    Layout, Menu, Icon,
+    Layout, Menu, Icon, Progress
 } from 'antd';
 import './styles.css';
 import { Route } from '../../components';
@@ -12,6 +12,7 @@ import {
     Colaboradores,
     Relatorios,
     Notificacoes,
+    Laboratorio,
 } from './subpages';
 import { Api } from '../../services';
 import moment from 'moment';
@@ -28,6 +29,7 @@ const PAGES = [
     { iconName: 'robot', name: 'Colaboradores', path: '/colaboradores', component: Colaboradores },
     { iconName: 'file-pdf', name: 'Relatórios', path: '/relatorios', component: Relatorios },
     { iconName: 'notification', name: 'Notificações', path: '/notificacoes', component: Notificacoes },
+    { iconName: 'experiment', name: 'Laboratório', path: '/laboratorio', component: Laboratorio },
 ];
 
 class Dashboard extends React.Component {
@@ -78,8 +80,17 @@ class Dashboard extends React.Component {
                 </Sider>
 
                 <Layout style={{ flex: 1 }} >
-                    <Header style={{ background: '#fff', padding: 0 }}>
-                        {this.state.rate_limit && <p>ApiGithub - {this.state.rate_limit.core.remaining}/{this.state.rate_limit.core.limit} | Renova em {moment.unix(this.state.rate_limit.core.reset).format("DD/MM/YYYY HH:mm:ss")}</p>}
+                    <Header style={{ background: '#fff', padding: 10 }}>
+                        <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+                            <div style={{ flex: 1 }}>
+                                {this.state.rate_limit && <p>ApiGithub - {} | Renova em {moment.unix(this.state.rate_limit.core.reset).format("DD/MM/YYYY HH:mm:ss")}</p>}
+                            </div>
+
+                            <div style={{ flex: 1 }}>
+                                {this.state.rate_limit && <Progress percent={(this.state.rate_limit.core.remaining/this.state.rate_limit.core.limit) * 100} showInfo />}
+                            </div>
+                        </div>
+
                     </Header>
 
                     {PAGES.map(value => (

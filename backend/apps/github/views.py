@@ -33,7 +33,8 @@ class GithubAPIView(APIView):
 
             github_projects = manual_dump({'user': user, 'projects': projects})
 
-            cache.set('github_projects', github_projects, settings.CACHE_LEVEL['THREE'])
+            cache.set('github_projects', github_projects,
+                      settings.CACHE_LEVEL['THREE'])
 
         return github_projects
 
@@ -63,27 +64,20 @@ class Contributors(GithubAPIView):
         for project in projects:
             contributors += project['contributors']
 
-        # # Converter a lista para json
-        # raw_contributors = [
-        #     contributor.raw_data for contributor in contributors]
-
-        # Eliminar os elementos repetidos
-        unique_contributors = list(
-            {contributor['id']: contributor for contributor in contributors}.values())
+        unique_contributor_dict = {
+            contributor['id']: contributor for contributor in contributors}
 
         # Iterar sobre todos os repositórios
         for project in projects:
             # Iterar sobre cada contribuidor em cada projeto
             for contributor in project['contributors']:
-                # Iterar sobre todos os contribuidores únicos
-                for unique_contributor in contributors:
-                    # Caso o contribuidor (que agora é unico) faça parte deste projecto, adiciona-lo
-                    # a lista de reposítorios deste contribuidor
-                    if unique_contributor['id'] == contributor['id']:
-                        # Cria uma nova lista caso seja vazio ou adiciona um novo elemento
-                        print(project['repo'])
-                        unique_contributor.setdefault(
-                            'repos', []).append(project['repo'])
+                # acessar a chave única de cada contributor e adicionar o projecto equivalente a lista
+                unique_contributor_dict[contributor['id']].setdefault(
+                    'repos', []).append(project['repo'])
+
+        # transformar o dicionario em uma lista
+        unique_contributors = list(
+            unique_contributor_dict.values())
 
         return Response(unique_contributors)
 
@@ -93,3 +87,20 @@ class Limits(GithubAPIView):
         limits = self.get_github_instance(request).get_rate_limit()
 
         return Response(limits)
+
+
+class Lab(GithubAPIView):
+    _avaliable_comands = [
+        {
+            'name': 'Limpar Cache',
+            'description': 'Este comando irá forar a atualização de todos os seus dados, use-o com cuidado!',
+            'command': 'clean_cache'
+        }
+    ]
+
+    def get(self, request, format=None):
+        return Response(self._avaliable_comands)
+
+    def post(self, request, format=None):
+        cache.clear()
+        return Response()

@@ -4,6 +4,7 @@ import Tarefas from './Tarefas';
 import Colaboradores from './Colaboradores'
 import Relatorios from './Relatorios'
 import Notificacoes from './Notificacoes'
+import Laboratorio from './Laboratorio'
 
 export {
     Home,
@@ -12,4 +13,5 @@ export {
     Colaboradores,
     Relatorios,
     Notificacoes,
+    Laboratorio,
 };
