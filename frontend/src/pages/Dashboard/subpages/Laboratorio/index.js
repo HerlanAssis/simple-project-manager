@@ -13,15 +13,25 @@ class Laboratorio extends React.Component {
     }
 
     lab() {
-        Api.BackendServer.post('github/lab/').then(response => {
+        const data = new URLSearchParams();
+        data.append('command', 'clean_cache');
+
+        Api.BackendServer.post('github/lab/',
+            data,
+            {
+                headers: {
+                    'Content-type': 'application/x-www-form-urlencoded'
+                }
+            }
+        ).then(response => {
             console.log(response);
         })
     }
 
     render() {
         return (
-            <Page>                
-                <button onClick={() => this.lab()} >Limpar Cache</button>
+            <Page>
+                <button onClick={() => this.lab()}>Limpar Cache</button>
             </Page>
         );
     }

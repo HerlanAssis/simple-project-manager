@@ -35,7 +35,8 @@ const PAGES = [
 class Dashboard extends React.Component {
     state = {
         collapsed: true,
-        rate_limit: null,
+        rate_limit: 0,
+        reset: 0,
     };
 
     componentDidMount() {
@@ -44,7 +45,11 @@ class Dashboard extends React.Component {
 
     getLimits() {
         Api.BackendServer.get('github/limits/').then(response => {
-            this.setState({ rate_limit: response.data });
+            const rate_limit = response.data;
+            this.setState({
+                rate_limit: parseInt((rate_limit.core.remaining / rate_limit.core.limit) * 100),
+                reset: rate_limit.core.reset,
+            });
 
             setTimeout(() => {
                 this.getLimits()
@@ -82,13 +87,15 @@ class Dashboard extends React.Component {
                 <Layout style={{ flex: 1 }} >
                     <Header style={{ background: '#fff', padding: 10 }}>
                         <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
-                            <div style={{ flex: 1 }}>
-                                {this.state.rate_limit && <p>ApiGithub - {} | Renova em {moment.unix(this.state.rate_limit.core.reset).format("DD/MM/YYYY HH:mm:ss")}</p>}
+                            
+                            <div style={{ flex: 5 }}>
+                                <Progress width={100} percent={this.state.rate_limit} showInfo />
+                            </div>
+                            
+                            <div style={{ flex: 1, textAlign:'center' }}>
+                                <p>Refresh {moment.unix(this.state.reset).fromNow()}</p>
                             </div>
 
-                            <div style={{ flex: 1 }}>
-                                {this.state.rate_limit && <Progress percent={(this.state.rate_limit.core.remaining/this.state.rate_limit.core.limit) * 100} showInfo />}
-                            </div>
                         </div>
 
                     </Header>

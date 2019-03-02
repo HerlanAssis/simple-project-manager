@@ -62,7 +62,7 @@ class Contributors(GithubAPIView):
 
         # Extrair a lista de contibuidores de cada repositório
         for project in projects:
-            contributors += project['contributors']
+            contributors += project['contributors']        
 
         unique_contributor_dict = {
             contributor['id']: contributor for contributor in contributors}
@@ -101,6 +101,12 @@ class Lab(GithubAPIView):
     def get(self, request, format=None):
         return Response(self._avaliable_comands)
 
-    def post(self, request, format=None):
-        cache.clear()
-        return Response()
+    def post(self, request, format=None):        
+        response = 'Comando não encontrado!'
+
+        command = request.POST.get("command", "")        
+        if command == 'clean_cache':
+            cache.clear()
+            response = 'Comando executado com sucesso!'
+
+        return Response(response)
