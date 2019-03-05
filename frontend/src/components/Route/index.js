@@ -3,8 +3,9 @@ import {
     Route,
     Redirect
 } from 'react-router-dom';
+
 import { KEYS } from '../../constants';
-import { Page } from '../../components';
+import { Exception } from '../../components';
 
 class ErrorBoundary extends React.Component {
     constructor(props) {
@@ -25,9 +26,15 @@ class ErrorBoundary extends React.Component {
         if (this.state.hasError) {
             // You can render any custom fallback UI
             return (
-                <Page>
-                    <h1>Something went wrong.</h1>
-                </Page>
+                <Exception
+                    type='Problemas com o servidor!'
+                    title='Ops!'
+                    description={'Desculpe, o servidor está reportando um erro'}
+                    actions={{
+                        name: 'Voltar para o início',
+                        path: '/',
+                    }}
+                />
             );
         }
         return this.props.children;

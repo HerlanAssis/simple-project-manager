@@ -3,25 +3,27 @@ import {
   BrowserRouter as Router,
   Switch,
 } from 'react-router-dom'
-
 import { Route } from './components';
+import LocaleProvider from './l18n';
+
 
 import {
   Login,
   Dashboard,
 } from './pages';
 
-
 class App extends Component {
 
   render() {
     return (
-      <Router>
-        <Switch>
-          <Route.Custom exact={true} path="/login" component={Login} />
-          <Route.Private path="/" component={Dashboard} />
-        </Switch>
-      </Router>
+      <LocaleProvider>
+        <Router>
+          <Switch>
+            <Route.Custom path="/login" component={Login} />
+            <Route.Private path="/" component={Dashboard} />
+          </Switch>
+        </Router>
+      </LocaleProvider>
     );
   }
 }

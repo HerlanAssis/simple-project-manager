@@ -3,16 +3,22 @@ import React from 'react';
 import {
     Layout, Menu, Icon, Progress
 } from 'antd';
+import {
+    Switch,
+} from 'react-router-dom'
+
 import './styles.css';
 import { Route } from '../../components';
 import {
     Home,
     Projetos,
     Tarefas,
+    Agenda,
     Colaboradores,
     Relatorios,
     Notificacoes,
     Laboratorio,
+    Page404,
 } from './subpages';
 import { Api } from '../../services';
 import moment from 'moment';
@@ -26,6 +32,7 @@ const PAGES = [
     { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
     { iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos },
     { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
+    { iconName: 'calendar', name: 'Agenda', path: '/agenda', component: Agenda },
     { iconName: 'robot', name: 'Colaboradores', path: '/colaboradores', component: Colaboradores },
     { iconName: 'file-pdf', name: 'Relatórios', path: '/relatorios', component: Relatorios },
     { iconName: 'notification', name: 'Notificações', path: '/notificacoes', component: Notificacoes },
@@ -36,7 +43,7 @@ class Dashboard extends React.Component {
     state = {
         collapsed: true,
         rate_limit: 0,
-        reset: 0,
+        reset: new Date().getTime(),
     };
 
     componentDidMount() {
@@ -87,22 +94,27 @@ class Dashboard extends React.Component {
                 <Layout style={{ flex: 1 }} >
                     <Header style={{ background: '#fff', padding: 10 }}>
                         <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
-                            
-                            <div style={{ flex: 5 }}>
-                                <Progress width={100} percent={this.state.rate_limit} showInfo />
+
+                            <div style={{ flex: 1 }}>
+                                <Progress width={100} successPercent={0} percent={this.state.rate_limit} showInfo />
                             </div>
-                            
-                            <div style={{ flex: 1, textAlign:'center' }}>
-                                <p>Refresh {moment.unix(this.state.reset).fromNow()}</p>
+
+                            <div style={{ width: 'auto', marginLeft:10, textAlign: 'center' }}>
+                                <p>Atualiza {moment.unix(this.state.reset).fromNow()}</p>
                             </div>
 
                         </div>
 
                     </Header>
 
-                    {PAGES.map(value => (
-                        <Route.Custom key={value.path} exact path={value.path} component={value.component} />
-                    ))}
+
+                    <Switch>
+                        {PAGES.map(value => (
+                            <Route.Custom exact={true} key={value.path} path={value.path} component={value.component} />
+                        ))}
+
+                        <Route.Custom component={Page404} />
+                    </Switch>
 
                     <Footer style={{ textAlign: 'center' }}>
                         Ant Design ©2018 Created by Ant UED
