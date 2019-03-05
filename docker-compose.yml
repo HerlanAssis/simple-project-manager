@@ -4,6 +4,7 @@ volumes:
   data:
 
 services:
+  # Database Machines
   database:
     build: database/
     volumes:
@@ -14,11 +15,15 @@ services:
       - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
      - "5432:5432"
+  
+  # Cache Machines
   cache:
     build: cache/            
     command: memcached -m 64
     ports:
      - "11211:11211"
+  
+  # Backend Machines
   backend:
     build: backend/
     command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"
@@ -42,12 +47,22 @@ services:
       - "8080:8000"
     depends_on:
       - backend
-  # frontend:
-  #   build: frontend/
+  # Frontend Machines
+  # project_manager:
+  #   build: frontend/project_manager/
   #   volumes:
-  #     - ./frontend/build/:/usr/share/nginx/html
-  #     - ./frontend/config/nginx:/etc/nginx/conf.d
+  #     - ./frontend/project_manager/build/:/usr/share/nginx/html
+  #     - ./frontend/project_manager/config/nginx:/etc/nginx/conf.d
   #   ports:
   #     - "80:80"
+  #   depends_on:
+  #     - server
+  # client:
+  #   build: frontend/client/
+  #   volumes:
+  #     - ./frontend/client/build/:/usr/share/nginx/html
+  #     - ./frontend/client/config/nginx:/etc/nginx/conf.d
+  #   ports:
+  #     - "8081:8081"
   #   depends_on:
   #     - server

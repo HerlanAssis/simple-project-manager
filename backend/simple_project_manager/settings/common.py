@@ -54,7 +54,8 @@ EXTERNAL_APPS = [
 MY_APPS = [
     'apps.core',
     'apps.api',
-    'apps.github'
+    'apps.project_manager',
+    'apps.client',
 ]
 
 INSTALLED_APPS = INTERNAL_APPS + EXTERNAL_APPS + MY_APPS
@@ -127,6 +128,7 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',  # for Google authentication
     'social_core.backends.github.GithubOAuth2',  # for Github authentication
     'rest_framework_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',
@@ -134,6 +136,8 @@ AUTHENTICATION_BACKENDS = (
 
 SOCIAL_AUTH_GITHUB_KEY = 'c3f39f63ffb0d5ca5b9d'
 SOCIAL_AUTH_GITHUB_SECRET = '2df19646ab5b3a247246cae191d55029c5eb740b'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '868259763295-0h7tcmihv8l91nlfkk2pu60m2o976ck5.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'NxT54Fv9O4UZjUyVAJvjtWqd'
 
 # DJANGO OAUTH TOOLKIT EXPIRATION SECONDS  - DEFAULT IS 36000 WHICH IS 10 hours
 OAUTH2_PROVIDER = {
@@ -180,6 +184,7 @@ SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 CORS_ORIGIN_WHITELIST = (
     'localhost',
     'localhost:3000',
+    'spm.com.br:3000',
 )
 
 CORS_ALLOW_CREDENTIALS = True

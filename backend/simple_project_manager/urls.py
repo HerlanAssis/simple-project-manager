@@ -16,10 +16,10 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
-from apps import core
+# from apps import core
 
 urlpatterns = [
-    path('', include('apps.core.urls')),
+    # path('', include('apps.core.urls')),
     # path('', include('social_django.urls', namespace='social')),
     path('api/', include('apps.api.urls')),
     path('auth/', include('rest_framework_social_oauth2.urls')),

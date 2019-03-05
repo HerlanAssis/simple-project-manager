@@ -1,4 +1,5 @@
 import graphene
+import apps.github.schema
 
 
 class Query(graphene.ObjectType):
