@@ -5,6 +5,6 @@ urlpatterns = [
     # some other urls
     path('login/', include('rest_social_auth.urls_token')),
     path('pm/', include('apps.project_manager.urls')),
-    path('c/', include('apps.client.urls')),
+    path('c/', include('apps.clients.urls')),
     # path('graphql', PrivateGraphQLView.as_view(graphiql=True)),
 ]

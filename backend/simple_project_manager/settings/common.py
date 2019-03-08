@@ -55,7 +55,10 @@ MY_APPS = [
     'apps.core',
     'apps.api',
     'apps.project_manager',
-    'apps.client',
+    'apps.clients',
+    'apps.notifications',
+    'apps.reports',
+    'apps.tasks',
 ]
 
 INSTALLED_APPS = INTERNAL_APPS + EXTERNAL_APPS + MY_APPS

@@ -48,21 +48,21 @@ services:
     depends_on:
       - backend
   # Frontend Machines
-  # project_manager:
-  #   build: frontend/project_manager/
-  #   volumes:
-  #     - ./frontend/project_manager/build/:/usr/share/nginx/html
-  #     - ./frontend/project_manager/config/nginx:/etc/nginx/conf.d
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - server
-  # client:
-  #   build: frontend/client/
-  #   volumes:
-  #     - ./frontend/client/build/:/usr/share/nginx/html
-  #     - ./frontend/client/config/nginx:/etc/nginx/conf.d
-  #   ports:
-  #     - "8081:8081"
-  #   depends_on:
-  #     - server
+  project_manager:
+    build: frontend/project_manager/
+    volumes:
+      - ./frontend/project_manager/build/:/usr/share/nginx/html
+      - ./frontend/project_manager/config/nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+  client:
+    build: frontend/client/
+    volumes:
+      - ./frontend/client/build/:/usr/share/nginx/html
+      - ./frontend/client/config/nginx:/etc/nginx/conf.d
+    ports:
+      - "8081:80"
+    depends_on:
+      - server
