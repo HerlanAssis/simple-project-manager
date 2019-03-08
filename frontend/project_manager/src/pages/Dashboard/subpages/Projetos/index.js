@@ -1,4 +1,5 @@
 import React from 'react';
+import { Avatar } from 'antd';
 import { Charts } from 'ant-design-pro';
 import moment from 'moment';
 import { Page, List } from '../../../../components';
@@ -36,48 +37,72 @@ class Projetos extends React.Component {
 
     _keyExtractor = (item) => `${item.repo.id}`
 
+    renderItem(project) {
+        return (
+            <div style={{ display: 'flex', flex: 1, flexDirection: 'column', height: '220px', width: '100%', marginBottom: '30px' }}>
+                {/* Nome do projeto */}
+                <div className='project-head'>
+                    <p className='one-line'>{project.repo.name}</p>
+                </div>
+
+                <div style={{ display: 'flex', flex: 3, flexDirection: 'row' }}>
+                    <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'pink' }} />
+
+                    <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'purple' }} />
+
+                    <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'blue' }} />
+                </div>
+
+                {/* Dados de gráfico */}
+                <div style={{ flex: 7 }}>
+                    <Charts.MiniArea
+                        line
+                        animate={true}
+                        color="#cceafe"
+                        height={50}
+                        data={visitData}
+                    />
+                </div>
+
+                {/* <div id={'contributors'} style={{
+                    flex: 3,
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    width: '100%',
+                    overflowY: 'hidden',
+                    flexDirection: 'column',
+                    // flexDirection: 'row',
+                    // alignItems: 'center',
+                    // justifyContent: 'center',
+                    backgroundColor: 'red'
+                }}>
+
+                    {project.contributors.map(contributor => {
+                        return (
+                            <div key={`${contributor.id}`} style={{ margin: 5 }}>
+                                <Avatar shape="square" size="default" src={contributor.avatar_url} />
+                            </div>
+                        );
+                    })}
+                </div> */}
+
+                {/* Rodapé
+            <div style={{ display: 'flex', flex: 2 }}>
+                <div style={{ position: 'relative', flex: 1, width: 'auto', height: 'auto', backgroundColor: 'green' }}></div>
+                <div style={{ position: 'relative', flex: 1, width: 'auto', height: 'auto', backgroundColor: 'blue' }}></div>
+            </div> */}
+
+            </div>
+        );
+    }
+
     render() {
         return (
             <Page loading={this.state.loading}>
                 <List
                     columns={2}
                     items={this.state.projetos}
-                    renderItem={(project) => (
-                        <div style={{ display: 'flex', flex: 1, flexDirection: 'column', height: '150px', width: '100%', marginBottom: '30px' }}>
-                            {/* Nome do projeto */}
-                            <div className='project-head'>
-                                <p className='one-line'>{project.repo.name}</p>
-                            </div>
-
-                            {/* Dados de gráfico */}
-                            <div style={{ display: 'flex', flex: 9, flexDirection: 'row' }}>
-                                <div style={{ flex: 8 }}>
-                                    <Charts.MiniArea
-                                        line
-                                        animate={true}
-                                        color="#cceafe"
-                                        height={60}
-                                        data={visitData}
-                                    />
-                                </div>
-
-                                <div style={{ display: 'flex', flex: 2, flexDirection:'column' }}>
-                                    <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'pink' }} />
-
-                                    <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'purple' }} />
-
-                                    <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'blue' }} />
-                                </div>
-                            </div>
-
-                            {/* Rodapé
-                            <div style={{ display: 'flex', flex: 2 }}>
-                                <div style={{ position: 'relative', flex: 1, width: 'auto', height: 'auto', backgroundColor: 'green' }}></div>
-                                <div style={{ position: 'relative', flex: 1, width: 'auto', height: 'auto', backgroundColor: 'blue' }}></div>
-                            </div> */}
-
-                        </div>
-                    )}
+                    renderItem={(project) => this.renderItem(project)}
                     keyExtractor={this._keyExtractor}
                 />
             </Page>

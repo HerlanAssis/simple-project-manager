@@ -13,3 +13,7 @@
     display: inline-block;    
     text-transform: capitalize;    
 }
+
+#contributors::-webkit-scrollbar { 
+    display: none; 
+}
