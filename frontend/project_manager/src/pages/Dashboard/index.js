@@ -11,6 +11,7 @@ import './styles.css';
 import { Route } from '../../components';
 import {
     Home,
+    Projeto,
     Projetos,
     Tarefas,
     Agenda,
@@ -30,7 +31,10 @@ const {
 
 const PAGES = [
     { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
-    { iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos },
+    {
+        iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos,
+        detailComponent: { key: 'Projeto', path: '/:name', component: Projeto }
+    },
     { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
     { iconName: 'calendar', name: 'Agenda', path: '/agenda', component: Agenda },
     { iconName: 'robot', name: 'Colaboradores', path: '/colaboradores', component: Colaboradores },
@@ -47,7 +51,7 @@ class Dashboard extends React.Component {
     };
 
     componentDidMount() {
-        this.getLimits()
+        this.getLimits();
     }
 
     getLimits() {
@@ -65,10 +69,26 @@ class Dashboard extends React.Component {
             setTimeout(() => {
                 this.getLimits()
             }, 5000);
-        })
+        });
     }
 
     render() {
+
+        const pages = [];
+
+        PAGES.forEach(value => {
+            pages.push(
+                <Route.Custom exact={true} key={value.path} path={value.path} component={value.component} />
+            )
+
+            if (value.detailComponent) {
+                pages.push(
+                    <Route.Custom exact={true} key={`${value.path}${value.detailComponent.path}`} path={`${value.path}${value.detailComponent.path}`} component={value.detailComponent.component} />
+                )
+            }
+        });
+
+        pages.push(<Route.Custom key={'page404'} component={Page404} />);
 
         return (
             <Layout style={{ minHeight: '100vh' }}>
@@ -103,7 +123,7 @@ class Dashboard extends React.Component {
                                 <Progress width={100} successPercent={0} percent={this.state.rate_limit} showInfo />
                             </div>
 
-                            <div style={{ width: 'auto', marginLeft:10, textAlign: 'center' }}>
+                            <div style={{ width: 'auto', marginLeft: 10, textAlign: 'center' }}>
                                 <p>Atualiza {moment.unix(this.state.reset).fromNow()}</p>
                             </div>
 
@@ -113,11 +133,7 @@ class Dashboard extends React.Component {
 
 
                     <Switch>
-                        {PAGES.map(value => (
-                            <Route.Custom exact={true} key={value.path} path={value.path} component={value.component} />
-                        ))}
-
-                        <Route.Custom component={Page404} />
+                        {pages}
                     </Switch>
 
                     <Footer style={{ textAlign: 'center' }}>

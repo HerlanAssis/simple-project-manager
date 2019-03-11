@@ -3,9 +3,10 @@ import {
     Route,
     Redirect
 } from 'react-router-dom';
+import { Exception } from 'ant-design-pro';
 
 import { KEYS } from '../../constants';
-import { Exception } from '../../components';
+// import { Exception } from '../../components';
 
 class ErrorBoundary extends React.Component {
     constructor(props) {
@@ -29,11 +30,8 @@ class ErrorBoundary extends React.Component {
                 <Exception
                     type='Problemas com o servidor!'
                     title='Ops!'
-                    description={'Desculpe, o servidor está reportando um erro'}
-                    actions={{
-                        name: 'Voltar para o início',
-                        path: '/',
-                    }}
+                    desc={'Desculpe, o servidor está reportando um erro'}
+                    backText={'Voltar ao início'}
                 />
             );
         }

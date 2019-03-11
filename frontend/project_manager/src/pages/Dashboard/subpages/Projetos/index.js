@@ -39,7 +39,12 @@ class Projetos extends React.Component {
 
     renderItem(project) {
         return (
-            <div style={{ display: 'flex', flex: 1, flexDirection: 'column', height: '220px', width: '100%', marginBottom: '30px' }}>
+            <div onClick={() => {
+                this.props.history.push({
+                    pathname: `${this.props.match.url}/${project.repo.name}`,
+                    state: { project }
+                })
+            }} style={{ display: 'flex', flex: 1, flexDirection: 'column', height: '150px', width: '100%', marginBottom: '30px', cursor: 'pointer' }}>
                 {/* Nome do projeto */}
                 <div className='project-head'>
                     <p className='one-line'>{project.repo.name}</p>
@@ -54,7 +59,7 @@ class Projetos extends React.Component {
                 </div>
 
                 {/* Dados de gráfico */}
-                <div style={{ flex: 7 }}>
+                <div style={{ flex: 7, backgroundColor: "red" }}>
                     <Charts.MiniArea
                         line
                         animate={true}
