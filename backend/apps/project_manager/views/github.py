@@ -27,10 +27,23 @@ class GithubAPIView(APIView):
             user = self.get_github_instance(request).get_user()
             projects = []
 
+            # commits = repo.get_commits()
+            # commits_sha_list = []
+            # for commit in commits:
+            # 	commits_sha_list.append(commit.sha)
+
+            # #Get a single commit by its sha
+            # commit = repo.get_commit(commits_sha_list[0])
+
             for repo in user.get_repos():
                 contributors = [
                     contributor for contributor in repo.get_contributors()]
-                projects.append({'repo': repo, 'contributors': contributors})
+                sha_commits = [commit for commit in repo.get_commits()]
+                # commits = [repo.get_commit(commit.sha)
+                #            for commit in sha_commits]
+
+                projects.append(
+                    {'repo': repo, 'contributors': contributors, 'commits': sha_commits})
 
             github_projects = manual_dump({'user': user, 'projects': projects})
 

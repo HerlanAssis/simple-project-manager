@@ -48,29 +48,28 @@ services:
     depends_on:
       - backend
   # Frontend Machines
-  builder:
-    build: frontend/.config/
-    volumes: ## for build another project just add a new line
-      - ./frontend/project_manager/:/projects/project_manager
-      - ./frontend/client/:/projects/client    
-    command: tail -f /dev/null # comment this line for disable debug mode
-  project_manager:
-    build: frontend/project_manager/
-    volumes:
-      - ./frontend/project_manager/build/:/usr/share/nginx/html
-      - ./frontend/.config/nginx:/etc/nginx/conf.d
-    ports:
-      - "80:80"
-    depends_on:
-      - server
-      - builder
-  client:
-    build: frontend/client/
-    volumes:
-      - ./frontend/client/build/:/usr/share/nginx/html
-      - ./frontend/.config/nginx:/etc/nginx/conf.d
-    ports:
-      - "8081:80"
-    depends_on:
-      - server
-      - builder
+  # builder:
+  #   build: frontend/.config/
+  #   volumes: ## for build another project just add a new line
+  #     - ./frontend/project_manager/:/projects/project_manager
+  #     - ./frontend/client/:/projects/client        
+  # project_manager:
+  #   build: frontend/project_manager/
+  #   volumes:
+  #     - ./frontend/project_manager/build/:/usr/share/nginx/html
+  #     - ./frontend/.config/nginx:/etc/nginx/conf.d
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - server
+  #     - builder
+  # client:
+  #   build: frontend/client/
+  #   volumes:
+  #     - ./frontend/client/build/:/usr/share/nginx/html
+  #     - ./frontend/.config/nginx:/etc/nginx/conf.d
+  #   ports:
+  #     - "8081:80"
+  #   depends_on:
+  #     - server
+  #     - builder
