@@ -50,7 +50,7 @@ class Projetos extends React.Component {
                     <p className='one-line'>{project.repo.name}</p>
                 </div>
 
-                <div style={{ display: 'flex', flex: 3, flexDirection: 'row' }}>
+                <div style={{ display: 'flex', flex: 1, flexDirection: 'row' }}>
                     <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'pink' }} />
 
                     <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'purple' }} />
@@ -59,7 +59,7 @@ class Projetos extends React.Component {
                 </div>
 
                 {/* Dados de gráfico */}
-                <div style={{ flex: 7, backgroundColor: "red" }}>
+                <div style={{ flex: 1 }}>
                     <Charts.MiniArea
                         line
                         animate={true}

@@ -131,7 +131,6 @@ class Dashboard extends React.Component {
 
                     </Header>
 
-
                     <Switch>
                         {pages}
                     </Switch>

@@ -1,8 +1,9 @@
 import React from 'react';
-import { Page } from '../../../../components';
-import { Api } from '../../../../services'
 import { Table } from 'antd';
-import moment from 'moment';    
+import { Page, } from '../../../../components';
+import { Api } from '../../../../services'
+
+import moment from 'moment';
 
 import './styles.css';
 
@@ -45,13 +46,14 @@ class Projeto extends React.Component {
 
         Api.BackendServer.get(`pm/commits/${project.repo.name}`).then(response => {
             const commits = response.data;
+
             const data = commits.map((value, index) => ({
                 key: `${index}`,
-                commiter: value.committer.login,
+                commiter: value.commit.author.name || value.committer.author.name,
                 additions: value.stats.additions,
                 deletions: value.stats.deletions,
-                churn: value.stats.deletions,
-                date: moment(value.commit.author.date).format('LLLL'),
+                churn: value.stats.total,
+                date: moment(value.commit.author.date || value.committer.author.date).format('LLLL'),
             }));
 
             this.setState({ loading: false, data });
@@ -63,6 +65,7 @@ class Projeto extends React.Component {
         console.log('params', pagination, filters, sorter);
     }
 
+
     render() {
         return (
             <Page loading={this.state.loading}>
@@ -73,3 +76,4 @@ class Projeto extends React.Component {
 }
 
 export default Projeto;
+
