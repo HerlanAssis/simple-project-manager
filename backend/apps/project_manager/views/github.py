@@ -38,12 +38,12 @@ class GithubAPIView(APIView):
             for repo in user.get_repos():
                 contributors = [
                     contributor for contributor in repo.get_contributors()]
-                sha_commits = [commit for commit in repo.get_commits()]
+                # sha_commits = [commit for commit in repo.get_commits()]
                 # commits = [repo.get_commit(commit.sha)
                 #            for commit in sha_commits]
 
                 projects.append(
-                    {'repo': repo, 'contributors': contributors, 'commits': sha_commits})
+                    {'repo': repo, 'contributors': contributors})
 
             github_projects = manual_dump({'user': user, 'projects': projects})
 
@@ -100,6 +100,28 @@ class Limits(GithubAPIView):
         limits = self.get_github_instance(request).get_rate_limit()
 
         return Response(limits)
+
+
+class Commits(GithubAPIView):
+    def get(self, request, reponame, format=None):
+        user = self.get_github_instance(request).get_user()
+        repo = user.get_repo(reponame)
+
+        name = key='commits-{}'.format(repo.name)
+
+        commits = cache.get(
+            key='commits-{}'.format(repo.name), default=None)
+
+        if not commits:
+            # Get commits to a repo
+            commits = [commit for commit in repo.get_commits()]
+            
+            commits_dumped = manual_dump(commits)
+
+            cache.set('commits-{reponame}'.format(reponame=repo.name), commits_dumped,
+                      settings.CACHE_LEVEL['THREE'])
+
+        return Response(commits)
 
 
 class Lab(GithubAPIView):
