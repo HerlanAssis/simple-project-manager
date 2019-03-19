@@ -22,10 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '&krfun!+s06r#zox&$9wzf2ma!wy=$kj(*h)glk4$l$%7=tthc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -64,9 +63,9 @@ MY_APPS = [
 INSTALLED_APPS = INTERNAL_APPS + EXTERNAL_APPS + MY_APPS
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -183,13 +182,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # When using PostgreSQL, it’s recommended to use the built-in JSONB field to store the extracted extra_data.
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
-
-CORS_ORIGIN_WHITELIST = (
-    'localhost',
-    'localhost:3000',
-    'spm.com.br:3000',
-)
-
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
