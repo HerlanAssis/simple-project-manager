@@ -26,50 +26,33 @@ services:
   # Backend Machines
   backend:
     build: backend/
-    command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"
-    #command: bash -c "python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"
-    #command: python manage.py runserver 0.0.0.0:8000
+    command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"    
     volumes:
       - ./backend:/simple_project_manager
     depends_on:
       - database
       - cache
-    #ports:
-    #  - "8000:8000"
     expose:
-      - "8000"
+      - "8000" 
   server:
     build: server/
     volumes:
-      - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/
-      - ./server/config/nginx:/etc/nginx/conf.d
+      - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/      
     ports:
       - "8080:8000"
     depends_on:
       - backend
+
   # Frontend Machines
-  builder:
-    build: frontend/.config/
-    volumes: ## for build another project just add a new line
-      - ./frontend/project_manager/:/projects/project_manager
-  #     - ./frontend/client/:/projects/client        
   project_manager:
-    build: frontend/project_manager/
-    volumes:
-      - ./frontend/project_manager/build/:/usr/share/nginx/html
-      - ./frontend/.config/nginx:/etc/nginx/conf.d
+    build: frontend/project_manager/    
     ports:
       - "80:80"
     depends_on:
-      - server
-      - builder
+      - server      
   # client:
-  #   build: frontend/client/
-  #   volumes:
-  #     - ./frontend/client/build/:/usr/share/nginx/html
-  #     - ./frontend/.config/nginx:/etc/nginx/conf.d
+  #   build: frontend/client/    
   #   ports:
   #     - "8081:80"
   #   depends_on:
   #     - server
-  #     - builder

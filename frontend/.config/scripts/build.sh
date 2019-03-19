@@ -1,1 +1,0 @@
-for d in ./*/; do (cd $d && yarn && yarn run build); done;
