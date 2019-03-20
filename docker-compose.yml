@@ -26,7 +26,7 @@ services:
   # Backend Machines
   backend:
     build: backend/
-    command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"    
+    command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python manage.py collectstatic --noinput && python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"    
     volumes:
       - ./backend:/simple_project_manager
     depends_on:
