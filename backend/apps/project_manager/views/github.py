@@ -20,37 +20,37 @@ class GithubAPIView(APIView):
             provider='github').extra_data['access_token']
         return Github(access_token)
 
-    def get_github_user_projects(self, request):
-        github_projects = cache.get(key='github_projects', default=None)
+    # def get_github_user_projects(self, request):
+    #     github_projects = cache.get(key='github_projects', default=None)
 
-        if not github_projects:
-            user = self.get_github_instance(request).get_user()
-            projects = []
+    #     if not github_projects:
+    #         user = self.get_github_instance(request).get_user()
+    #         projects = []
 
-            # commits = repo.get_commits()
-            # commits_sha_list = []
-            # for commit in commits:
-            # 	commits_sha_list.append(commit.sha)
+    #         # commits = repo.get_commits()
+    #         # commits_sha_list = []
+    #         # for commit in commits:
+    #         # 	commits_sha_list.append(commit.sha)
 
-            # #Get a single commit by its sha
-            # commit = repo.get_commit(commits_sha_list[0])
+    #         # #Get a single commit by its sha
+    #         # commit = repo.get_commit(commits_sha_list[0])
 
-            for repo in user.get_repos():
-                contributors = [
-                    contributor for contributor in repo.get_contributors()]
-                # sha_commits = [commit for commit in repo.get_commits()]
-                # commits = [repo.get_commit(commit.sha)
-                #            for commit in sha_commits]
+    #         for repo in user.get_repos():
+    #             contributors = [
+    #                 contributor for contributor in repo.get_contributors()]
+    #             # sha_commits = [commit for commit in repo.get_commits()]
+    #             # commits = [repo.get_commit(commit.sha)
+    #             #            for commit in sha_commits]
 
-                projects.append(
-                    {'repo': repo, 'contributors': contributors})
+    #             projects.append(
+    #                 {'repo': repo, 'contributors': contributors})
 
-            github_projects = manual_dump({'user': user, 'projects': projects})
+    #         github_projects = manual_dump({'user': user, 'projects': projects})
 
-            cache.set('github_projects', github_projects,
-                      settings.CACHE_LEVEL['THREE'])
+    #         cache.set('github_projects', github_projects,
+    #                   settings.CACHE_LEVEL['THREE'])
 
-        return github_projects
+    #     return github_projects
 
 
 class User(GithubAPIView):
@@ -59,40 +59,64 @@ class User(GithubAPIView):
         return Response(user)
 
 
-class Projects(GithubAPIView):
-    def get(self, request, format=None):
-        github_projects = self.get_github_user_projects(request)
-        projects = github_projects['projects']
+# class Projects(GithubAPIView):
+#     def get(self, request, format=None):
+#         github_projects = self.get_github_user_projects(request)
+#         # projects = github_projects['projects']
 
-        return Response(projects)
+#         return Response('')
+
+
+class Repos(GithubAPIView):
+    def get(self, request, format=None):
+        user = self.get_github_instance(request).get_user()
+        key = 'repos'
+        repos = cache.get(key=key, default=[])
+
+        if not repos or True:
+            repos = [{'name': repo.name, 'id': repo.id}
+                     for repo in user.get_repos()]
+            cache.set(key, repos, settings.CACHE_LEVEL['THREE'])
+
+        return Response(repos)
 
 
 class Contributors(GithubAPIView):
-    def get(self, request, format=None):
-        github_projects = self.get_github_user_projects(request)
-        projects = github_projects['projects']
-        contributors = []
+    def get(self, request, reponame, format=None):
+        user = self.get_github_instance(request).get_user()
+        repo = user.get_repo(reponame)
+        key = 'contributors-{}'.format(repo.name)
+        contributors = cache.get(key=key, default=[])
 
-        # Extrair a lista de contibuidores de cada repositório
-        for project in projects:
-            contributors += project['contributors']
+        if not contributors:
+            contributors = [contributor for contributor in repo.get_contributors()]
+            cache.set(key, contributors, settings.CACHE_LEVEL['THREE'])
 
-        unique_contributor_dict = {
-            contributor['id']: contributor for contributor in contributors}
+        return Response(contributors)
+        # github_projects = self.get_github_user_projects(request)
+        # projects = github_projects['projects']
+        # contributors = []
 
-        # Iterar sobre todos os repositórios
-        for project in projects:
-            # Iterar sobre cada contribuidor em cada projeto
-            for contributor in project['contributors']:
-                # acessar a chave única de cada contributor e adicionar o projecto equivalente a lista
-                unique_contributor_dict[contributor['id']].setdefault(
-                    'repos', []).append(project['repo'])
+        # # Extrair a lista de contibuidores de cada repositório
+        # for project in projects:
+        #     contributors += project['contributors']
 
-        # transformar o dicionario em uma lista
-        unique_contributors = list(
-            unique_contributor_dict.values())
+        # unique_contributor_dict = {
+        #     contributor['id']: contributor for contributor in contributors}
 
-        return Response(unique_contributors)
+        # # Iterar sobre todos os repositórios
+        # for project in projects:
+        #     # Iterar sobre cada contribuidor em cada projeto
+        #     for contributor in project['contributors']:
+        #         # acessar a chave única de cada contributor e adicionar o projecto equivalente a lista
+        #         unique_contributor_dict[contributor['id']].setdefault(
+        #             'repos', []).append(project['repo'])
+
+        # # transformar o dicionario em uma lista
+        # unique_contributors = list(
+        #     unique_contributor_dict.values())
+
+        # return Response(unique_contributors)
 
 
 class Limits(GithubAPIView):
@@ -107,7 +131,7 @@ class Commits(GithubAPIView):
         user = self.get_github_instance(request).get_user()
         repo = user.get_repo(reponame)
 
-        name = key='commits-{}'.format(repo.name)
+        key = 'commits-{}'.format(repo.name)
 
         commits = cache.get(
             key='commits-{}'.format(repo.name), default=None)
@@ -115,7 +139,7 @@ class Commits(GithubAPIView):
         if not commits:
             # Get commits to a repo
             commits = [commit for commit in repo.get_commits()]
-            
+
             commits_dumped = manual_dump(commits)
 
             cache.set('commits-{reponame}'.format(reponame=repo.name), commits_dumped,

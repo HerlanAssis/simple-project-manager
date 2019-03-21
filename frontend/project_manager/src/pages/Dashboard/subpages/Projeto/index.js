@@ -42,9 +42,13 @@ class Projeto extends React.Component {
     componentDidMount() {
         this.setState({ loading: true })
 
-        const { project } = this.props.location.state;
+        const { repo } = this.props.location.state;
 
-        Api.BackendServer.get(`pm/commits/${project.repo.name}`).then(response => {
+        Api.BackendServer.get(`pm/contributors/${repo.name}`).then(response => {
+            console.log("TESTE TESTADO", response.data)
+        });
+
+        Api.BackendServer.get(`pm/commits/${repo.name}`).then(response => {
             const commits = response.data;
 
             const data = commits.map((value, index) => ({

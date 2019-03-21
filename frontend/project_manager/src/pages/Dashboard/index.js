@@ -37,7 +37,7 @@ const PAGES = [
     },
     { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
     { iconName: 'calendar', name: 'Agenda', path: '/agenda', component: Agenda },
-    { iconName: 'robot', name: 'Colaboradores', path: '/colaboradores', component: Colaboradores },
+    // { iconName: 'robot', name: 'Colaboradores', path: '/colaboradores', component: Colaboradores },
     { iconName: 'file-pdf', name: 'Relatórios', path: '/relatorios', component: Relatorios },
     { iconName: 'notification', name: 'Notificações', path: '/notificacoes', component: Notificacoes },
     { iconName: 'experiment', name: 'Laboratório', path: '/laboratorio', component: Laboratorio },

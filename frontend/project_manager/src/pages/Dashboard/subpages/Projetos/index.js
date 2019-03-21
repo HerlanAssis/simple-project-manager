@@ -1,5 +1,4 @@
 import React from 'react';
-import { Avatar } from 'antd';
 import { Charts } from 'ant-design-pro';
 import moment from 'moment';
 import { Page, List } from '../../../../components';
@@ -23,31 +22,33 @@ class Projetos extends React.Component {
         super(props);
         this.state = {
             projetos: [],
+            repos: [],
             loading: false,
         }
     }
 
     componentDidMount() {
         this.setState({ loading: true });
-        Api.BackendServer.get('pm/projects/').then(response => {
-            console.log(response);
-            this.setState({ projetos: response.data, loading: false });
-        })
+        
+        Api.BackendServer.get('pm/repos/').then(response => {
+            console.log("REPOS", response);            
+            this.setState({ repos: response.data, loading: false });
+        })    
     }
 
-    _keyExtractor = (item) => `${item.repo.id}`
+    _keyExtractor = (item) => `${item.id}`
 
-    renderItem(project) {
+    renderItem(repo) {
         return (
             <div onClick={() => {
                 this.props.history.push({
-                    pathname: `${this.props.match.url}/${project.repo.name}`,
-                    state: { project }
+                    pathname: `${this.props.match.url}/${repo.name}`,
+                    state: { repo }
                 })
             }} style={{ display: 'flex', flex: 1, flexDirection: 'column', height: '150px', width: '100%', marginBottom: '30px', cursor: 'pointer' }}>
                 {/* Nome do projeto */}
                 <div className='project-head'>
-                    <p className='one-line'>{project.repo.name}</p>
+                    <p className='one-line'>{repo.name}</p>
                 </div>
 
                 <div style={{ display: 'flex', flex: 1, flexDirection: 'row' }}>
@@ -82,7 +83,7 @@ class Projetos extends React.Component {
                     backgroundColor: 'red'
                 }}>
 
-                    {project.contributors.map(contributor => {
+                    {contributors.map(contributor => {
                         return (
                             <div key={`${contributor.id}`} style={{ margin: 5 }}>
                                 <Avatar shape="square" size="default" src={contributor.avatar_url} />
@@ -106,7 +107,7 @@ class Projetos extends React.Component {
             <Page loading={this.state.loading}>
                 <List
                     columns={2}
-                    items={this.state.projetos}
+                    items={this.state.repos}
                     renderItem={(project) => this.renderItem(project)}
                     keyExtractor={this._keyExtractor}
                 />
