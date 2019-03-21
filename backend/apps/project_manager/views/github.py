@@ -1,3 +1,4 @@
+from math import ceil
 from github import Github
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -14,12 +15,46 @@ class GithubAPIView(APIView):
     authentication_classes = (TokenAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
     renderer_classes = (PyGithubJSONRenderer, )
+    per_page = 10
 
     def get_github_instance(self, request):
         access_token = request.user.social_auth.get(
             provider='github').extra_data['access_token']
-        return Github(access_token)
+        return Github(login_or_token=access_token, per_page=self.per_page)
 
+    def get_paginated_github_object(self, data, page, cache_key, object_modeler):                                
+        page_limit = ceil(data.totalCount/self.per_page) -1        
+
+        next_page = prev_page = page
+        if(next_page < page_limit):
+            next_page += 1
+        if(prev_page > 0):
+            prev_page -= 1        
+
+        current_page = cache.get(key=cache_key, default=None)
+
+        if current_page is None:            
+            current_page = object_modeler(data.get_page(page))
+            cache.set(cache_key, current_page, settings.CACHE_LEVEL['THREE'])            
+
+        return {
+            'next': next_page,
+            'previous': prev_page,
+            'limit': page_limit,
+            'current_page':current_page
+        }
+
+
+# class GithubPaginatedView(GithubAPIView):
+#     pagination_class = pagination.PageNumberPagination
+    
+#     def get_paginated_response(self, data):
+#         return Response({
+#             'next': None,
+#             'previous': None,
+#             'count': len(data),
+#             'results': data
+#         })
     # def get_github_user_projects(self, request):
     #     github_projects = cache.get(key='github_projects', default=None)
 
@@ -70,15 +105,19 @@ class User(GithubAPIView):
 class Repos(GithubAPIView):
     def get(self, request, format=None):
         user = self.get_github_instance(request).get_user()
-        key = 'repos'
-        repos = cache.get(key=key, default=[])
+        repos = user.get_repos()
+        page = request.GET.get('page')
 
-        if not repos or True:
-            repos = [{'name': repo.name, 'id': repo.id}
-                     for repo in user.get_repos()]
-            cache.set(key, repos, settings.CACHE_LEVEL['THREE'])
+        if page is None:
+            page = 0
+        
+        cache_key = 'repos-page-{}'.format(page)        
 
-        return Response(repos)
+        object_modeler = lambda data: [{'name': repo.name, 'id': repo.id} for repo in data]
+
+        content = self.get_paginated_github_object(repos, page, cache_key, object_modeler)
+
+        return Response(content)        
 
 
 class Contributors(GithubAPIView):
