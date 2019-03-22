@@ -25,19 +25,8 @@ class GithubAPIView(APIView):
         return Github(login_or_token=access_token, per_page=self.per_page)
 
     def get_repo(self, request, repo_full_name):
-        user = self.get_github_instance(request).get_user()          
-        repo = user.get_repo_from(repo_full_name)
-
-        # try:
-        #     repo = user.get_repo(reponame)
-        # except Exception as e:
-        #     repos = user.get_repos()
-        #     repo_id = int(request.GET.get('repo_id'))
-        #     for user_repo in repos:
-        #         if(user_repo.id == repo_id):
-        #             repo = user_repo
-
-        return repo
+        user = self.get_github_instance(request).get_user()
+        return user.get_repo_from(repo_full_name)        
 
     def get_paginated_github_object(self, data, page, key, object_modeler):
         total_items = data.totalCount
@@ -106,7 +95,7 @@ class Contributors(GithubAPIView):
         contributors = repo.get_contributors()
         page = request.GET.get('page')
 
-        key = 'repo-{}-contributors-page'.format(reponame)
+        key = 'repo-{}-contributors-page'.format(repo_full_name)
 
         def object_modeler(data): return [contributor for contributor in data]
 
@@ -119,12 +108,11 @@ class Contributors(GithubAPIView):
 class Commits(GithubAPIView):
     def get(self, request, format=None):        
         repo_full_name = request.GET.get('repo_full_name')
-        repo = self.get_repo(request, repo_full_name)
-        # repo = self.get_repo(request, reponame)
+        repo = self.get_repo(request, repo_full_name)        
 
         commits = repo.get_commits()
         page = request.GET.get('page')
-        key = 'repo-{}-commit-page'.format(reponame)
+        key = 'repo-{}-commit-page'.format(repo_full_name)
 
         def object_modeler(data): return [
             {'commit': commit.commit, 'committer': commit.committer, 'stats': commit.stats} for commit in data]
