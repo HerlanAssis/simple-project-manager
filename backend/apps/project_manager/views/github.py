@@ -24,18 +24,18 @@ class GithubAPIView(APIView):
             provider='github').extra_data['access_token']
         return Github(login_or_token=access_token, per_page=self.per_page)
 
-    def get_repo(self, request, reponame):
-        user = self.get_github_instance(request).get_user()
-        repo = None
+    def get_repo(self, request, repo_full_name):
+        user = self.get_github_instance(request).get_user()          
+        repo = user.get_repo_from(repo_full_name)
 
-        try:
-            repo = user.get_repo(reponame)
-        except Exception as e:
-            repos = user.get_repos()
-            repo_id = int(request.GET.get('repo_id'))
-            for user_repo in repos:
-                if(user_repo.id == repo_id):
-                    repo = user_repo
+        # try:
+        #     repo = user.get_repo(reponame)
+        # except Exception as e:
+        #     repos = user.get_repos()
+        #     repo_id = int(request.GET.get('repo_id'))
+        #     for user_repo in repos:
+        #         if(user_repo.id == repo_id):
+        #             repo = user_repo
 
         return repo
 
@@ -98,9 +98,10 @@ class Repos(GithubAPIView):
 
 
 class Contributors(GithubAPIView):
-    def get(self, request, reponame, format=None):
-        # user = self.get_github_instance(request).get_user()
-        repo = self.get_repo(request, reponame)
+    def get(self, request, format=None):        
+        repo_full_name = request.GET.get('repo_full_name')
+        repo = self.get_repo(request, repo_full_name)
+        # repo = self.get_repo(request, reponame)
 
         contributors = repo.get_contributors()
         page = request.GET.get('page')
@@ -116,9 +117,10 @@ class Contributors(GithubAPIView):
 
 
 class Commits(GithubAPIView):
-    def get(self, request, reponame, format=None):
-        # user = self.get_github_instance(request).get_user()
-        repo = self.get_repo(request, reponame)
+    def get(self, request, format=None):        
+        repo_full_name = request.GET.get('repo_full_name')
+        repo = self.get_repo(request, repo_full_name)
+        # repo = self.get_repo(request, reponame)
 
         commits = repo.get_commits()
         page = request.GET.get('page')

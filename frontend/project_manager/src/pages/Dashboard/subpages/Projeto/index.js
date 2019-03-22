@@ -50,7 +50,7 @@ class Projeto extends React.Component {
 
         const { repo } = this.props.location.state;
 
-        Api.BackendServer.get(`pm/commits/${repo.name}`, { params: { repo_id: repo.id } }).then(response => {
+        Api.BackendServer.get(`pm/commits/`, { params: { repo_full_name: repo.full_name } }).then(response => {
             const commits = response.data;
 
             console.log('commit', commits)
