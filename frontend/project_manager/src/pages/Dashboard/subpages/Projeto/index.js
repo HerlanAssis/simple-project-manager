@@ -36,6 +36,12 @@ class Projeto extends React.Component {
         this.state = {
             loading: false,
             data: [],
+            commits: {
+                per_page: 0,
+                total_itens: 0,
+                current_page: 1,
+                results: [],
+            },
         }
     }
 
@@ -44,14 +50,12 @@ class Projeto extends React.Component {
 
         const { repo } = this.props.location.state;
 
-        Api.BackendServer.get(`pm/contributors/${repo.name}`).then(response => {
-            console.log("TESTE TESTADO", response.data)
-        });
-
-        Api.BackendServer.get(`pm/commits/${repo.name}`).then(response => {
+        Api.BackendServer.get(`pm/commits/${repo.name}`, { params: { repo_id: repo.id } }).then(response => {
             const commits = response.data;
 
-            const data = commits.map((value, index) => ({
+            console.log('commit', commits)
+
+            const data = commits.results.map((value, index) => ({
                 key: `${index}`,
                 commiter: value.commit.author.name || value.committer.author.name,
                 additions: value.stats.additions,
@@ -60,20 +64,47 @@ class Projeto extends React.Component {
                 date: moment(value.commit.author.date || value.committer.author.date).format('LLLL'),
             }));
 
-            this.setState({ loading: false, data });
+            this.setState({ loading: false, data, commits });
         });
 
     }
 
     onChange(pagination, filters, sorter) {
-        console.log('params', pagination, filters, sorter);
+        this.setState({ loading: true });
+
+        const { repo } = this.props.location.state;
+        const { current } = pagination;
+
+        Api.BackendServer.get(`pm/commits/${repo.name}`, { params: { page: current - 1 } }).then(response => {
+            const commits = response.data;
+
+            const data = commits.results.map((value, index) => ({
+                key: `${index}`,
+                commiter: value.commit.author.name || value.committer.author.name,
+                additions: value.stats.additions,
+                deletions: value.stats.deletions,
+                churn: value.stats.total,
+                date: moment(value.commit.author.date || value.committer.author.date).format('LLLL'),
+            }));
+
+            this.setState({ loading: false, data, commits });
+        });
     }
 
 
     render() {
         return (
             <Page loading={this.state.loading}>
-                <Table columns={columns} dataSource={this.state.data} onChange={this.onChange} />,
+                <Table pagination={{
+                    pageSize: Number(this.state.commits.per_page),
+                    total: Number(this.state.commits.total_itens),
+                    current: Number(this.state.commits.current_page) + 1,
+                    hideOnSinglePage: true,
+                }}
+                    columns={columns}
+                    dataSource={this.state.data}
+                    onChange={(pagination, filters, sorter) => this.onChange(pagination, filters, sorter)}
+                />,
             </Page>
         );
     }

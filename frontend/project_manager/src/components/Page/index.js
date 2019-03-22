@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Spin } from 'antd';
+import { Layout, Spin, Pagination } from 'antd';
 
 import './styles.css'
 
@@ -15,11 +15,14 @@ class Page extends React.PureComponent {
     }
 
     render() {
+        const { children, pagination, style, loading } = this.props;
+        // defaultCurrent={6} total={500}
         return (
-            <Content style={this.props.style} className='content'>
-                <Spin wrapperClassName={'spin'} spinning={this.props.loading} size={'large'}>
-                    <div style={this.props.style} className='page'>
-                        {this.props.children}
+            <Content style={style} className='content'>
+                <Spin wrapperClassName={'spin'} spinning={loading} size={'large'}>
+                    <div style={style} className='page'>
+                        {children}
+                        {pagination && <Pagination {...pagination} style={{ display: 'flex', justifyContent: 'flex-end' }}  />}
                     </div>
                 </Spin>
             </Content>

@@ -22,18 +22,26 @@ class Projetos extends React.Component {
         super(props);
         this.state = {
             projetos: [],
-            repos: [],
+            repos: {
+                // prev: '',
+                // next: '',
+                // limit: '',
+                per_page: 0,
+                total_itens: 0,
+                current_page: 1,
+                results: [],
+            },
             loading: false,
         }
     }
 
     componentDidMount() {
         this.setState({ loading: true });
-        
+
         Api.BackendServer.get('pm/repos/').then(response => {
-            console.log("REPOS", response);            
+            console.log("REPOS", response);
             this.setState({ repos: response.data, loading: false });
-        })    
+        })
     }
 
     _keyExtractor = (item) => `${item.id}`
@@ -102,12 +110,29 @@ class Projetos extends React.Component {
         );
     }
 
+    onChange(page, pageSize) {
+        this.setState({ loading: true });
+        Api.BackendServer.get('pm/repos/', { params: { page: page - 1 } }).then(response => {
+            console.log("REPOS", response);
+            this.setState({ repos: response.data, loading: false });
+        })
+    }
+
     render() {
         return (
-            <Page loading={this.state.loading}>
+            <Page
+                loading={this.state.loading}
+                pagination={{
+                    pageSize: Number(this.state.repos.per_page),
+                    total: Number(this.state.repos.total_itens),
+                    current: Number(this.state.repos.current_page) + 1,
+                    onChange: (page, pageSize) => this.onChange(page, pageSize),
+                    hideOnSinglePage: true,
+                }}
+            >
                 <List
                     columns={2}
-                    items={this.state.repos}
+                    items={this.state.repos.results}
                     renderItem={(project) => this.renderItem(project)}
                     keyExtractor={this._keyExtractor}
                 />
