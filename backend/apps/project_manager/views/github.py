@@ -79,7 +79,8 @@ class Repos(GithubAPIView):
         key = 'repos-page'
 
         def object_modeler(data): return [
-            {'name': repo.name, 'full_name': repo.full_name, 'id': repo.id} for repo in data]
+            {'name': repo.name, 'full_name': repo.full_name, 'id': repo.id, 'num_contributors': repo.get_contributors().totalCount, 'num_commits': repo.get_commits().totalCount } for repo in data]
+
         content = self.get_paginated_github_object(
             repos, page, key, object_modeler)
 
