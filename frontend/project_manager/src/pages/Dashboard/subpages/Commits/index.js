@@ -29,7 +29,7 @@ const columns = [{
 },
 ];
 
-class Projeto extends React.Component {
+class Commits extends React.Component {
 
     constructor(props) {
         super(props);
@@ -52,8 +52,6 @@ class Projeto extends React.Component {
 
         Api.BackendServer.get(`pm/commits/`, { params: { repo_full_name: repo.full_name } }).then(response => {
             const commits = response.data;
-
-            console.log('commit', commits)
 
             const data = commits.results.map((value, index) => ({
                 key: `${index}`,
@@ -110,5 +108,5 @@ class Projeto extends React.Component {
     }
 }
 
-export default Projeto;
+export default Commits;
 

@@ -1,6 +1,6 @@
 import Home from './Home';
-import Projeto from './Projeto';
 import Projetos from './Projetos';
+import Commits from './Commits';
 import Tarefas from './Tarefas';
 import Agenda from './Agenda';
 import Colaboradores from './Colaboradores';
@@ -11,7 +11,7 @@ import Page404 from './page404';
 
 export {
     Home,
-    Projeto,
+    Commits,
     Projetos,
     Tarefas,
     Agenda,

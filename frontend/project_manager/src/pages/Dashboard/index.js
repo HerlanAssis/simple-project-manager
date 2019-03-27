@@ -11,7 +11,6 @@ import './styles.css';
 import { Route } from '../../components';
 import {
     Home,
-    Projeto,
     Projetos,
     Tarefas,
     Agenda,
@@ -19,6 +18,7 @@ import {
     Relatorios,
     Notificacoes,
     Laboratorio,
+    Commits,
     Page404,
 } from './subpages';
 import { Api } from '../../services';
@@ -33,7 +33,11 @@ const PAGES = [
     { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
     {
         iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos,
-        detailComponent: { key: 'Projeto', path: '/:name', component: Projeto }
+        subcomponents: [
+            // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
+            { key: 'Projeto', path: '/projetos/commits/:projectname', component: Commits },
+            { key: 'Colaboradores', path: '/projetos/colaboradores/:projectname', component: Colaboradores },
+        ],
     },
     { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
     { iconName: 'calendar', name: 'Agenda', path: '/agenda', component: Agenda },
@@ -72,22 +76,24 @@ class Dashboard extends React.Component {
         });
     }
 
-    render() {
+    getPages(pages) {
+        let builded_pages = []
 
-        const pages = [];
-
-        PAGES.forEach(value => {
-            pages.push(
+        pages.forEach(value => {
+            builded_pages.push(
                 <Route.Custom exact={true} key={value.path} path={value.path} component={value.component} />
             )
 
-            if (value.detailComponent) {
-                pages.push(
-                    <Route.Custom exact={true} key={`${value.path}${value.detailComponent.path}`} path={`${value.path}${value.detailComponent.path}`} component={value.detailComponent.component} />
-                )
+            if (value.subcomponents) {
+                builded_pages = [...builded_pages, ...this.getPages(value.subcomponents)];
             }
         });
 
+        return builded_pages;
+    }
+
+    render() {
+        const pages = this.getPages(PAGES);
         pages.push(<Route.Custom key={'page404'} component={Page404} />);
 
         return (

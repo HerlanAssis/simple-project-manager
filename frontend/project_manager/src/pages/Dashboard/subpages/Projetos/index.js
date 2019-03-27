@@ -50,7 +50,7 @@ class Projetos extends React.Component {
         return (
             <div onClick={() => {
                 this.props.history.push({
-                    pathname: `${this.props.match.url}/${repo.name}`,
+                    pathname: `${this.props.match.url}/commits/${repo.name}`,
                     state: { repo }
                 })
             }} style={{ display: 'flex', flex: 1, flexDirection: 'column', height: '150px', width: '100%', marginBottom: '30px', cursor: 'pointer' }}>
