@@ -1,4 +1,5 @@
 import Home from './Home';
+import ProjetosAssistidos from './ProjetosAssistidos';
 import Projetos from './Projetos';
 import Commits from './Commits';
 import Tarefas from './Tarefas';
@@ -20,4 +21,5 @@ export {
     Notificacoes,
     Laboratorio,
     Page404,
+    ProjetosAssistidos,
 };

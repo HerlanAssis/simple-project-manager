@@ -12,6 +12,7 @@ import { Route } from '../../components';
 import {
     Home,
     Projetos,
+    ProjetosAssistidos,
     Tarefas,
     Agenda,
     Colaboradores,
@@ -32,11 +33,19 @@ const {
 const PAGES = [
     { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
     {
-        iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos,
-        subcomponents: [
+        iconName: 'eye', name: 'Projetos Assistidos', path: '/monitorando', component: ProjetosAssistidos,
+        subcomponents: (fatherPath) => [
             // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
-            { key: 'Projeto', path: '/projetos/commits/:projectname', component: Commits },
-            { key: 'Colaboradores', path: '/projetos/colaboradores/:projectname', component: Colaboradores },
+            { key: 'Projeto', path: `${fatherPath}/commits/:projectname`, component: Commits },
+            { key: 'Colaboradores', path: `${fatherPath}/colaboradores/:projectname`, component: Colaboradores },
+        ],
+    },
+    {
+        iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos,
+        subcomponents: (fatherPath) => [
+            // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
+            { key: 'Projeto', path: `${fatherPath}/commits/:projectname`, component: Commits },
+            { key: 'Colaboradores', path: `${fatherPath}/colaboradores/:projectname`, component: Colaboradores },
         ],
     },
     { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
@@ -85,7 +94,7 @@ class Dashboard extends React.Component {
             )
 
             if (value.subcomponents) {
-                builded_pages = [...builded_pages, ...this.getPages(value.subcomponents)];
+                builded_pages = [...builded_pages, ...this.getPages(value.subcomponents(value.path))];
             }
         });
 

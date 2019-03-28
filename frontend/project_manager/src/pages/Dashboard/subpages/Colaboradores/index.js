@@ -21,15 +21,22 @@ class Colaboradores extends React.Component {
 
     state = {
         loading: false,
-        colaboradores: [],
+        colaboradores: {
+            per_page: 0,
+            total_itens: 0,
+            current_page: 1,
+            results: [],
+        },
     }
 
     componentDidMount() {
         this.setState({ loading: true });
-        Api.BackendServer.get('pm/contributors/').then(response => {
-            this.setState({ colaboradores: response.data, loading: false });
 
+        const { repo } = this.props.location.state;
+
+        Api.BackendServer.get('pm/contributors/', { params: { repo_full_name: repo.full_name } }).then(response => {
             console.log(response);
+            this.setState({ colaboradores: response.data, loading: false });
         })
     }
 
@@ -71,14 +78,31 @@ class Colaboradores extends React.Component {
         )
     }
 
+    onChange(page, pageSize) {
+        this.setState({ loading: true });
+        const { repo } = this.props.location.state;
+        Api.BackendServer.get('pm/contributors/', { params: { repo_full_name: repo.full_name, page: page - 1 } }).then(response => {
+            this.setState({ colaboradores: response.data, loading: false });
+        })
+    }
+
     _keyExtractor = (item) => `${item.id}`
 
     render() {
         return (
-            <Page loading={this.state.loading}>
+            <Page
+                pagination={{
+                    pageSize: Number(this.state.colaboradores.per_page),
+                    total: Number(this.state.colaboradores.total_itens),
+                    current: Number(this.state.colaboradores.current_page) + 1,
+                    onChange: (page, pageSize) => this.onChange(page, pageSize),
+                    hideOnSinglePage: true,
+                }}
+                loading={this.state.loading}
+            >
                 <List
                     columns={3}
-                    items={this.state.colaboradores}
+                    items={this.state.colaboradores.results}
                     renderItem={(item) => this.renderItem(item)}
                     keyExtractor={this._keyExtractor}
                 />

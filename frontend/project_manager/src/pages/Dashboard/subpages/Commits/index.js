@@ -53,6 +53,8 @@ class Commits extends React.Component {
         Api.BackendServer.get(`pm/commits/`, { params: { repo_full_name: repo.full_name } }).then(response => {
             const commits = response.data;
 
+            console.log('commit', commits)
+
             const data = commits.results.map((value, index) => ({
                 key: `${index}`,
                 commiter: value.commit.author.name || value.committer.author.name,
@@ -73,7 +75,7 @@ class Commits extends React.Component {
         const { repo } = this.props.location.state;
         const { current } = pagination;
 
-        Api.BackendServer.get(`pm/commits/${repo.name}`, { params: { page: current - 1 } }).then(response => {
+        Api.BackendServer.get('pm/commits/', { params: { page: current - 1, repo_full_name: repo.full_name } }).then(response => {
             const commits = response.data;
 
             const data = commits.results.map((value, index) => ({
@@ -109,4 +111,3 @@ class Commits extends React.Component {
 }
 
 export default Commits;
-
