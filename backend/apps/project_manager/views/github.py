@@ -13,6 +13,10 @@ from ..utils import PyGithubJSONRenderer, manual_dump
 # enable_console_debug_logging()
 
 
+def repo_object_modeler(data, extra_args): return [
+    {'name': repo.name, 'full_name': repo.full_name, 'id': repo.id, 'num_contributors': repo.get_contributors().totalCount, 'num_commits': repo.get_commits().totalCount, 'has_in_watched': extra_args['user'].has_in_watched(repo)} for repo in data]
+
+
 class GithubAPIView(APIView):
     authentication_classes = (TokenAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -28,7 +32,7 @@ class GithubAPIView(APIView):
         user = self.get_github_instance(request).get_user()
         return user.get_repo_from(repo_full_name)
 
-    def get_paginated_github_object(self, data, page, key, object_modeler):
+    def get_paginated_github_object(self, data, page, key, object_modeler, extra_args):
         total_items = data.totalCount
 
         if page is None:
@@ -50,7 +54,7 @@ class GithubAPIView(APIView):
 
         if current_page is None:
             current_page = manual_dump(
-                object_modeler(data.get_page(int(page))))
+                object_modeler(data.get_page(int(page)), extra_args))
             cache.set(cache_key, current_page, settings.CACHE_LEVEL['THREE'])
 
         return {
@@ -78,11 +82,10 @@ class Repos(GithubAPIView):
 
         key = 'repos-page'
 
-        def object_modeler(data): return [
-            {'name': repo.name, 'full_name': repo.full_name, 'id': repo.id, 'num_contributors': repo.get_contributors().totalCount, 'num_commits': repo.get_commits().totalCount} for repo in data]
+        extra_args = {'user': user}
 
         content = self.get_paginated_github_object(
-            repos, page, key, object_modeler)
+            repos, page, key, repo_object_modeler, extra_args)
 
         return Response(content)
 
@@ -95,28 +98,57 @@ class Watchers(GithubAPIView):
 
         key = 'watchers-page'
 
-        def object_modeler(data): return [
-            {'name': repo.name, 'full_name': repo.full_name, 'id': repo.id, 'num_contributors': repo.get_contributors().totalCount, 'num_commits': repo.get_commits().totalCount} for repo in data]
+        extra_args = {'user': user}
 
         content = self.get_paginated_github_object(
-            watchers, page, key, object_modeler)
+            watchers, page, key, repo_object_modeler, extra_args)
+
+        return Response(content)
+
+
+class AddToWatched(GithubAPIView):
+    def get(self, request, format=None):
+        user = self.get_github_instance(request).get_user()
+        repo_full_name = request.GET.get('repo_full_name')
+        repo = self.get_repo(request, repo_full_name)
+        user.add_to_watched(repo)
+
+        content = {'status': 'ok'}
+
+        # clean cache
+        cache.clear()
+
+        return Response(content)
+
+
+class RemoveFromWatched(GithubAPIView):
+    def get(self, request, format=None):
+        user = self.get_github_instance(request).get_user()
+        repo_full_name = request.GET.get('repo_full_name')
+        repo = self.get_repo(request, repo_full_name)
+        user.remove_from_watched(repo)
+
+        content = {'status': 'ok'}
+
+        # clean cache
+        cache.clear()
 
         return Response(content)
 
 
 class SearchByRepositories(GithubAPIView):
     def get(self, request, format=None):
+        user = self.get_github_instance(request).get_user()
         reponame = request.GET.get('reponame')
         page = request.GET.get('page')
         repos = self.get_github_instance(request).search_repositories(reponame)
 
         key = 'search-{}-page'.format(reponame)
 
-        def object_modeler(data): return [
-            {'name': repo.name, 'full_name': repo.full_name, 'id': repo.id, 'num_contributors': repo.get_contributors().totalCount, 'num_commits': repo.get_commits().totalCount} for repo in data]
+        extra_args = {'user': user}
 
         content = self.get_paginated_github_object(
-            repos, page, key, object_modeler)
+            repos, page, key, repo_object_modeler, extra_args)
 
         return Response(content)
 
@@ -132,28 +164,28 @@ class Contributors(GithubAPIView):
 
         key = 'repo-{}-contributors-page'.format(repo_full_name)
 
-        def object_modeler(data): return [contributor for contributor in data]
+        def object_modeler(data, extra_args): return [
+            contributor for contributor in data]
 
         content = self.get_paginated_github_object(
-            contributors, page, key, object_modeler)
+            contributors, page, key, object_modeler, None)
 
         return Response(content)
 
 
 class Commits(GithubAPIView):
     def get(self, request, format=None):
+        user = self.get_github_instance(request).get_user()
         repo_full_name = request.GET.get('repo_full_name')
         repo = self.get_repo(request, repo_full_name)
 
         commits = repo.get_commits()
         page = request.GET.get('page')
         key = 'repo-{}-commit-page'.format(repo_full_name)
-
-        def object_modeler(data): return [
-            {'commit': commit.commit, 'committer': commit.committer, 'stats': commit.stats} for commit in data]
+        extra_args = {'user': user}
 
         content = self.get_paginated_github_object(
-            commits, page, key, object_modeler)
+            commits, page, key, repo_object_modeler, extra_args)
 
         return Response(content)
 

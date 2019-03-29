@@ -11,6 +11,7 @@ import './styles.css';
 import { Route } from '../../components';
 import {
     Home,
+    Pesquisar,
     Projetos,
     ProjetosAssistidos,
     Tarefas,
@@ -33,19 +34,27 @@ const {
 const PAGES = [
     { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
     {
+        iconName: 'search', name: 'Pesquisar', path: '/pesquisar', component: Pesquisar,
+        subcomponents: (fatherPath) => [
+            // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
+            { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
+            { key: 'Colaboradores', path: `${fatherPath}/:projectname/colaboradores/`, component: Colaboradores },
+        ],
+    },
+    {
         iconName: 'eye', name: 'Projetos Assistidos', path: '/monitorando', component: ProjetosAssistidos,
         subcomponents: (fatherPath) => [
             // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
-            { key: 'Projeto', path: `${fatherPath}/commits/:projectname`, component: Commits },
-            { key: 'Colaboradores', path: `${fatherPath}/colaboradores/:projectname`, component: Colaboradores },
+            { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
+            { key: 'Colaboradores', path: `${fatherPath}/:projectname/colaboradores/`, component: Colaboradores },
         ],
     },
     {
         iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos,
         subcomponents: (fatherPath) => [
             // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
-            { key: 'Projeto', path: `${fatherPath}/commits/:projectname`, component: Commits },
-            { key: 'Colaboradores', path: `${fatherPath}/colaboradores/:projectname`, component: Colaboradores },
+            { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
+            { key: 'Colaboradores', path: `${fatherPath}/:projectname/colaboradores/`, component: Colaboradores },
         ],
     },
     { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },

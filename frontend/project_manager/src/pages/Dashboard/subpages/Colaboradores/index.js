@@ -6,7 +6,6 @@ import { Page, List } from '../../../../components';
 import { Api } from '../../../../services';
 import './styles.css';
 
-
 const visitData = [];
 const beginDay = new Date().getTime();
 for (let i = 0; i < 50; i += 1) {
