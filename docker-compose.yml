@@ -44,12 +44,12 @@ services:
       - backend
 
   # Frontend Machines
-  # project_manager:
-  #   build: frontend/project_manager/    
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     - server      
+  project_manager:
+    build: frontend/project_manager/    
+    ports:
+      - "80:80"
+    depends_on:
+      - server      
   # client:
   #   build: frontend/client/    
   #   ports:

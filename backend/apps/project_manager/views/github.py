@@ -51,7 +51,6 @@ class GithubAPIView(APIView):
         #     prev_page -= 1
 
         current_page = cache.get(key=cache_key, default=None)
-
         if current_page is None:
             current_page = manual_dump(
                 object_modeler(data.get_page(int(page)), extra_args))
@@ -174,21 +173,21 @@ class Contributors(GithubAPIView):
 
 
 class Commits(GithubAPIView):
-    def get(self, request, format=None):
-        user = self.get_github_instance(request).get_user()
+    def get(self, request, format=None):        
         repo_full_name = request.GET.get('repo_full_name')
-        repo = self.get_repo(request, repo_full_name)
+        repo = self.get_repo(request, repo_full_name)        
 
         commits = repo.get_commits()
         page = request.GET.get('page')
         key = 'repo-{}-commit-page'.format(repo_full_name)
-        extra_args = {'user': user}
+
+        def object_modeler(data, extra_args): return [
+            {'commit': commit.commit, 'committer': commit.committer, 'stats': commit.stats} for commit in data]
 
         content = self.get_paginated_github_object(
-            commits, page, key, repo_object_modeler, extra_args)
+            commits, page, key, object_modeler, {})
 
         return Response(content)
-
 
 class Limits(GithubAPIView):
     def get(self, request, format=None):

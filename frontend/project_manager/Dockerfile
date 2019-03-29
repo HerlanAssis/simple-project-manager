@@ -2,9 +2,10 @@
 FROM node:alpine as builder
 WORKDIR '/app'
 COPY package.json .
-RUN npm install
+RUN yarn
 COPY . .
-RUN npm run build
+RUN yarn cache clean
+RUN yarn run build
 
 # PRODUCTION PHASE
 FROM nginx:1.15
