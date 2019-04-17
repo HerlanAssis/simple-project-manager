@@ -85,7 +85,7 @@ class Repository extends React.Component {
                                 state: { repo }
                             })
                         }} style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'yellow', cursor: 'pointer' }}>
-                            <p>COMMITS: {repo.num_contributors}</p>
+                            <p>COMMITS: {repo.num_commits}</p>
                         </div>
 
                         <div onClick={() => {

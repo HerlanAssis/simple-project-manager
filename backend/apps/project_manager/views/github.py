@@ -29,8 +29,7 @@ class GithubAPIView(APIView):
         return Github(login_or_token=access_token, per_page=self.per_page)
 
     def get_repo(self, request, repo_full_name):
-        user = self.get_github_instance(request).get_user()
-        return user.get_repo_from(repo_full_name)
+        return self.get_github_instance(request).get_repo(repo_full_name)
 
     def get_paginated_github_object(self, data, page, key, object_modeler, extra_args):
         total_items = data.totalCount
