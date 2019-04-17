@@ -9,7 +9,7 @@ class ProjetosAssistidos extends React.Component {
         super(props);
         this.state = {
             projetos: [],
-            watchers: {
+            stargazers: {
                 // prev: '',
                 // next: '',
                 // limit: '',
@@ -28,18 +28,18 @@ class ProjetosAssistidos extends React.Component {
     componentDidMount() {
         this.setState({ loading: true });
 
-        Api.BackendServer.get('pm/watchers/').then(response => {
-            console.log("watchers", response);
-            this.setState({ watchers: response.data, loading: false });
+        Api.BackendServer.get('pm/stargazers/').then(response => {
+            console.log("stargazers", response);
+            this.setState({ stargazers: response.data, loading: false });
         })
     }
 
     refresh() {
         this.setState({ loading: true });
 
-        Api.BackendServer.get('pm/watchers/').then(response => {
-            console.log("watchers", response);
-            this.setState({ watchers: response.data, loading: false });
+        Api.BackendServer.get('pm/stargazers/').then(response => {
+            console.log("stargazers", response);
+            this.setState({ stargazers: response.data, loading: false });
         })
     }
 
@@ -53,8 +53,8 @@ class ProjetosAssistidos extends React.Component {
 
     onChange(page, pageSize) {
         this.setState({ loading: true });
-        Api.BackendServer.get('pm/watchers/', { params: { page: page - 1 } }).then(response => {
-            this.setState({ watchers: response.data, loading: false });
+        Api.BackendServer.get('pm/stargazers/', { params: { page: page - 1 } }).then(response => {
+            this.setState({ stargazers: response.data, loading: false });
         })
     }
 
@@ -63,9 +63,9 @@ class ProjetosAssistidos extends React.Component {
             <Page
                 loading={this.state.loading}
                 pagination={{
-                    pageSize: Number(this.state.watchers.per_page),
-                    total: Number(this.state.watchers.total_itens),
-                    current: Number(this.state.watchers.current_page) + 1,
+                    pageSize: Number(this.state.stargazers.per_page),
+                    total: Number(this.state.stargazers.total_itens),
+                    current: Number(this.state.stargazers.current_page) + 1,
                     onChange: (page, pageSize) => this.onChange(page, pageSize),
                     hideOnSinglePage: true,
                 }}
@@ -74,7 +74,7 @@ class ProjetosAssistidos extends React.Component {
                 <div style={{ flex: 9 }}>
                     <List
                         columns={2}
-                        items={this.state.watchers.results}
+                        items={this.state.stargazers.results}
                         renderItem={(project) => this.renderItem(project)}
                         keyExtractor={this._keyExtractor}
                     />

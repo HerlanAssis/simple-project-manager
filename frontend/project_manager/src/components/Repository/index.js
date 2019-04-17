@@ -25,8 +25,8 @@ class Repository extends React.Component {
                 title: 'Ativar monitoramento?',
                 onConfirm: () => {
                     const { repo } = this.props;
-                    Api.BackendServer.get('pm/watchers/add', { params: { repo_full_name: repo.full_name } }).then(response => {
-                        console.log("watchers add", response);
+                    Api.BackendServer.get('pm/stargazers/add', { params: { repo_full_name: repo.full_name } }).then(response => {
+                        console.log("stargazers add", response);
                         if (this.props.refresh) this.props.refresh();
                     })
                 },
@@ -40,8 +40,8 @@ class Repository extends React.Component {
                 title: 'Desativar monitoramento?',
                 onConfirm: () => {
                     const { repo } = this.props;
-                    Api.BackendServer.get('pm/watchers/remove', { params: { repo_full_name: repo.full_name } }).then(response => {
-                        console.log("watchers remove", response);
+                    Api.BackendServer.get('pm/stargazers/remove', { params: { repo_full_name: repo.full_name } }).then(response => {
+                        console.log("stargazers remove", response);
                         if (this.props.refresh) this.props.refresh();
                     })
                 },
@@ -51,7 +51,7 @@ class Repository extends React.Component {
 
     render() {
         const { match, history, repo } = this.props;
-        const popconfirmProps = repo.has_in_watched ? this.popconfirmPropsForRemoveMonitoring() : this.popconfirmPropsForAddMonitoring();
+        const popconfirmProps = repo.has_in_starred ? this.popconfirmPropsForRemoveMonitoring() : this.popconfirmPropsForAddMonitoring();
         return (
             <div style={{ display: 'flex', flex: 9, flexDirection: 'column', height: '150px', width: '100%', marginBottom: '30px' }}>
                 {/* Nome do projeto */}
@@ -61,9 +61,9 @@ class Repository extends React.Component {
                         <p className='one-line'>{repo.name}</p>
                     </div>
 
-                    <div style={{ display: 'flex', flex: 2, backgroundColor: "yellow", alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', flex: 2, alignItems: 'center', justifyContent: 'center' }}>
                         <Popconfirm placement="topRight" {...popconfirmProps} okText="Sim" cancelText="Não">
-                            <Icon style={{ fontSize: '26px' }} type={repo.has_in_watched ? "eye" : "eye-invisible"} />
+                            <Icon style={{ fontSize: '26px', color: repo.has_in_starred ? 'yellow' : 'gray' }} type={'star'} />
                         </Popconfirm>
                     </div>
 

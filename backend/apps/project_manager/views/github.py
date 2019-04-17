@@ -14,7 +14,7 @@ from ..utils import PyGithubJSONRenderer, manual_dump
 
 
 def repo_object_modeler(data, extra_args): return [
-    {'name': repo.name, 'full_name': repo.full_name, 'id': repo.id, 'num_contributors': repo.get_contributors().totalCount, 'num_commits': repo.get_commits().totalCount, 'has_in_watched': extra_args['user'].has_in_watched(repo)} for repo in data]
+    {'name': repo.name, 'full_name': repo.full_name, 'id': repo.id, 'num_contributors': repo.get_contributors().totalCount, 'num_commits': repo.get_commits().totalCount, 'has_in_starred': extra_args['user'].has_in_starred(repo)} for repo in data]
 
 
 class GithubAPIView(APIView):
@@ -125,6 +125,52 @@ class RemoveFromWatched(GithubAPIView):
         repo_full_name = request.GET.get('repo_full_name')
         repo = self.get_repo(request, repo_full_name)
         user.remove_from_watched(repo)
+
+        content = {'status': 'ok'}
+
+        # clean cache
+        cache.clear()
+
+        return Response(content)
+
+
+class Stargazers(GithubAPIView):
+    def get(self, request, format=None):
+        user = self.get_github_instance(request).get_user()
+        stargazers = user.get_starred()
+        page = request.GET.get('page')
+
+        key = 'stargazers-page'
+
+        extra_args = {'user': user}
+
+        content = self.get_paginated_github_object(
+            stargazers, page, key, repo_object_modeler, extra_args)
+
+        return Response(content)
+
+
+class AddToStargazer(GithubAPIView):
+    def get(self, request, format=None):
+        user = self.get_github_instance(request).get_user()
+        repo_full_name = request.GET.get('repo_full_name')
+        repo = self.get_repo(request, repo_full_name)
+        user.add_to_starred(repo)
+
+        content = {'status': 'ok'}
+
+        # clean cache
+        cache.clear()
+
+        return Response(content)
+
+
+class RemoveFromStargazers(GithubAPIView):
+    def get(self, request, format=None):
+        user = self.get_github_instance(request).get_user()
+        repo_full_name = request.GET.get('repo_full_name')
+        repo = self.get_repo(request, repo_full_name)
+        user.remove_from_starred(repo)
 
         content = {'status': 'ok'}
 

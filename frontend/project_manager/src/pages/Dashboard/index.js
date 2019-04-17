@@ -42,7 +42,7 @@ const PAGES = [
         ],
     },
     {
-        iconName: 'eye', name: 'Projetos Assistidos', path: '/monitorando', component: ProjetosAssistidos,
+        iconName: 'star', name: 'Projetos Assistidos', path: '/monitorando', component: ProjetosAssistidos,
         subcomponents: (fatherPath) => [
             // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
             { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
