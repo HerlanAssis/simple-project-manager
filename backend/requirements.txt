@@ -12,3 +12,4 @@ django-rest-framework-social-oauth2==1.1.0
 python-memcached==1.59
 django-debug-toolbar==1.11
 PyGithub==1.43.5
+django-multiselectfield==0.1.8
