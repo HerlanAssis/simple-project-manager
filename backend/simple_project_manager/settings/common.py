@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '&krfun!+s06r#zox&$9wzf2ma!wy=$kj(*h)glk4$l$%7=tthc'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -101,11 +101,14 @@ TEMPLATES = [
     },
 ]
 
+CACHE_HOST = os.environ.get("CACHE_HOST")
+CACHE_PORT = os.environ.get("CACHE_PORT")
+CACHE_LOCATION = ":".join([CACHE_HOST, CACHE_PORT]) 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'cache:11211',
-        'KEY_PREFIX': 'backend',
+        'LOCATION': CACHE_LOCATION,
+        'KEY_PREFIX': os.environ.get("CACHE_KEY_PREFIX"),
     }
 }
 
@@ -136,10 +139,10 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SOCIAL_AUTH_GITHUB_KEY = 'c3f39f63ffb0d5ca5b9d'
-SOCIAL_AUTH_GITHUB_SECRET = '2df19646ab5b3a247246cae191d55029c5eb740b'
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '868259763295-0h7tcmihv8l91nlfkk2pu60m2o976ck5.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'NxT54Fv9O4UZjUyVAJvjtWqd'
+SOCIAL_AUTH_GITHUB_KEY = os.environ.get("SOCIAL_AUTH_GITHUB_KEY")
+SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
 
 # DJANGO OAUTH TOOLKIT EXPIRATION SECONDS  - DEFAULT IS 36000 WHICH IS 10 hours
 OAUTH2_PROVIDER = {

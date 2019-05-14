@@ -13,15 +13,15 @@ services:
       # Scripts
       - ./database/scripts:/scripts
       - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-     - "5432:5432"
+    # ports:
+    #  - "5432:5432"
   
   # Cache Machines
   cache:
     build: cache/            
     command: memcached -m 64
-    ports:
-     - "11211:11211"
+    # ports:
+    #  - "11211:11211"
   
   # Backend Machines
   backend:
@@ -33,26 +33,43 @@ services:
       - database
       - cache
     expose:
-      - "8000" 
+      - "8000"
+    environment:
+      - CACHE_HOST=cache
+      - CACHE_PORT=11211
+      - CACHE_KEY_PREFIX=backend
+      - PG_NAME=postgres
+      - PG_USER=postgres
+      - PG_HOST=database
+      - PG_PORT=5432
+      - SOCIAL_AUTH_GITHUB_KEY=c3f39f63ffb0d5ca5b9d
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=868259763295-0h7tcmihv8l91nlfkk2pu60m2o976ck5.apps.googleusercontent.com
+      # - SECRET_KEY=""
+      # - PG_PASSWORD=""
+      # - SOCIAL_AUTH_GITHUB_SECRET=""
+      # - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=""
+    env_file:
+      - secrets.env
+
   server:
     build: server/
     volumes:
       - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/      
     ports:
-      - "8080:8000"
+      - "8080:8080"
     depends_on:
       - backend
 
   # Frontend Machines
   project_manager:
-    build: frontend/project_manager/    
+    build: project_manager/    
     ports:
       - "80:80"
     depends_on:
       - server      
-  # client:
-  #   build: frontend/client/    
-  #   ports:
-  #     - "8081:80"
-  #   depends_on:
-  #     - server
+  client:
+    build: client/    
+    ports:
+      - "8081:80"
+    depends_on:
+      - server
