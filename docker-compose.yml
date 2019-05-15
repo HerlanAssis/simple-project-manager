@@ -48,8 +48,8 @@ services:
       # - PG_PASSWORD=""
       # - SOCIAL_AUTH_GITHUB_SECRET=""
       # - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=""
-      - GMAIL_USER=""
-      - GMAIL_PASS=""
+      # - MAILGUN_USER=""
+      # - MAILGUN_PASS=""
     env_file:
       - secrets.env
 

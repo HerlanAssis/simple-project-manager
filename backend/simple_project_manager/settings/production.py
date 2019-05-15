@@ -14,8 +14,8 @@ DATABASES = {
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.mailgun.org'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ.get("GMAIL_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("GMAIL_PASS")
+EMAIL_HOST_USER = os.environ.get("MAILGUN_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("MAILGUN_PASS")
+EMAIL_USE_TLS = True
