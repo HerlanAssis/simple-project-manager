@@ -14,17 +14,17 @@ class Watcher(BaseModel):
   )
 
   notification = MultiSelectField(choices=NOTIFICATION_OPTIONS)
-  watcher = models.ForeignKey(TaskManager, related_name="observed_tasks", on_delete=models.CASCADE,)
-  observer = models.ForeignKey(User, related_name="observers", on_delete=models.CASCADE,)
+  vigilant = models.ForeignKey(TaskManager, related_name="vigilantes", on_delete=models.CASCADE)
+  observer = models.ForeignKey(User, related_name="observers", on_delete=models.CASCADE)
 
-  def sendMail(self):
-    if self.notification in (self.EMAIL):
-      print("NOTIFY BY EMAIL")      
+  def sendMail(self, message):
+    if self.EMAIL in self.notification:
+      print("NOTIFY BY EMAIL - {}".format(message))      
     
-  def sendTelegramNotification(self):
-    if self.notification in (self.TELEGRAM):
-      print("NOTIFY BY TELEGRAM")
+  def sendTelegramNotification(self, message):
+    if self.TELEGRAM in self.notification:
+      print("NOTIFY BY TELEGRAM - {}".format(message))
 
-  def notify(self):
-    self.sendTelegramNotification()
-    self.sendMail()
+  def notify(self, message):
+    self.sendTelegramNotification(message)
+    self.sendMail(message)

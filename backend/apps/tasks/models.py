@@ -8,10 +8,9 @@ class TaskManager(BaseModel):
   project_id = models.CharField(max_length=256, unique=True)
   owner = models.ForeignKey(User, related_name="managed_tasks", on_delete=models.CASCADE)
 
-  def notify(self):    
-    # for observer in self.observers:
-    #   print(observer)
-
+  def notify(self, message):    
+    for vigilant in self.vigilantes.all():
+      vigilant.notify("Project {} - [{}]".format(self.project_id, message))
 
 class Task(BaseModel):
   TODO = 'TODO'
@@ -34,8 +33,8 @@ class Task(BaseModel):
   description = models.CharField(max_length=256)
 
   # notify_task_manager
-  def notify(self):
-    self.task_manager.notify()
+  def notify(self, message):
+    self.task_manager.notify(message)
 
 
 class Note(BaseModel):
@@ -47,4 +46,4 @@ class Note(BaseModel):
 # method for updating
 @receiver(post_save, sender=Task)
 def notify(sender, instance, **kwargs):
-  instance.notify()  
+  instance.notify(instance['description'])  
