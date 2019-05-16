@@ -53,6 +53,6 @@ def handle(msg):
 
 
 bot = Bot(os.environ.get("TELEGRAM_BOT_TOKEN"))
-# bot.setWebhook("https://e5e65cda.ngrok.io/{}".format("api/n/telegrambot/"), max_connections=1)
+bot.setWebhook("http://35.199.110.204/{}".format("api/n/telegrambot/"), max_connections=1)
 webhook = loop.OrderedWebhook(bot, handle)
 webhook.run_as_thread()
