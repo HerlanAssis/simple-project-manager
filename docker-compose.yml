@@ -44,12 +44,14 @@ services:
       - PG_PORT=5432
       - SOCIAL_AUTH_GITHUB_KEY=c3f39f63ffb0d5ca5b9d
       - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=868259763295-0h7tcmihv8l91nlfkk2pu60m2o976ck5.apps.googleusercontent.com
+      - TELEGRAM_BOT_API_URL=https://api.telegram.org/bot
       # - SECRET_KEY=""
       # - PG_PASSWORD=""
       # - SOCIAL_AUTH_GITHUB_SECRET=""
       # - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=""
       # - MAILGUN_USER=""
       # - MAILGUN_PASS=""
+      # - TELEGRAM_BOT_TOKEN=""
     env_file:
       - secrets.env
 
