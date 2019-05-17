@@ -8,51 +8,88 @@ from rest_framework.views import APIView
 from rest_framework.utils import encoders
 from django.core.cache import cache
 from django.conf import settings
-import telepot
-from telepot import loop, Bot
+import logging
+import telegram
+from telegram.error import NetworkError, Unauthorized
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, RegexHandler,
+                          ConversationHandler)
+from time import sleep
+from ..models import Watcher
+
+
+update_id = None
 
 class TelegramAPIView(APIView):  
   pass
 
 class MeninoDeRecadoBot(TelegramAPIView):    
   def get(self, request, format=None):
-    webhook.feed(request.data)
     return Response("")
 
   def post(self, request, format=None):
-    webhook.feed(request.data)    
     return Response("")
 
+# Telegram Bot Authorization Token
+bot = telegram.Bot('722189281:AAEm1AEGB5XeXjUrFBru8zB8ND-wTHoelrE')
+# Comandos
+projetos_monitorados="Projetos monitorados"
+monitorar_novo_projeto="Monitorar um novo projeto"
+cancelar_monitoramento="Cancelar monitoramente"
+reply_keyboard = [[projetos_monitorados], [monitorar_novo_projeto], [cancelar_monitoramento]]
 
-# def handle(msg):
-#   if msg['text'] != '/vote':
-#     print('Not /vote')
-#   print(msg)
+def start_or_help(update):
+  update.message.reply_text(
+    'Oi! Eu sou responsável por notificar pessoas.\n',
+    'O que você deseja fazer?',
+    reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
 
-# def start(chat_id, bot):  
-#   monitorar_projeto = {'comando':'\/monitorar_projeto', 'texto':'Monitorar novo projeto'}
-#   listar_projetos = {'comando': '\/listar_projetos', 'texto':'Listar projetos monitorados'}
+def listar_projetos(update):
+  meus_monitoramentos=Watcher.objects.all().filter(telegram_chat_id=update.message.chat.id)
+  print(meus_monitoramentos)
 
-#   welcome_message='''Bem vindo! Para interagir utilize os comandos:
-#     \n{} - {}
-#     \n{} - {}
-#   '''.format(**monitorar_projeto, **listar_projetos)
+def monitorar_projeto(update):
+  projeto=Watcher.objects.get(authorization_code=update.message)
+  
+  if projeto:
+    projeto.telegram_chat_id=update.message.chat.id
+    projeto.save()
 
-#   bot.sendMessage(chat_id, welcome_message)  
+  print(projeto)
+
+def handler(bot):
+  global update_id
+  # Request updates after the last update_id
+  for update in bot.get_updates(offset=update_id, timeout=10):
+      update_id = update.update_id + 1
+      print(update)
+
+      if update.message:  # your bot can receive updates without messages
+        if update.message.text=='/start' or update.message.text=='/help':
+          start_or_help(update)
+        if update.message.text == projetos_monitorados:
+          listar_projetos(update)
+        if update.message.text == monitorar_novo_projeto:
+          pass
+        if update.message.text == cancelar_monitoramento:
+          pass
+        else:
+          update.message.reply_text(
+            'Não entendi, caso tenha dúvidas tente utilizar o /help.',
+          )
+
+try:
+  update_id = bot.get_updates()[0].update_id
+except IndexError:
+  update_id = None
+
+while True:
+  try:
+      handler(bot)
+  except NetworkError:
+      sleep(1)
+  except Unauthorized:
+      # The user has removed or blocked the bot.
+      update_id += 1
 
 
-# def help(chat_id, bot):
-#   pass
-
-def handle(msg):
-  content_type, chat_type, chat_id = telepot.glance(msg)
-  print(msg)
-
-  if content_type == 'text':
-    bot.sendMessage(chat_id, msg['text'])
-
-
-bot = Bot(os.environ.get("TELEGRAM_BOT_TOKEN"))
-bot.setWebhook("http://35.199.110.204/{}".format("api/n/telegrambot/"), max_connections=1)
-webhook = loop.OrderedWebhook(bot, handle)
-webhook.run_as_thread()
