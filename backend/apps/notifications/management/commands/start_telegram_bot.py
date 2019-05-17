@@ -34,8 +34,6 @@ def listar_projetos(update):
     update.message.reply_text('Você não tem nenhum projeto monitorado!')
 
 def monitorar_projeto(update, code):
-  print("**************** {}".format(code))
-
   try:
     projeto=Watcher.objects.get(authorization_code=code)      
   except Watcher.DoesNotExist:

@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.contrib.auth.models import User
 from apps.core.models import BaseModel
@@ -6,7 +7,7 @@ from apps.tasks.models import TaskManager
 from multiselectfield import MultiSelectField
 from django.core.mail import send_mail
 from django.conf import settings
-
+import telegram
 
 def sendMail(subject, message, recipient_list):
   # subject = 'Thank you for registering to our site'
