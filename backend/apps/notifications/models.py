@@ -42,7 +42,8 @@ class Watcher(BaseModel):
     
   def sendTelegramNotification(self, message):
     if self.telegram_chat_id and self.TELEGRAM in self.notification:
-      print("NOTIFY BY TELEGRAM - {}".format(message))
+      bot = telegram.Bot(os.environ.get("TELEGRAM_BOT_TOKEN"))
+      bot.send_message(chat_id=self.telegram_chat_id, text="Teste.")
 
   def notify(self, message):
     self.sendTelegramNotification(message)
