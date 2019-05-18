@@ -45,12 +45,14 @@ services:
       - SOCIAL_AUTH_GITHUB_KEY=c3f39f63ffb0d5ca5b9d
       - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=868259763295-0h7tcmihv8l91nlfkk2pu60m2o976ck5.apps.googleusercontent.com
       - TELEGRAM_BOT_API_URL=https://api.telegram.org/bot
+      - MAIL_USER=postmaster@sandboxf2a0f7bca535466aad4a4ca3567b575f.mailgun.org
+      - MAIL_HOST=smtp.mailgun.org
+      - MAIL_PORT=587
+      # - MAIL_PASS=""
       # - SECRET_KEY=""
       # - PG_PASSWORD=""
       # - SOCIAL_AUTH_GITHUB_SECRET=""
-      # - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=""
-      # - MAILGUN_USER=""
-      # - MAILGUN_PASS=""
+      # - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=""      
       # - TELEGRAM_BOT_TOKEN=""
     env_file:
       - secrets.env

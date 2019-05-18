@@ -52,7 +52,6 @@ EXTERNAL_APPS = [
 
 MY_APPS = [
     'apps.core',
-    'apps.api',
     'apps.project_manager',
     'apps.clients',
     'apps.notifications',

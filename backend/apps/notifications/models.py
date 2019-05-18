@@ -8,15 +8,19 @@ from multiselectfield import MultiSelectField
 from django.core.mail import send_mail
 from django.conf import settings
 import telegram
-
-def sendMail(subject, message, recipient_list):
-  # subject = 'Thank you for registering to our site'
-  # message = ' it  means a world to us '
-  # recipient_list = ['receiver@gmail.com',]
-  email_from = settings.EMAIL_HOST_USER
-  send_mail(subject, message, email_from, recipient_list)
+from apps.core.utils import HASH_MAX_LENGTH, create_hash, truncate
+from django.utils.encoding import python_2_unicode_compatible
 
 
+@python_2_unicode_compatible
+class NotificationHistory(BaseModel):
+  message = models.CharField(max_length=256, editable=False)
+
+  def __str__(self):
+    return truncate(self.message, 10)
+
+
+@python_2_unicode_compatible
 class Watcher(BaseModel):
   TELEGRAM = 'TELEGRAM'
   EMAIL = 'EMAIL'  
@@ -33,23 +37,35 @@ class Watcher(BaseModel):
   authorization_code = models.CharField(max_length=HASH_MAX_LENGTH, default=create_hash, unique=True, editable=False)    
   telegram_chat_id = models.CharField(max_length=16, blank=True)
 
-  def sendMail(self, message):
-    if self.observer.email and self.EMAIL in self.notification:
+  def __str__(self):
+    return self.vigilant
+
+  def canSendMail(self):
+    return self.observer.email and self.EMAIL in self.notification
+
+  def canSendTelegramMessage(self):
+    return self.telegram_chat_id and self.TELEGRAM in self.notification
+  
+  def getEmail(self):
+    return self.observer.email
+
+  def sendMailNotification(self, message):
+    if self.canSendMail():
       subject = 'Thank you for registering to our site'      
       email_from = settings.EMAIL_HOST_USER
       recipient_list = ['herlanassis@gmail.com',]
-      send_mail(subject, message, email_from, recipient_list)
-      print("NOTIFY BY EMAIL FOR {} - {}".format(self.observer.email, message))
+      send_mail(subject, message, email_from, recipient_list)      
     
   def sendTelegramNotification(self, message):
-    if self.telegram_chat_id and self.TELEGRAM in self.notification:
+    if self.canSendTelegramMessage():
       bot = telegram.Bot(os.environ.get("TELEGRAM_BOT_TOKEN"))
-      bot.send_message(chat_id=self.telegram_chat_id, text="Teste.")
+      bot.send_message(chat_id=self.telegram_chat_id, text=message)
 
-  def notify(self, message):
+  def sendNotification(self, message):
+    NotificationHistory(message=message).save()
     self.sendTelegramNotification(message)
-    self.sendMail(message)
-    
+    # self.sendMailNotification(message)
+  
   def reset_authorization_code(self):
     self.authorization_code = create_hash()
     self.save()
