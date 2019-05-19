@@ -18,7 +18,7 @@ class TaskManager(BaseModel):
 
     if created:
       notify_model = self.vigilantes.__class__
-      notify_model.sendMassiveMail(self.vigilantes.all(), message)
+      notify_model.sendMassiveMailNotification(self.vigilantes.all(), message)
       # emails = []
       # for vigilant in self.vigilantes.all():
       #   if vigilant.canSendMail():
