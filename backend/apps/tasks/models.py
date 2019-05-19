@@ -17,11 +17,13 @@ class TaskManager(BaseModel):
     created=kwargs['created']
 
     if created:
-      emails = []
-      for vigilant in self.vigilantes.all():
-        if vigilant.canSendMail():
-          emails.append(vigilant.getEmail())
-      sendMail("Nova tarefa", message, emails)
+      notify_model = self.vigilantes.__class__
+      notify_model.sendMassiveMail(self.vigilantes.all(), message)
+      # emails = []
+      # for vigilant in self.vigilantes.all():
+      #   if vigilant.canSendMail():
+      #     emails.append(vigilant.getEmail())
+      # sendMail("Nova tarefa", message, emails)
     else:
       for vigilant in self.vigilantes.all():
         vigilant.sendNotification("[{}] {}".format(self.project_name, message))

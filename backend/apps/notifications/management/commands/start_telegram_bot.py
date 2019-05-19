@@ -41,7 +41,7 @@ def monitorar_projeto(update, code):
   
   if projeto:
     projeto.telegram_chat_id=update.message.chat.id
-    projeto.reset_authorization_code()
+    projeto.resetAuthorizationCode()
     projeto.save()    
     update.message.reply_text('Projeto monitorado!')
   else:
@@ -55,7 +55,7 @@ def cancele_o_monitoramento(update, code):
   
   if projeto:
     projeto.telegram_chat_id=''
-    projeto.reset_authorization_code()
+    projeto.resetAuthorizationCode()
     projeto.save()
     update.message.reply_text('Monitoramento cancelado!')
   else:

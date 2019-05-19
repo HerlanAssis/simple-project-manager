@@ -66,6 +66,16 @@ class Watcher(BaseModel):
     self.sendTelegramNotification(message)
     # self.sendMailNotification(message)
   
-  def reset_authorization_code(self):
+  def resetAuthorizationCode(self):
     self.authorization_code = create_hash()
     self.save()
+
+  @staticmethod
+  def sendMassiveMailNotification(vigilantes, message):
+    emails = []
+    for vigilant in vigilantes:
+      if vigilant.canSendMail():
+        emails.append(vigilant.getEmail())    
+    email_from = settings.EMAIL_HOST_USER  
+    # send_mail(subject, message, email_from, emails)
+    send_mail("Nova tarefa", message, email_from, ['herlanassis@gmail.com'])
