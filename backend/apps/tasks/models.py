@@ -17,16 +17,11 @@ class TaskManager(BaseModel):
     created=kwargs['created']
 
     if created:
-      notify_model = self.vigilantes.__class__
+      notify_model = self.vigilantes.model
       notify_model.sendMassiveMailNotification(self.vigilantes.all(), message)
-      # emails = []
-      # for vigilant in self.vigilantes.all():
-      #   if vigilant.canSendMail():
-      #     emails.append(vigilant.getEmail())
-      # sendMail("Nova tarefa", message, emails)
-    else:
-      for vigilant in self.vigilantes.all():
-        vigilant.sendNotification("[{}] {}".format(self.project_name, message))
+    
+    for vigilant in self.vigilantes.all():
+      vigilant.sendNotification("[{}] {}".format(self.project_name, message))
 
   def reset_invitation_code(self):
     self.invitation_code = create_hash()

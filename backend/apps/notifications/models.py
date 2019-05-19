@@ -38,7 +38,9 @@ class Watcher(BaseModel):
   telegram_chat_id = models.CharField(max_length=16, blank=True)
 
   def __str__(self):
-    return self.vigilant
+    if self.vigilant and self.observer:
+      return "{}-{}".format(self.observer, self.vigilant)
+    return self.authorization_code
 
   def canSendMail(self):
     return self.observer.email and self.EMAIL in self.notification
@@ -64,7 +66,6 @@ class Watcher(BaseModel):
   def sendNotification(self, message):
     NotificationHistory(message=message).save()
     self.sendTelegramNotification(message)
-    # self.sendMailNotification(message)
   
   def resetAuthorizationCode(self):
     self.authorization_code = create_hash()
@@ -72,10 +73,11 @@ class Watcher(BaseModel):
 
   @staticmethod
   def sendMassiveMailNotification(vigilantes, message):
-    emails = []
-    for vigilant in vigilantes:
-      if vigilant.canSendMail():
-        emails.append(vigilant.getEmail())    
-    email_from = settings.EMAIL_HOST_USER  
+    if vigilantes:
+      emails = []
+      for vigilant in vigilantes:
+        if vigilant.canSendMail():
+          emails.append(vigilant.getEmail())    
+      email_from = settings.EMAIL_HOST_USER  
     # send_mail(subject, message, email_from, emails)
-    send_mail("Nova tarefa", message, email_from, ['herlanassis@gmail.com'])
+      send_mail("Nova tarefa", message, email_from, ['herlanassis@gmail.com'])
