@@ -1,41 +1,26 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from .models import TaskManager, Task, Note, Release
+from .models import Watcher, History
 
-class TaskManagerType(DjangoObjectType):
-  class Meta:
-      model = TaskManager
 
-class TaskType(DjangoObjectType):
+class WatcherType(DjangoObjectType):
   class Meta:
-    model = Task
+    model = Watcher
 
-class ReleaseType(DjangoObjectType):
+class HistoryType(DjangoObjectType):
   class Meta:
-    model = Release
-
-class NoteType(DjangoObjectType):
-  class Meta:
-      model = Note
+      model = History
 
 
 class Query(object):
-  all_taskmanagers = graphene.List(TaskManagerType)
-  all_tasks = graphene.List(TaskType)
-  all_releases = graphene.List(ReleaseType)
-  all_notes = graphene.List(NoteType)
+  all_Watchers = graphene.List(WatcherType)
+  all_historys = graphene.List(HistoryType)  
 
-  def resolve_all_taskmanagers(self, info, **kwargs):
-    return TaskManager.objects.all()
+  def resolve_all_Watchers(self, info, **kwargs):
+    return Watcher.objects.all()
 
-  def resolve_all_releases(self, info, **kwargs):
-    return Release.objects.all()
-
-  def resolve_all_tasks(self, info, **kwargs):
-    return Task.objects.all()
-
-  def resolve_all_notes(self, info, **kwargs):
-    return Note.objects.all()
+  def resolve_all_historys(self, info, **kwargs):
+    return History.objects.all()
 
 # class Query(object):
 #     category = graphene.Field(CategoryType,

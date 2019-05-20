@@ -13,7 +13,7 @@ from django.utils.encoding import python_2_unicode_compatible
 
 
 @python_2_unicode_compatible
-class NotificationHistory(BaseModel):
+class History(BaseModel):
   message = models.CharField(max_length=256, editable=False)
 
   def __str__(self):
@@ -64,7 +64,7 @@ class Watcher(BaseModel):
       bot.send_message(chat_id=self.telegram_chat_id, text=message)
 
   def sendNotification(self, message):
-    NotificationHistory(message=message).save()
+    History(message=message).save()
     self.sendTelegramNotification(message)
   
   def resetAuthorizationCode(self):

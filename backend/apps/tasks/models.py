@@ -6,6 +6,7 @@ from apps.core.models import BaseModel
 from apps.core.utils import HASH_MAX_LENGTH, create_hash, truncate, sendMail
 from django.utils.encoding import python_2_unicode_compatible
 
+
 @python_2_unicode_compatible
 class TaskManager(BaseModel):
   project_name= models.CharField(max_length=256)
@@ -50,7 +51,7 @@ class Task(BaseModel):
   )
   task_manager = models.ForeignKey(TaskManager, related_name="tasks", on_delete=models.CASCADE)  
   responsible = models.ForeignKey(User, related_name="responsibilities_tasks", on_delete=models.CASCADE)  
-  title = models.CharField(max_length=256)
+  title = models.CharField(max_length=32)
   description = models.CharField(max_length=256, blank=True)
 
   # notify_task_manager
@@ -69,6 +70,19 @@ class Note(BaseModel):
 
   def __str__(self):
     return truncate(self.description, 10)
+
+
+@python_2_unicode_compatible
+class Release(BaseModel):
+  date_start = models.DateField(blank=True)
+  date_end = models.DateField(blank=True)
+  is_final_relase = models.BooleanField(default=False)
+  title = models.CharField(max_length=32)
+  description = models.CharField(max_length=256, blank=True)
+  task_manager = models.ForeignKey(TaskManager, related_name="releases", on_delete=models.CASCADE)  
+
+  def __str__(self):
+    return self.title
 
 
 # method for updating

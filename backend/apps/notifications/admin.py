@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Watcher, NotificationHistory
+from .models import Watcher, History
 
 admin.site.register(Watcher)
-admin.site.register(NotificationHistory)
+admin.site.register(History)
