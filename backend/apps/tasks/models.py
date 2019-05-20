@@ -10,19 +10,17 @@ from django.utils.encoding import python_2_unicode_compatible
 @python_2_unicode_compatible
 class TaskManager(BaseModel):
   project_name= models.CharField(max_length=256)
+  url = models.URLField(max_length=200, blank=True)
   project_id = models.CharField(max_length=256, unique=True)
   owner = models.ForeignKey(User, related_name="managed_tasks", on_delete=models.CASCADE)
   invitation_code = models.CharField(max_length=HASH_MAX_LENGTH, default=create_hash, unique=True, editable=False)
 
   def notify(self, message, **kwargs):    
     created=kwargs['created']
-
-    if created:
-      notify_model = self.vigilantes.model
-      notify_model.sendMassiveMailNotification(self.vigilantes.all(), message)
+    message="[{}] {}".format(self.project_name, message)
     
-    for vigilant in self.vigilantes.all():
-      vigilant.sendNotification("[{}] {}".format(self.project_name, message))
+    notify_model = self.vigilantes.model
+    notify_model.notify(self.vigilantes.all(), created, message)
 
   def reset_invitation_code(self):
     self.invitation_code = create_hash()

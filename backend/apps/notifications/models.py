@@ -12,24 +12,16 @@ from apps.core.utils import HASH_MAX_LENGTH, create_hash, truncate
 from django.utils.encoding import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
-class History(BaseModel):
-  message = models.CharField(max_length=256, editable=False)
+TELEGRAM = 'TELEGRAM'
+EMAIL = 'EMAIL'  
 
-  def __str__(self):
-    return truncate(self.message, 10)
-
+NOTIFICATION_OPTIONS = (
+  (TELEGRAM, 'Telegram'),
+  (EMAIL, 'Email'),
+)
 
 @python_2_unicode_compatible
 class Watcher(BaseModel):
-  TELEGRAM = 'TELEGRAM'
-  EMAIL = 'EMAIL'  
-
-  NOTIFICATION_OPTIONS = (
-    (TELEGRAM, 'Telegram'),
-    (EMAIL, 'Email'),
-  )
-
   notification = MultiSelectField(choices=NOTIFICATION_OPTIONS)
   vigilant = models.ForeignKey(TaskManager, related_name="vigilantes", on_delete=models.CASCADE)
   observer = models.ForeignKey(User, related_name="observers", on_delete=models.CASCADE)
@@ -43,10 +35,10 @@ class Watcher(BaseModel):
     return self.authorization_code
 
   def canSendMail(self):
-    return self.observer.email and self.EMAIL in self.notification
+    return self.observer.email and EMAIL in self.notification
 
   def canSendTelegramMessage(self):
-    return self.telegram_chat_id and self.TELEGRAM in self.notification
+    return self.telegram_chat_id and TELEGRAM in self.notification
   
   def getEmail(self):
     return self.observer.email
@@ -62,22 +54,41 @@ class Watcher(BaseModel):
     if self.canSendTelegramMessage():
       bot = telegram.Bot(os.environ.get("TELEGRAM_BOT_TOKEN"))
       bot.send_message(chat_id=self.telegram_chat_id, text=message)
-
-  def sendNotification(self, message):
-    History(message=message).save()
-    self.sendTelegramNotification(message)
   
   def resetAuthorizationCode(self):
     self.authorization_code = create_hash()
     self.save()
 
   @staticmethod
-  def sendMassiveMailNotification(vigilantes, message):
+  def notify(vigilantes, created, message):
     if vigilantes:
       emails = []
       for vigilant in vigilantes:
+        #Generate a history register
+        History(message=message, created=created, sources=vigilant.notification, watcher=vigilant).save()
+
+        # collect emails
         if vigilant.canSendMail():
-          emails.append(vigilant.getEmail())    
-      email_from = settings.EMAIL_HOST_USER  
-    # send_mail(subject, message, email_from, emails)
-      send_mail("Nova tarefa", message, email_from, ['herlanassis@gmail.com'])
+          emails.append(vigilant.getEmail())
+
+        # send telegram notification
+        if vigilant.canSendTelegramMessage():
+          vigilant.sendTelegramNotification(message)
+
+      if created:
+        # send email notification for many users
+        email_from = settings.EMAIL_HOST_USER        
+        # send_mail("Nova tarefa", message, email_from, emails)
+        send_mail("Nova tarefa", message, email_from, ['herlanassis@gmail.com'])
+
+
+@python_2_unicode_compatible
+class History(BaseModel):
+  sources = MultiSelectField(choices=NOTIFICATION_OPTIONS, editable=False)
+  message = models.CharField(max_length=256, editable=False)
+  created = models.BooleanField(default=False, editable=False)
+
+  watcher = models.ForeignKey(Watcher, related_name="histories", on_delete=models.CASCADE)  
+
+  def __str__(self):
+    return truncate(self.message, 10)
