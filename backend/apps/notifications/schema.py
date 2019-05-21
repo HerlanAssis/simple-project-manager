@@ -7,6 +7,7 @@ class WatcherType(DjangoObjectType):
   class Meta:
     model = Watcher
 
+
 class HistoryType(DjangoObjectType):
   class Meta:
       model = History
@@ -14,51 +15,35 @@ class HistoryType(DjangoObjectType):
 
 class Query(object):
   all_Watchers = graphene.List(WatcherType)
+  watcher = graphene.Field(WatcherType, id=graphene.Int(), authorization_code=graphene.String())
+
   all_historys = graphene.List(HistoryType)  
+  history = graphene.Field(HistoryType, id=graphene.Int())
 
   def resolve_all_Watchers(self, info, **kwargs):
     return Watcher.objects.all()
 
+  def resolve_watcher(self, info, **kwargs):
+    id = kwargs.get('id')
+    authorization_code = kwargs.get('authorization_code')
+
+    if id is not None:
+      return Watcher.objects.get(pk=id)
+
+    if authorization_code is not None:
+      return Watcher.objects.get(authorization_code=authorization_code)
+
+    return None
+
   def resolve_all_historys(self, info, **kwargs):
     return History.objects.all()
 
-# class Query(object):
-#     category = graphene.Field(CategoryType,
-#                               id=graphene.Int(),
-#                               name=graphene.String())
-#     all_categories = graphene.List(CategoryType)
+  def resolve_history(self, info, **kwargs):
+    id = kwargs.get('id')    
 
-#     ingredient = graphene.Field(IngredientType,
-#                                 id=graphene.Int(),
-#                                 name=graphene.String())
-#     all_ingredients = graphene.List(IngredientType)
+    if id is not None:
+      return History.objects.get(pk=id)    
 
-#     def resolve_all_categories(self, info, **kwargs):
-#         return Category.objects.all()
+    return None
 
-#     def resolve_all_ingredients(self, info, **kwargs):
-#         return Ingredient.objects.all()
-
-#     def resolve_category(self, info, **kwargs):
-#         id = kwargs.get('id')
-#         name = kwargs.get('name')
-
-#         if id is not None:
-#             return Category.objects.get(pk=id)
-
-#         if name is not None:
-#             return Category.objects.get(name=name)
-
-#         return None
-
-#     def resolve_ingredient(self, info, **kwargs):
-#         id = kwargs.get('id')
-#         name = kwargs.get('name')
-
-#         if id is not None:
-#             return Ingredient.objects.get(pk=id)
-
-#         if name is not None:
-#             return Ingredient.objects.get(name=name)
-
-#         return None
+# schema = graphene.Schema(query=Query, mutation=MyMutations)

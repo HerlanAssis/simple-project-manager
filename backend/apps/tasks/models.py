@@ -22,7 +22,7 @@ class TaskManager(BaseModel):
     notify_model = self.vigilantes.model
     notify_model.notify(self.vigilantes.all(), created, message)
 
-  def reset_invitation_code(self):
+  def resetInvitationCode(self):
     self.invitation_code = create_hash()
     self.save()
 
@@ -74,7 +74,7 @@ class Note(BaseModel):
 class Release(BaseModel):
   date_start = models.DateField(blank=True)
   date_end = models.DateField(blank=True)
-  is_final_relase = models.BooleanField(default=False)
+  is_final_release = models.BooleanField(default=False)
   title = models.CharField(max_length=32)
   description = models.CharField(max_length=256, blank=True)
   task_manager = models.ForeignKey(TaskManager, related_name="releases", on_delete=models.CASCADE)  
