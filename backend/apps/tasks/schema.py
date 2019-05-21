@@ -86,5 +86,3 @@ class Query(object):
       return Note.objects.get(pk=id)    
 
     return None
-
-# schema = graphene.Schema(query=Query, mutation=MyMutations)

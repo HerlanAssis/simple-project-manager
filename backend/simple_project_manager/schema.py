@@ -6,4 +6,8 @@ class Query(apps.core.schema.Query, graphene.ObjectType):
     # as we begin to add more apps to our project
     pass
 
-schema = graphene.Schema(query=Query)
+
+class Mutation(apps.core.schema.Mutation, graphene.ObjectType):
+    pass
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
