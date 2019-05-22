@@ -9,11 +9,14 @@ from django.utils.encoding import python_2_unicode_compatible
 
 @python_2_unicode_compatible
 class TaskManager(BaseModel):
-  project_name= models.CharField(max_length=256)
+  project_name = models.CharField(max_length=256)
   url = models.URLField(max_length=200, blank=True)
   project_id = models.CharField(max_length=256, unique=True)
   owner = models.ForeignKey(User, related_name="managed_tasks", on_delete=models.CASCADE)
   invitation_code = models.CharField(max_length=HASH_MAX_LENGTH, default=create_hash, unique=True, editable=False)
+
+  class Meta:
+    unique_together = ['owner', 'project_id']
 
   def notify(self, message, **kwargs):    
     created=kwargs['created']

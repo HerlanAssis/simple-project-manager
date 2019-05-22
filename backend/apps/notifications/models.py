@@ -7,6 +7,8 @@ from apps.tasks.models import TaskManager
 from multiselectfield import MultiSelectField
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import telegram
 from apps.core.utils import HASH_MAX_LENGTH, create_hash, truncate
 from django.utils.encoding import python_2_unicode_compatible
@@ -22,12 +24,15 @@ NOTIFICATION_OPTIONS = (
 
 @python_2_unicode_compatible
 class Watcher(BaseModel):
-  notification = MultiSelectField(choices=NOTIFICATION_OPTIONS)
+  notification = MultiSelectField(choices=NOTIFICATION_OPTIONS, default=[default[0] for default in NOTIFICATION_OPTIONS])
   vigilant = models.ForeignKey(TaskManager, related_name="vigilantes", on_delete=models.CASCADE)
   observer = models.ForeignKey(User, related_name="observers", on_delete=models.CASCADE)
   
   authorization_code = models.CharField(max_length=HASH_MAX_LENGTH, default=create_hash, unique=True, editable=False)    
   telegram_chat_id = models.CharField(max_length=16, blank=True)
+
+  class Meta:
+    unique_together = ['vigilant', 'observer']
 
   def __str__(self):
     if self.vigilant and self.observer:
@@ -58,6 +63,13 @@ class Watcher(BaseModel):
   def resetAuthorizationCode(self):
     self.authorization_code = create_hash()
     self.save()
+
+  @staticmethod
+  def getVigilantBy(invitation_code):
+    try:
+      return TaskManager.objects.get(invitation_code=invitation_code)      
+    except TaskManager.DoesNotExist:
+      return None
 
   @staticmethod
   def notify(vigilantes, created, message):
@@ -92,3 +104,11 @@ class History(BaseModel):
 
   def __str__(self):
     return truncate(self.message, 10)
+
+
+# method for autocreate a watcher for your user
+@receiver(post_save, sender=TaskManager)
+def notify(sender, instance, **kwargs):  
+  created=kwargs['created']
+  if created:
+    Watcher(vigilant=instance, observer=instance.owner).save()
