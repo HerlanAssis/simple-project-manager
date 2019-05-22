@@ -10,8 +10,7 @@ from django.utils.encoding import python_2_unicode_compatible
 @python_2_unicode_compatible
 class TaskManager(BaseModel):
   project_name = models.CharField(max_length=256)
-  url = models.URLField(max_length=200, blank=True)
-  project_id = models.CharField(max_length=256, unique=True)
+  project_id = models.CharField(max_length=256, unique=True, editable=False)
   owner = models.ForeignKey(User, related_name="managed_tasks", on_delete=models.CASCADE)
   invitation_code = models.CharField(max_length=HASH_MAX_LENGTH, default=create_hash, unique=True, editable=False)
 
@@ -50,10 +49,11 @@ class Task(BaseModel):
     choices=PROGRESS,
     default=TODO,
   )
-  task_manager = models.ForeignKey(TaskManager, related_name="tasks", on_delete=models.CASCADE)  
-  responsible = models.ForeignKey(User, related_name="responsibilities_tasks", on_delete=models.CASCADE)  
   title = models.CharField(max_length=32)
   description = models.CharField(max_length=256, blank=True)
+  task_manager = models.ForeignKey(TaskManager, related_name="tasks", on_delete=models.CASCADE)
+  owner = models.ForeignKey(User, related_name="tasks", on_delete=models.CASCADE)
+  responsible = models.ForeignKey(User, related_name="responsibilities_tasks", on_delete=models.CASCADE, blank=True)
 
   # notify_task_manager
   def notify(self, **kwargs):
@@ -66,7 +66,8 @@ class Task(BaseModel):
 @python_2_unicode_compatible
 class Note(BaseModel):
   owner = models.ForeignKey(User, related_name="notes", on_delete=models.CASCADE)
-  task = models.ForeignKey(Task, related_name="task_notes", on_delete=models.CASCADE, blank=True)  
+  task_manager = models.ForeignKey(TaskManager, related_name="taskmanager_notes", on_delete=models.CASCADE)
+  task = models.ForeignKey(Task, related_name="task_notes", on_delete=models.CASCADE, blank=True)
   description = models.CharField(max_length=256)
 
   def __str__(self):
@@ -75,8 +76,7 @@ class Note(BaseModel):
 
 @python_2_unicode_compatible
 class Release(BaseModel):
-  date_start = models.DateField(blank=True)
-  date_end = models.DateField(blank=True)
+  completed_on = models.DateField()
   is_final_release = models.BooleanField(default=False)
   title = models.CharField(max_length=32)
   description = models.CharField(max_length=256, blank=True)

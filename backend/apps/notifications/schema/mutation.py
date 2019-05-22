@@ -6,17 +6,18 @@ from .inputs import WatcherInput
 
 class CreateWatcher(graphene.Mutation):
   class Arguments:
-    invitation_code=graphene.String(required=True)    
+    invitation_code=graphene.String(required=False)
+    project_id=graphene.String(required=False)
 
   ok = graphene.Boolean()
   watcher = graphene.Field(WatcherType)
 
   @staticmethod
-  def mutate(root, info, invitation_code, input=None):
+  def mutate(root, info, invitation_code, project_id, input=None):
     ok = False
-    vigilant_instance = Watcher.getVigilantBy(invitation_code)
-    
-    if vigilant_instance:      
+    vigilant_instance = Watcher.getVigilantBy(invitation_code, project_id)
+
+    if vigilant_instance:
       # invalidate invitation code
       vigilant_instance.resetInvitationCode()
       

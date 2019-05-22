@@ -10,18 +10,18 @@ class Query(object):
   history = graphene.Field(HistoryType, id=graphene.Int())
 
   def resolve_all_Watchers(self, info, **kwargs):
-    return Watcher.objects.all()
+    return Watcher.objects.filter(observer=info.context.user)
 
   def resolve_watcher(self, info, **kwargs):
     id = kwargs.get('id')
     authorization_code = kwargs.get('authorization_code')
 
     if id is not None:
-      return Watcher.objects.get(pk=id)
+      return Watcher.objects.get(pk=id, observer=info.context.user)
 
     if authorization_code is not None:
-      return Watcher.objects.get(authorization_code=authorization_code)
-
+      return Watcher.objects.get(authorization_code=authorization_code,  observer=info.context.user)
+    
     return None
 
   def resolve_all_historys(self, info, **kwargs):
@@ -31,6 +31,6 @@ class Query(object):
     id = kwargs.get('id')    
 
     if id is not None:
-      return History.objects.get(pk=id)    
+      return History.objects.get(pk=id)
 
     return None

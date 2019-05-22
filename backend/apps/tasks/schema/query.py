@@ -18,7 +18,7 @@ class Query(object):
   note = graphene.Field(NoteType, id=graphene.Int())
 
   def resolve_all_taskmanagers(self, info, **kwargs):
-    return TaskManager.objects.all()
+    return TaskManager.objects.filter(owner=info.context.user)
 
   def resolve_taskmanager(self, info, **kwargs):
     id = kwargs.get('id')
@@ -26,24 +26,24 @@ class Query(object):
     invitation_code = kwargs.get('invitation_code')    
 
     if id is not None:
-      return TaskManager.objects.get(pk=id)
+      return TaskManager.objects.get(pk=id, owner=info.context.user)
 
     if project_id is not None:
-      return TaskManager.objects.get(project_id=project_id)
+      return TaskManager.objects.get(project_id=project_id, owner=info.context.user)
     
     if invitation_code is not None:
-      return TaskManager.objects.get(invitation_code=invitation_code)
+      return TaskManager.objects.get(invitation_code=invitation_code, owner=info.context.user)
 
     return None
   
   def resolve_all_tasks(self, info, **kwargs):
-    return Task.objects.all()
+    return Task.objects.filter(owner=info.context.user)
 
   def resolve_task(self, info, **kwargs):
     id = kwargs.get('id')    
 
     if id is not None:
-      return Task.objects.get(pk=id)    
+      return Task.objects.get(pk=id, owner=info.context.user)    
 
     return None
   
@@ -59,12 +59,12 @@ class Query(object):
     return None
 
   def resolve_all_notes(self, info, **kwargs):
-    return Note.objects.all()
+    return Note.objects.filter(owner=info.context.user)
 
   def resolve_note(self, info, **kwargs):
     id = kwargs.get('id')    
 
     if id is not None:
-      return Note.objects.get(pk=id)    
+      return Note.objects.get(pk=id, owner=info.context.user)    
 
     return None

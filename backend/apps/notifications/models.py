@@ -65,9 +65,11 @@ class Watcher(BaseModel):
     self.save()
 
   @staticmethod
-  def getVigilantBy(invitation_code):
+  def getVigilantBy(invitation_code, project_id):
     try:
-      return TaskManager.objects.get(invitation_code=invitation_code)      
+      return TaskManager.objects.get(invitation_code=invitation_code)
+    except TaskManager.DoesNotExist:
+      return TaskManager.objects.get(project_id=project_id)
     except TaskManager.DoesNotExist:
       return None
 
@@ -106,7 +108,7 @@ class History(BaseModel):
     return truncate(self.message, 10)
 
 
-# method for autocreate a watcher for your user
+# method for autocreate an watcher for your taskmanager owner
 @receiver(post_save, sender=TaskManager)
 def notify(sender, instance, **kwargs):  
   created=kwargs['created']

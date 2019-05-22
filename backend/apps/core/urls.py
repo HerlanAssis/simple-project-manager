@@ -8,5 +8,5 @@ urlpatterns = [
     path('n/', include('apps.notifications.urls')),
     path('t/', include('apps.tasks.urls')),
     path('r/', include('apps.reports.urls')),
-    path('graphql', graphql.PrivateGraphQLView.as_view(graphiql=True)),
+    path('graphql', graphql.DRFAuthenticatedGraphQLView.as_view(graphiql=True)),
 ]

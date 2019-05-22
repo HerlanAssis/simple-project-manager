@@ -4,10 +4,12 @@ from ..models import TaskManager, Task, Note, Release
 
 class TaskManagerType(DjangoObjectType):
   class Meta:
-      model = TaskManager
+    model = TaskManager
+    exclude_fields = ('owner')
 
 
 class TaskType(DjangoObjectType):
+  status = graphene.Field(graphene.String, source='status')
   class Meta:
     model = Task
 
@@ -19,4 +21,4 @@ class ReleaseType(DjangoObjectType):
 
 class NoteType(DjangoObjectType):
   class Meta:
-      model = Note
+    model = Note

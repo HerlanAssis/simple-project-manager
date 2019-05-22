@@ -3,6 +3,7 @@ import graphene
 from apps.tasks.schema.query import Query as TasksQuery
 from apps.notifications.schema.query import Query as NotificationsQuery
 
+from apps.tasks.schema.mutation import Mutation as TasksMutation
 from apps.notifications.schema.mutation import Mutation as NotificationsMutation
 
 class Query(TasksQuery, NotificationsQuery):
@@ -10,7 +11,7 @@ class Query(TasksQuery, NotificationsQuery):
     # as we begin to add more apps to our project
     pass
 
-class Mutation(NotificationsMutation):
+class Mutation(TasksMutation, NotificationsMutation):
     # This class will inherit from multiple Queries
     # as we begin to add more apps to our project
     pass

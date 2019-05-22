@@ -8,8 +8,8 @@ from rest_framework.utils import encoders
 from django.core.cache import cache
 from django.conf import settings
 from apps.core.serializers import CurrentUserSerializer
+from rest_framework.settings import api_settings
 from ..utils import PyGithubJSONRenderer, manual_dump
-
 # enable_console_debug_logging()
 
 
@@ -18,7 +18,7 @@ def repo_object_modeler(data, extra_args): return [
 
 
 class GithubAPIView(APIView):
-    authentication_classes = (TokenAuthentication, BasicAuthentication)
+    authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
     permission_classes = (IsAuthenticated,)
     renderer_classes = (PyGithubJSONRenderer, )
     per_page = 10

@@ -1,14 +1,20 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from graphene_django.views import GraphQLView
+import rest_framework
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import authentication_classes, permission_classes, api_view
+from rest_framework.settings import api_settings
 
-# from rest_framework.authentication import TokenAuthentication, BasicAuthentication
-# from rest_framework.permissions import IsAuthenticated
-# from rest_framework.views import APIView    
 
+class DRFAuthenticatedGraphQLView(GraphQLView):
+    def parse_body(self, request):
+        if isinstance(request, rest_framework.request.Request):
+            return request.data
+        return super(DRFAuthenticatedGraphQLView, self).parse_body(request)
 
-# class PrivateGraphQLView(APIView, GraphQLView):
-class PrivateGraphQLView(GraphQLView):
-    # authentication_classes = (TokenAuthentication, BasicAuthentication)
-    # permission_classes = (IsAuthenticated,)
-    """Adds a login requirement to graphQL API access via main endpoint."""
-    pass
+    @classmethod
+    def as_view(cls, *args, **kwargs):
+        view = super(DRFAuthenticatedGraphQLView, cls).as_view(*args, **kwargs)
+        view = permission_classes((IsAuthenticated,))(view)
+        view = authentication_classes(api_settings.DEFAULT_AUTHENTICATION_CLASSES)(view)
+        view = api_view(['GET', 'POST'])(view)
+        return view
