@@ -49,7 +49,7 @@ class CreateWatcherAsContributor(graphene.Mutation):
       github_instance = Github(login_or_token=access_token)
       repo = github_instance.get_user().get_repo(reponame)
 
-      if repo and repo.id =! project_id: ## esse malandro não participa desse projeto
+      if repo and repo.id != project_id: ## esse malandro não participa desse projeto
         return CreateWatcher(ok=ok, watcher=None)
     except Exception as e:
       return CreateWatcher(ok=ok, watcher=None)
