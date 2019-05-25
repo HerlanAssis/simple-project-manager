@@ -15,3 +15,9 @@ def sendMail(subject, message, recipient_list):
   email_from = settings.EMAIL_HOST_USER
   # send_mail(subject, message, email_from, recipient_list)
   send_mail(subject, message, email_from, ['herlanassis@gmail.com'])
+
+def get_or_none(classmodel, **kwargs):
+  try:
+    return classmodel.objects.get(**kwargs)
+  except classmodel.DoesNotExist:
+    return None

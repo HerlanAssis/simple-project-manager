@@ -14,7 +14,8 @@ from ..utils import PyGithubJSONRenderer, manual_dump
 
 
 def repo_object_modeler(data, extra_args): return [
-    {'name': repo.name, 'full_name': repo.full_name, 'id': repo.id, 'num_contributors': repo.get_contributors().totalCount, 'num_commits': repo.get_commits().totalCount, 'has_in_starred': extra_args['user'].has_in_starred(repo)} for repo in data]
+    {'name': repo.name, 'full_name': repo.full_name, 'id': repo.id, 'num_contributors': repo.get_contributors().totalCount, 'num_commits': repo.get_commits().totalCount, 'has_in_starred': extra_args['user'].has_in_starred(repo), 'is_owner': extra_args['user'].id == repo.owner.id} for repo in data
+]
 
 
 class GithubAPIView(APIView):
