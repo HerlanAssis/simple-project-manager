@@ -12,6 +12,7 @@ from django.dispatch import receiver
 import telegram
 from apps.core.utils import HASH_MAX_LENGTH, create_hash, truncate
 from django.utils.encoding import python_2_unicode_compatible
+from apps.core.utils import get_or_none
 
 
 TELEGRAM = 'TELEGRAM'
@@ -65,13 +66,13 @@ class Watcher(BaseModel):
     self.save()
 
   @staticmethod
-  def getVigilantBy(invitation_code, project_id):
-    try:
-      return TaskManager.objects.get(invitation_code=invitation_code)
-    except TaskManager.DoesNotExist:
-      return TaskManager.objects.get(project_id=project_id)
-    except TaskManager.DoesNotExist:
-      return None
+  def getVigilantBy(invitation_code, project_id):    
+    taskmanager = get_or_none(TaskManager, invitation_code=invitation_code)
+    
+    if taskmanager:
+      return taskmanager
+    
+    return get_or_none(TaskManager, project_id=project_id)    
 
   @staticmethod
   def notify(vigilantes, created, message):

@@ -2,6 +2,7 @@ import graphene
 from graphene_django.types import DjangoObjectType
 from ..models import TaskManager, Task, Note, Release
 from .types import TaskManagerType, TaskType, ReleaseType, NoteType
+from apps.core.utils import get_or_none
 
 
 class Query(object):
@@ -26,13 +27,13 @@ class Query(object):
     invitation_code = kwargs.get('invitation_code')    
 
     if id is not None:
-      return TaskManager.objects.get(pk=id, owner=info.context.user)
+      return get_or_none(TaskManager, pk=id, owner=info.context.user)      
 
     if project_id is not None:
-      return TaskManager.objects.get(project_id=project_id, owner=info.context.user)
+      return get_or_none(TaskManager, project_id=project_id, owner=info.context.user)      
     
     if invitation_code is not None:
-      return TaskManager.objects.get(invitation_code=invitation_code, owner=info.context.user)
+      return get_or_none(TaskManager, invitation_code=invitation_code, owner=info.context.user)
 
     return None
   
@@ -43,7 +44,7 @@ class Query(object):
     id = kwargs.get('id')    
 
     if id is not None:
-      return Task.objects.get(pk=id, owner=info.context.user)    
+      return get_or_none(Task, pk=id, owner=info.context.user)            
 
     return None
   
@@ -54,17 +55,17 @@ class Query(object):
     id = kwargs.get('id')    
 
     if id is not None:
-      return Release.objects.get(pk=id)    
+      return get_or_none(Release, pk=id)      
 
     return None
 
-  def resolve_all_notes(self, info, **kwargs):
+  def resolve_all_notes(self, info, **kwargs):    
     return Note.objects.filter(owner=info.context.user)
 
   def resolve_note(self, info, **kwargs):
     id = kwargs.get('id')    
 
     if id is not None:
-      return Note.objects.get(pk=id, owner=info.context.user)    
+      return get_or_none(Note, pk=id, owner=info.context.user)
 
     return None

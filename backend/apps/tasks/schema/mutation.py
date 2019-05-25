@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from ..models import TaskManager, Task, Note, Release
 from .types import TaskManagerType, TaskType, NoteType, ReleaseType
 from .inputs import TaskManagerInput, TaskInput, NoteInput, ReleaseInput
+from apps.core.utils import get_or_none
 
 
 class CreateTaskManager(graphene.Mutation):
@@ -37,7 +38,7 @@ class UpdateTaskManager(graphene.Mutation):
   @staticmethod
   def mutate(root, info, id, input=None):
     ok = False
-    taskmanager_instance = TaskManager.objects.get(pk=id)
+    taskmanager_instance = get_or_none(TaskManager, pk=id)
     
     if taskmanager_instance:
       ok = True      
@@ -60,7 +61,7 @@ class CreateTask(graphene.Mutation):
   @staticmethod
   def mutate(root, info, taskmanager_id, responsible_id, input=None):              
     ok = False
-    taskmanager_instance = TaskManager.objects.get(pk=taskmanager_id)
+    taskmanager_instance = get_or_none(TaskManager, pk=taskmanager_id)
     if taskmanager_instance:
       context_user_is_the_taskmanager_owner = taskmanager_instance.owner.pk == info.context.user.pk
       if context_user_is_the_taskmanager_owner:
@@ -73,7 +74,7 @@ class CreateTask(graphene.Mutation):
           owner=info.context.user,
           task_manager=taskmanager_instance,
         )
-        responsible = User.objects.get(pk=responsible_id)
+        responsible = get_or_none(User, pk=responsible_id)
         
         if responsible:
           task_instance.responsible=responsible
@@ -95,8 +96,8 @@ class UpdateTask(graphene.Mutation):
   @staticmethod
   def mutate(root, info, id, responsible_id, input=None):              
     ok = False
-    task_instance = Task.objects.get(pk=id)
-    responsible = User.objects.get(pk=responsible_id)
+    task_instance = get_or_none(Task, pk=id)
+    responsible = get_or_none(User, pk=responsible_id)
     
     if task_instance:
       context_user_is_the_task_owner = task_instance.owner.pk == info.context.user.pk      
@@ -125,7 +126,7 @@ class CreateRelease(graphene.Mutation):
   @staticmethod
   def mutate(root, info, taskmanager_id, input=None):              
     ok = False
-    taskmanager_instance = TaskManager.objects.get(pk=taskmanager_id)
+    taskmanager_instance = get_or_none(TaskManager, pk=taskmanager_id)
     if taskmanager_instance:
       context_user_is_the_taskmanager_owner = taskmanager_instance.owner.pk == info.context.user.pk
       if context_user_is_the_taskmanager_owner:
@@ -153,7 +154,7 @@ class UpdateRelease(graphene.Mutation):
   @staticmethod
   def mutate(root, info, id, input=None):              
     ok = False
-    release_instance = Release.objects.get(pk=id)
+    release_instance = get_or_none(Release, pk=id)
     if release_instance:
       context_user_is_the_taskmanager_release_owner = release_instance.task_manager.owner.pk == info.context.user.pk
 
@@ -179,7 +180,7 @@ class CreateNote(graphene.Mutation):
   @staticmethod
   def mutate(root, info, taskmanager_id, task_id, input=None):              
     ok = False
-    taskmanager_instance = TaskManager.objects.get(pk=taskmanager_id)
+    taskmanager_instance = get_or_none(TaskManager, pk=taskmanager_id)
     if taskmanager_instance:      
       ok = True
       note_instance = Note(
@@ -188,7 +189,7 @@ class CreateNote(graphene.Mutation):
         owner=info.context.user,
       )      
       
-      task_instance = Task.objects.get(pk=task_id)
+      task_instance = get_or_none(Task, pk=task_id)
       if task_instance:        
         note_instance.task=task_instance
 
@@ -209,12 +210,12 @@ class UpdateNote(graphene.Mutation):
   @staticmethod
   def mutate(root, info, id, task_id, input=None):              
     ok = False    
-    note_instance = Note.objects.get(pk=id)
+    note_instance = get_or_none(Note, pk=id)
     if note_instance:      
       ok = True
       note_instance.description=input.description
 
-      task_instance = Task.objects.get(pk=task_id)
+      task_instance = get_or_none(Task, pk=task_id)
       if task_instance:        
         note_instance.task=task_instance
 

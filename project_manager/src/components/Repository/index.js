@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Popconfirm } from 'antd';
+import { Icon, Popconfirm, Button } from 'antd';
 import { Charts } from 'ant-design-pro';
 import { Api } from '../../services';
 import moment from 'moment';
@@ -56,15 +56,20 @@ class Repository extends React.Component {
             <div style={{ display: 'flex', flex: 9, flexDirection: 'column', height: '150px', width: '100%', marginBottom: '30px' }}>
                 {/* Nome do projeto */}
                 <div style={{ display: 'flex', flexDirection: 'row' }} className='project-head'>
-
-                    <div style={{ flex: 8, backgroundColor: "red" }}>
-                        <p className='one-line'>{repo.name}</p>
-                    </div>
-
-                    <div style={{ display: 'flex', flex: 2, alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <Popconfirm placement="topRight" {...popconfirmProps} okText="Sim" cancelText="Não">
                             <Icon style={{ fontSize: '26px', color: repo.has_in_starred ? 'yellow' : 'gray' }} type={'star'} />
                         </Popconfirm>
+                    </div>
+
+                    <div style={{ flex: 7, backgroundColor: "red" }}>
+                        <p className='one-line'>{repo.name}</p>
+                    </div>
+
+                    <div style={{ display: 'flex', flex: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
+                        <Button type="primary" size="large" icon="line-chart"> 
+                            Gerenciar Tarefas
+                        </Button>
                     </div>
 
                 </div>

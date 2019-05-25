@@ -4,6 +4,7 @@ import os
 import telegram
 from telegram.error import NetworkError, Unauthorized
 from time import sleep
+from apps.core.utils import get_or_none
 
 update_id = None
 
@@ -34,10 +35,7 @@ def listar_projetos(update):
     update.message.reply_text('Você não tem nenhum projeto monitorado!')
 
 def monitorar_projeto(update, code):
-  try:
-    projeto=Watcher.objects.get(authorization_code=code)      
-  except Watcher.DoesNotExist:
-    projeto = None  
+  projeto=get_or_none(Watcher, authorization_code=code)  
   
   if projeto:
     projeto.telegram_chat_id=update.message.chat.id
@@ -48,10 +46,7 @@ def monitorar_projeto(update, code):
     update.message.reply_text('Projeto não encontrado. Caso tenha dúvidas tente utilizar o /help')
 
 def cancele_o_monitoramento(update, code):  
-  try:
-    projeto=Watcher.objects.get(authorization_code=code)      
-  except Watcher.DoesNotExist:
-    projeto = None
+  projeto=get_or_none(Watcher, authorization_code=code)  
   
   if projeto:
     projeto.telegram_chat_id=''

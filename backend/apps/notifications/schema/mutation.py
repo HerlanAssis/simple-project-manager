@@ -4,6 +4,7 @@ from graphene_django.types import DjangoObjectType
 from ..models import Watcher, History
 from .types import WatcherType
 from .inputs import WatcherInput
+from apps.core.utils import get_or_none
 
 class CreateWatcherAsGuest(graphene.Mutation):
   class Arguments:
@@ -108,7 +109,8 @@ class UpdateWatcher(graphene.Mutation):
   @staticmethod
   def mutate(root, info, id, input=None):
     ok = False
-    watcher_instance = Watcher.objects.get(pk=id)
+    watcher_instance = get_or_none(Watcher, pk=id)
+
     if watcher_instance:
       ok = True      
       watcher_instance.notification=input.notification

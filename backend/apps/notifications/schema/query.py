@@ -1,6 +1,7 @@
 import graphene
 from ..models import Watcher, History
 from .types import WatcherType, HistoryType
+from apps.core.utils import get_or_none
 
 class Query(object):
   all_Watchers = graphene.List(WatcherType)
@@ -17,10 +18,10 @@ class Query(object):
     authorization_code = kwargs.get('authorization_code')
 
     if id is not None:
-      return Watcher.objects.get(pk=id, observer=info.context.user)
+      return get_or_none(Watcher, pk=id, observer=info.context.user)
 
     if authorization_code is not None:
-      return Watcher.objects.get(authorization_code=authorization_code,  observer=info.context.user)
+      return get_or_none(Watcher, authorization_code=authorization_code,  observer=info.context.user)
     
     return None
 
@@ -31,6 +32,6 @@ class Query(object):
     id = kwargs.get('id')    
 
     if id is not None:
-      return History.objects.get(pk=id)
+      return get_or_none(History, pk=id)
 
     return None
