@@ -66,13 +66,14 @@ class Watcher(BaseModel):
     self.save()
 
   @staticmethod
-  def getVigilantBy(invitation_code, project_id):    
-    taskmanager = get_or_none(TaskManager, invitation_code=invitation_code)
+  def getVigilantBy(invitation_code = None, project_id = None):    
+    if invitation_code:
+      return get_or_none(TaskManager, invitation_code=invitation_code)
     
-    if taskmanager:
-      return taskmanager
+    if project_id:
+      return get_or_none(TaskManager, project_id=project_id)
     
-    return get_or_none(TaskManager, project_id=project_id)    
+    return None
 
   @staticmethod
   def notify(vigilantes, created, message):
@@ -94,7 +95,7 @@ class Watcher(BaseModel):
         # send email notification for many users
         email_from = settings.EMAIL_HOST_USER        
         # send_mail("Nova tarefa", message, email_from, emails)
-        send_mail("Nova tarefa", message, email_from, ['herlanassis@gmail.com'])
+        #send_mail("Nova tarefa", message, email_from, ['herlanassis@gmail.com'])
 
 
 @python_2_unicode_compatible
