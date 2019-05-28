@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-    Layout, Menu, Icon, Progress
+    Layout, Menu, Icon, Progress, Button,
 } from 'antd';
 import {
     Switch,
@@ -25,6 +25,12 @@ import {
 } from './subpages';
 import { Api } from '../../services';
 import moment from 'moment';
+
+// * Redux imports *
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { AuthActions } from '../../modules/Authentication';
+// * END Redux imports *
 
 const {
     Header, Footer, Sider,
@@ -151,8 +157,10 @@ class Dashboard extends React.Component {
                                 <p>Atualiza {moment.unix(this.state.reset).fromNow()}</p>
                             </div>
 
+                            <div style={{ width: 'auto', justifyContent: 'center', alignItems: 'center', marginLeft: 10, }}>
+                                <Button onClick={this.props.logout} type="primary" shape="circle" icon="logout" size={'default'} />
+                            </div>
                         </div>
-
                     </Header>
 
                     <Switch>
@@ -169,4 +177,22 @@ class Dashboard extends React.Component {
     }
 }
 
-export default Dashboard;
+const mapStateToProps = (state) => {
+    const {
+        removeTokenLoading,
+        removeTokenDone,
+    } = state.authentication;
+
+    return {
+        removeTokenLoading,
+        removeTokenDone,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({
+        'logout': AuthActions.AuthLogout,
+    }, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

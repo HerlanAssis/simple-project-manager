@@ -3,9 +3,10 @@ import {
   BrowserRouter as Router,
   Switch,
 } from 'react-router-dom'
+import { Provider } from 'react-redux';
 import { Route } from './components';
 import LocaleProvider from './l18n';
-
+import store from './store';
 
 import {
   Login,
@@ -16,14 +17,16 @@ class App extends Component {
 
   render() {
     return (
-      <LocaleProvider>
-        <Router>
-          <Switch>
-            <Route.Custom path="/login" component={Login} />
-            <Route.Private path="/" component={Dashboard} />
-          </Switch>
-        </Router>
-      </LocaleProvider>
+      <Provider store={store}>
+        <LocaleProvider>
+          <Router>
+            <Switch>
+              <Route.Custom path="/login" component={Login} />
+              <Route.Private path="/" component={Dashboard} />
+            </Switch>
+          </Router>
+        </LocaleProvider>
+      </Provider>
     );
   }
 }

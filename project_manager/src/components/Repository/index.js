@@ -62,11 +62,11 @@ class Repository extends React.Component {
                         </Popconfirm>
                     </div>
 
-                    <div style={{ flex: 7, backgroundColor: "red" }}>
+                    <div style={{ flex: 6, backgroundColor: "red" }}>
                         <p className='one-line'>{repo.name}</p>
                     </div>
 
-                    <div style={{ display: 'flex', flex: 2, alignItems: 'center', justifyContent: 'flex-end' }}>
+                    <div style={{ display: 'flex', flex: 3, alignItems: 'center', justifyContent: 'flex-end' }}>
                         <Button type="primary" size="large" icon="line-chart"> 
                             Gerenciar Tarefas
                         </Button>
