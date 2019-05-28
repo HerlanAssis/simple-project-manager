@@ -1,6 +1,9 @@
 import * as AuthTypes from './types';
 
 const DEFAULT_STATE = {
+    requestTokenDone: false,
+    requestTokenLoading: false,
+    
     removeTokenLoading: false,
     removeTokenDone: false,
 };
@@ -8,24 +11,24 @@ const DEFAULT_STATE = {
 const AuthReducer = (state = DEFAULT_STATE, action) => {
     switch (action.type) {
         /**Token REQUEST LOADING */
-        // case AuthTypes.TOKEN_REQUEST_LOADING:
-        //     return {
-        //         ...state,
-        //         tokenRequestDone: false,
-        //         tokenRequestLoading: true,
-        //     };
-        // case AuthTypes.TOKEN_REQUEST_SUCCESS:
-        //     return {
-        //         ...state,
-        //         tokenRequestDone: true,
-        //         tokenRequestLoading: false,
-        //     };
-        // case AuthTypes.TOKEN_REQUEST_ERROR:
-        //     return {
-        //         ...state,
-        //         tokenRequestDone: false,
-        //         tokenRequestLoading: false,
-        //     };
+        case AuthTypes.REQUEST_TOKEN_LOADING:
+            return {
+                ...state,
+                requestTokenDone: false,
+                requestTokenLoading: true,
+            };
+        case AuthTypes.REQUEST_TOKEN_SUCCESS:
+            return {
+                ...state,
+                requestTokenDone: true,
+                requestTokenLoading: false,
+            };
+        case AuthTypes.REQUEST_TOKEN_ERROR:
+            return {
+                ...state,
+                requestTokenDone: false,
+                requestTokenLoading: false,
+            };
         /** Token REQUEST LOADING */
 
         /** REMOVE TOKEN LOADING */
@@ -38,7 +41,7 @@ const AuthReducer = (state = DEFAULT_STATE, action) => {
                 removeTokenLoading: false,
             };
         /** REMOVE TOKEN LOADING */
-        
+
         default:
             return state;
     }

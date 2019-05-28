@@ -30,6 +30,7 @@ import moment from 'moment';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { AuthActions } from '../../modules/Authentication';
+import { KEYS } from '../../constants';
 // * END Redux imports *
 
 const {
@@ -158,7 +159,7 @@ class Dashboard extends React.Component {
                             </div>
 
                             <div style={{ width: 'auto', justifyContent: 'center', alignItems: 'center', marginLeft: 10, }}>
-                                <Button onClick={this.props.logout} type="primary" shape="circle" icon="logout" size={'default'} />
+                                <Button onClick={() => this.props.logout({ token_key: KEYS.TOKEN_KEY })} type="primary" shape="circle" icon="logout" size={'default'} />
                             </div>
                         </div>
                     </Header>
