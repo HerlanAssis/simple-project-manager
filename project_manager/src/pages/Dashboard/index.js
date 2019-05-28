@@ -1,14 +1,15 @@
 import React from 'react';
 
 import {
-    Layout, Menu, Icon, Progress, Button,
+    Layout, Menu, Icon, Modal
 } from 'antd';
+
 import {
     Switch,
 } from 'react-router-dom'
 
 import './styles.css';
-import { Route } from '../../components';
+import { Route, Header } from '../../components';
 import {
     Home,
     Pesquisar,
@@ -24,7 +25,6 @@ import {
     Page404,
 } from './subpages';
 import { Api } from '../../services';
-import moment from 'moment';
 
 // * Redux imports *
 import { bindActionCreators } from 'redux';
@@ -34,9 +34,10 @@ import { KEYS } from '../../constants';
 // * END Redux imports *
 
 const {
-    Header, Footer, Sider,
+    Footer, Sider,
 } = Layout;
 
+const confirm = Modal.confirm;
 
 const PAGES = [
     { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
@@ -73,11 +74,15 @@ const PAGES = [
 ];
 
 class Dashboard extends React.Component {
-    state = {
-        collapsed: true,
-        rate_limit: 0,
-        reset: new Date().getTime(),
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            collapsed: true,
+            rate_limit: 0,
+            reset: new Date().getTime(),
+        };
+        this.logout = this.logout.bind(this);
+    }
 
     componentDidMount() {
         this.getLimits();
@@ -117,6 +122,19 @@ class Dashboard extends React.Component {
         return builded_pages;
     }
 
+    logout() {
+        confirm({
+            title: 'Sair do sistema?',
+            content: 'Ao sair do sistema sua sessão será encerrada.',
+            okText: 'Sair',
+            cancelText: 'Cancelar',
+            onOk: () => {
+                this.props.logout({ token_key: KEYS.TOKEN_KEY });
+            },
+            onCancel: () => { },
+        });
+    }
+
     render() {
         const pages = this.getPages(PAGES);
         pages.push(<Route.Custom key={'page404'} component={Page404} />);
@@ -132,7 +150,8 @@ class Dashboard extends React.Component {
                         </div>
                     </div>
 
-                    <Menu theme="dark" defaultSelectedKeys={[this.props.location.pathname]} mode="inline">
+                    <Menu theme="dark" defaultSelectedKeys={[this.props.location.pathname]} mode="vertical">
+
                         {PAGES.map(value => (
                             <Menu.Item
                                 onClick={() => this.props.history.push(value.path)}
@@ -142,26 +161,16 @@ class Dashboard extends React.Component {
                                 <span>{value.name}</span>
                             </Menu.Item>
                         ))}
-
                     </Menu>
                 </Sider>
 
                 <Layout style={{ flex: 1 }} >
-                    <Header style={{ background: '#fff', padding: 10 }}>
-                        <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+                    <Header
+                        rate_limit={this.state.rate_limit}
+                        reset={this.state.reset}
+                        logout={this.logout}
+                    >
 
-                            <div style={{ flex: 1 }}>
-                                <Progress width={100} successPercent={0} percent={this.state.rate_limit} showInfo />
-                            </div>
-
-                            <div style={{ width: 'auto', marginLeft: 10, textAlign: 'center' }}>
-                                <p>Atualiza {moment.unix(this.state.reset).fromNow()}</p>
-                            </div>
-
-                            <div style={{ width: 'auto', justifyContent: 'center', alignItems: 'center', marginLeft: 10, }}>
-                                <Button onClick={() => this.props.logout({ token_key: KEYS.TOKEN_KEY })} type="primary" shape="circle" icon="logout" size={'default'} />
-                            </div>
-                        </div>
                     </Header>
 
                     <Switch>

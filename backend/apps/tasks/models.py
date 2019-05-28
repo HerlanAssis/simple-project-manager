@@ -59,6 +59,7 @@ class Task(BaseModel):
         User, related_name="tasks", on_delete=models.CASCADE)
     responsible = models.ForeignKey(
         User, related_name="responsibilities_tasks", on_delete=models.CASCADE, blank=True)
+    expected_date = models.DateField()
 
     # notify_task_manager
     def notify(self, **kwargs):
@@ -86,6 +87,7 @@ class Note(BaseModel):
 @python_2_unicode_compatible
 class Release(BaseModel):
     completed_on = models.DateField()
+    closed = models.BooleanField(default=False)
     is_final_release = models.BooleanField(default=False)
     title = models.CharField(max_length=32)
     description = models.CharField(max_length=256, blank=True)

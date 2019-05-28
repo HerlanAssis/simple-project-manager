@@ -53,7 +53,7 @@ class Repository extends React.Component {
         const { match, history, repo } = this.props;
         const popconfirmProps = repo.has_in_starred ? this.popconfirmPropsForRemoveMonitoring() : this.popconfirmPropsForAddMonitoring();
         return (
-            <div style={{ display: 'flex', flex: 9, flexDirection: 'column', height: '150px', width: '100%', marginBottom: '30px' }}>
+            <div style={{ display: 'flex', flex: 9, flexDirection: 'column', height: '200px', width: '100%', marginBottom: '30px' }}>
                 {/* Nome do projeto */}
                 <div style={{ display: 'flex', flexDirection: 'row' }} className='project-head'>
                     <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -74,7 +74,7 @@ class Repository extends React.Component {
 
                 </div>
 
-                <div style={{ display: 'flex', flex: 2 }}>
+                <div style={{ display: 'flex', flex: 1 }}>
                     <div style={{ display: 'flex', flex: 2, flexDirection: 'row' }}>
                         <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'pink' }} />
 
@@ -106,12 +106,12 @@ class Repository extends React.Component {
                 </div>
 
                 {/* Dados de gráfico */}
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 2 }}>
                     <Charts.MiniArea
                         line
                         animate={true}
                         color="#cceafe"
-                        height={50}
+                        height={100}
                         data={visitData}
                     />
                 </div>
