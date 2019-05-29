@@ -7,6 +7,7 @@ services:
   # Database Machines
   database:
     build: database/
+    restart: always
     volumes:
       # Volume dos dados
       - data:/var/lib/postgresql/data
@@ -18,7 +19,8 @@ services:
   
   # Cache Machines
   cache:
-    build: cache/            
+    build: cache/
+    restart: always
     command: memcached -m 64
     # ports:
     #  - "11211:11211"
@@ -26,6 +28,7 @@ services:
   # Backend Machines
   backend:
     build: backend/
+    restart: always
     command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python telegram_bot.py && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"
     volumes:
       - ./backend:/simple_project_manager
@@ -45,8 +48,8 @@ services:
       - SOCIAL_AUTH_GITHUB_KEY=c3f39f63ffb0d5ca5b9d
       - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=868259763295-0h7tcmihv8l91nlfkk2pu60m2o976ck5.apps.googleusercontent.com
       - TELEGRAM_BOT_API_URL=https://api.telegram.org/bot
-      - MAIL_USER=postmaster@sandboxf2a0f7bca535466aad4a4ca3567b575f.mailgun.org
-      - MAIL_HOST=smtp.mailgun.org
+      - MAIL_USER=simpleprojectmanager.site@gmail.com
+      - MAIL_HOST=smtp.gmail.com
       - MAIL_PORT=587
       # - MAIL_PASS=""
       # - SECRET_KEY=""
@@ -59,6 +62,7 @@ services:
 
   server:
     build: server/
+    restart: always
     volumes:
       - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/      
     ports:
@@ -68,13 +72,15 @@ services:
 
   # Frontend Machines
   project_manager:
-    build: project_manager/    
+    build: project_manager/
+    restart: always
     ports:
       - "80:80"
     depends_on:
       - server      
   #client:
-  #  build: client/    
+  #  build: client/
+  #  restart: always    
   #  ports:
   #    - "8081:80"
   #  depends_on:

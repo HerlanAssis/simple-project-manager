@@ -59,7 +59,7 @@ class Task(BaseModel):
         User, related_name="tasks", on_delete=models.CASCADE)
     responsible = models.ForeignKey(
         User, related_name="responsibilities_tasks", on_delete=models.CASCADE, blank=True)
-    expected_date = models.DateField()
+    expected_date = models.DateField(blank=True)
 
     # notify_task_manager
     def notify(self, **kwargs):
