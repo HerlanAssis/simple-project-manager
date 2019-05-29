@@ -94,8 +94,10 @@ class Watcher(BaseModel):
       if created:
         # send email notification for many users
         email_from = settings.EMAIL_HOST_USER        
-        # send_mail("Nova tarefa", message, email_from, emails)
-        #send_mail("Nova tarefa", message, email_from, ['herlanassis@gmail.com'])
+        try:
+          send_mail("Nova tarefa", message, email_from, emails)
+        except Exception as e:
+          pass
 
 
 @python_2_unicode_compatible
