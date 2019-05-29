@@ -1,6 +1,6 @@
 import * as AuthTypes from './types';
 
-const AuthLogin = ({ code, client_id, redirect_uri, token_key }) => {
+const authLogin = ({ code, client_id, redirect_uri, token_key }) => {
     return {
         type: AuthTypes.SAGA_LOGIN,
         params: {
@@ -9,7 +9,7 @@ const AuthLogin = ({ code, client_id, redirect_uri, token_key }) => {
     }
 };
 
-const AuthLogout = ({ token_key }) => {
+const authLogout = ({ token_key }) => {
     return {
         type: AuthTypes.SAGA_LOGOUT,
         params: {
@@ -19,6 +19,6 @@ const AuthLogout = ({ token_key }) => {
 };
 
 export {
-    AuthLogin,
-    AuthLogout,
+    authLogin,
+    authLogout,
 }

@@ -24,14 +24,14 @@ import {
     Commits,
     Page404,
 } from './subpages';
-import { Api } from '../../services';
 
 // * Redux imports *
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { AuthActions } from '../../modules/Authentication';
-import { KEYS } from '../../constants';
+import { UserActions } from '../../modules/User';
 // * END Redux imports *
+import { KEYS } from '../../constants';
 
 const {
     Footer, Sider,
@@ -85,25 +85,8 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        this.getLimits();
-    }
-
-    getLimits() {
-        // Api.BackendServer.get('pm/user/').then(response => {
-        //     console.log('USER', response)
-        // });
-
-        Api.BackendServer.get('pm/limits/').then(response => {
-            const rate_limit = response.data;
-            this.setState({
-                rate_limit: parseInt((rate_limit.core.remaining / rate_limit.core.limit) * 100),
-                reset: rate_limit.core.reset,
-            });
-
-            setTimeout(() => {
-                this.getLimits()
-            }, 5000);
-        });
+        this.props.getLimits();
+        this.props.getUser();
     }
 
     getPages(pages) {
@@ -139,6 +122,8 @@ class Dashboard extends React.Component {
         const pages = this.getPages(PAGES);
         pages.push(<Route.Custom key={'page404'} component={Page404} />);
 
+        const { limits } = this.props;
+
         return (
             <Layout style={{ minHeight: '100vh' }}>
                 <Sider
@@ -166,8 +151,8 @@ class Dashboard extends React.Component {
 
                 <Layout style={{ flex: 1 }} >
                     <Header
-                        rate_limit={this.state.rate_limit}
-                        reset={this.state.reset}
+                        rate_limit={parseInt((limits.core.remaining / limits.core.limit) * 100)}
+                        reset={limits.core.reset}
                         logout={this.logout}
                     >
 
@@ -193,15 +178,35 @@ const mapStateToProps = (state) => {
         removeTokenDone,
     } = state.authentication;
 
+    const {
+        requestUserLoading,
+        requestUserDone,
+        user,
+
+        requestLimitsLoading,
+        requestLimitsDone,
+        limits,
+    } = state.user;
+
     return {
         removeTokenLoading,
         removeTokenDone,
+
+        requestUserLoading,
+        requestUserDone,
+        user,
+
+        requestLimitsLoading,
+        requestLimitsDone,
+        limits,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
-        'logout': AuthActions.AuthLogout,
+        'logout': AuthActions.authLogout,
+        'getUser': UserActions.getUser,
+        'getLimits': UserActions.getLimits,
     }, dispatch);
 };
 

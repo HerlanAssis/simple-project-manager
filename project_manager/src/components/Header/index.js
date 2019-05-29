@@ -1,9 +1,9 @@
 import React from 'react';
 
 import {
-  Layout, Menu, Icon, Progress, Button, Modal, Tooltip, Avatar
+  Layout, Menu, Icon, Tooltip, 
 } from 'antd';
-import { KEYS, URLS } from '../../constants';
+import { URLS } from '../../constants';
 
 import {
   NoticeIcon, HeaderDropdown

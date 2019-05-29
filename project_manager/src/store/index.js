@@ -12,7 +12,6 @@ const LogMiddleware = ({ dispatch, getState }) => next => (action) => {
 	return next(action);
 };
 
-
 const store = createStore(reducers, applyMiddleware(sagaMiddleware, LogMiddleware));
 
 sagaMiddleware.run(rootSaga);
