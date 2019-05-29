@@ -1,7 +1,7 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from ..models import TaskManager, Task, Note, Release
-from apps.core.schema.input import UserInput
+from apps.core.graphql.input import UserInput
 
 class TaskManagerInput(graphene.InputObjectType):
   project_name = graphene.String()
