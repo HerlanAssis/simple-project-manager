@@ -14,4 +14,3 @@ django-debug-toolbar==1.11
 PyGithub==1.43.5
 django-multiselectfield==0.1.8
 python-telegram-bot==11.1.0
-# supervisor==4.0.2

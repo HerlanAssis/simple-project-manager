@@ -54,9 +54,62 @@ function* removeToken({ params }) {
     }
 }
 
+function* getUser({ params }) {
+
+    yield put({
+        type: AuthTypes.REQUEST_USER_LOADING,
+        payload: {}
+    });
+
+    try {
+        const response = yield call(Api.BackendServer.get, 'pm/user/', params);
+
+        yield put({
+            type: AuthTypes.REQUEST_USER_SUCCESS,
+            payload: {
+                user: response.data,
+            }
+        });
+
+    } catch (error) {
+        yield put({
+            type: AuthTypes.REQUEST_USER_ERROR,
+            payload: {}
+        });
+    }
+};
+
+function* getLimits({ params }) {
+
+    yield put({
+        type: AuthTypes.REQUEST_LIMITS_LOADING,
+        payload: {}
+    });
+
+    try {
+        const response = yield call(Api.BackendServer.get, 'pm/limits/', params);        
+
+        yield put({
+            type: AuthTypes.REQUEST_LIMITS_SUCCESS,
+            payload: {
+                limits: response.data,
+            }
+        });
+
+    } catch (error) {
+        yield put({
+            type: AuthTypes.REQUEST_LIMITS_ERROR,
+            payload: {}
+        });
+    }
+};
+
 const saga = [
     takeEvery(AuthTypes.SAGA_LOGIN, getToken),
     takeEvery(AuthTypes.SAGA_LOGOUT, removeToken),
+
+    takeEvery(AuthTypes.SAGA_USER, getUser),
+    takeEvery(AuthTypes.SAGA_LIMITS, getLimits),
 ]
 
 export default saga;

@@ -1,9 +1,10 @@
 import React from 'react';
 
 import {
-  Layout, Menu, Icon, Tooltip, 
+  Layout, Menu, Icon, Tooltip, Modal,
 } from 'antd';
-import { URLS } from '../../constants';
+
+import { URLS, KEYS } from '../../constants';
 
 import {
   NoticeIcon, HeaderDropdown
@@ -11,18 +12,53 @@ import {
 
 import moment from 'moment';
 
+// * Redux imports *
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { AuthActions } from '../../modules/Authentication';
+// * END Redux imports *
+
 const {
   Header,
 } = Layout;
 
+const confirm = Modal.confirm;
+
+
 class CustomHeader extends React.Component {
 
-  render() {
+  constructor(props){
+    super(props);
 
-    const { rate_limit, reset, logout } = this.props;
+    this.logout = this.logout.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.getLimits();
+    this.props.getUser();
+  }
+
+  logout() {
+    confirm({
+      title: 'Sair do sistema?',
+      content: 'Ao sair do sistema sua sessão será encerrada.',
+      okText: 'Sair',
+      cancelText: 'Cancelar',
+      onOk: () => {
+        this.props.logout({ token_key: KEYS.TOKEN_KEY });
+      },
+      onCancel: () => { },
+    });
+  }
+
+  render() {
+    const { limits } = this.props;
+
+    const rate_limit = parseInt((limits.core.remaining / limits.core.limit) * 100);
+    const reset = limits.core.reset;
 
     const menu = (
-      <Menu selectedKeys={[]} onClick={logout}>
+      <Menu selectedKeys={[]} onClick={this.logout}>
         <Menu.Item key="logout">
           <Icon type="logout" />
           Logout
@@ -104,27 +140,49 @@ class CustomHeader extends React.Component {
 
           <div style={{ marginRight: 20 }}>
             <HeaderDropdown overlay={menu}>
-              <span>{"HERLAN"}</span>
+              <span>{this.props.user.username}</span>
             </HeaderDropdown>
           </div>
-
         </div>
-
-        {/* <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
-            <div style={{ flex: 1 }}>
-            </div>
-
-            
-
-        </div> */}
-
-        {/* <div>
-          
-
-        </div> */}
-      </Header>
+      </Header >
     )
   }
 }
 
-export default CustomHeader;
+const mapStateToProps = (state) => {
+  const {
+    removeTokenLoading,
+    removeTokenDone,
+
+    requestUserLoading,
+    requestUserDone,
+    user,
+
+    requestLimitsLoading,
+    requestLimitsDone,
+    limits,
+  } = state.authentication;
+
+  return {
+    removeTokenLoading,
+    removeTokenDone,
+
+    requestUserLoading,
+    requestUserDone,
+    user,
+
+    requestLimitsLoading,
+    requestLimitsDone,
+    limits,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({
+    'logout': AuthActions.authLogout,
+    'getUser': AuthActions.getUser,
+    'getLimits': AuthActions.getLimits,
+  }, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CustomHeader);

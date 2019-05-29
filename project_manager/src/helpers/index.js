@@ -1,4 +1,4 @@
-import * as AxiosGraphqlBuilder from './axios-graphql-formatter';
+import * as AxiosGraphqlBuilder from './axios_graphql_builder';
 
 export {
     AxiosGraphqlBuilder,

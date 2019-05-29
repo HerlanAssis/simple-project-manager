@@ -18,7 +18,22 @@ const authLogout = ({ token_key }) => {
     }
 };
 
+const getUser = () => {
+    return {
+        type: AuthTypes.SAGA_USER,
+    }
+};
+
+const getLimits = () => {
+    return {
+        type: AuthTypes.SAGA_LIMITS,
+    }
+};
+
 export {
     authLogin,
     authLogout,
+    
+    getUser,
+    getLimits,
 }

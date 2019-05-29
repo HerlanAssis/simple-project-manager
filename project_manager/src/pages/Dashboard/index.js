@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-    Layout, Menu, Icon, Modal
+    Layout, Menu, Icon
 } from 'antd';
 
 import {
@@ -28,16 +28,12 @@ import {
 // * Redux imports *
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { AuthActions } from '../../modules/Authentication';
-import { UserActions } from '../../modules/User';
+// import { AuthActions } from '../../modules/Authentication';
 // * END Redux imports *
-import { KEYS } from '../../constants';
 
 const {
     Footer, Sider,
 } = Layout;
-
-const confirm = Modal.confirm;
 
 const PAGES = [
     { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
@@ -81,12 +77,6 @@ class Dashboard extends React.Component {
             rate_limit: 0,
             reset: new Date().getTime(),
         };
-        this.logout = this.logout.bind(this);
-    }
-
-    componentDidMount() {
-        this.props.getLimits();
-        this.props.getUser();
     }
 
     getPages(pages) {
@@ -105,24 +95,9 @@ class Dashboard extends React.Component {
         return builded_pages;
     }
 
-    logout() {
-        confirm({
-            title: 'Sair do sistema?',
-            content: 'Ao sair do sistema sua sessão será encerrada.',
-            okText: 'Sair',
-            cancelText: 'Cancelar',
-            onOk: () => {
-                this.props.logout({ token_key: KEYS.TOKEN_KEY });
-            },
-            onCancel: () => { },
-        });
-    }
-
     render() {
         const pages = this.getPages(PAGES);
         pages.push(<Route.Custom key={'page404'} component={Page404} />);
-
-        const { limits } = this.props;
 
         return (
             <Layout style={{ minHeight: '100vh' }}>
@@ -150,11 +125,7 @@ class Dashboard extends React.Component {
                 </Sider>
 
                 <Layout style={{ flex: 1 }} >
-                    <Header
-                        rate_limit={parseInt((limits.core.remaining / limits.core.limit) * 100)}
-                        reset={limits.core.reset}
-                        logout={this.logout}
-                    >
+                    <Header >
 
                     </Header>
 
@@ -174,39 +145,16 @@ class Dashboard extends React.Component {
 
 const mapStateToProps = (state) => {
     const {
-        removeTokenLoading,
-        removeTokenDone,
+        
     } = state.authentication;
 
-    const {
-        requestUserLoading,
-        requestUserDone,
-        user,
-
-        requestLimitsLoading,
-        requestLimitsDone,
-        limits,
-    } = state.user;
-
     return {
-        removeTokenLoading,
-        removeTokenDone,
-
-        requestUserLoading,
-        requestUserDone,
-        user,
-
-        requestLimitsLoading,
-        requestLimitsDone,
-        limits,
+        
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({
-        'logout': AuthActions.authLogout,
-        'getUser': UserActions.getUser,
-        'getLimits': UserActions.getLimits,
+    return bindActionCreators({    
     }, dispatch);
 };
 

@@ -1,9 +1,9 @@
 import { AuthSaga } from '../modules/Authentication';
-import { UserSaga } from '../modules/User';
+import { TasksSaga } from '../modules/Tasks';
 
 export default function* root() {
     yield [
         ...AuthSaga,
-        ...UserSaga,
+        ...TasksSaga
     ];
 };

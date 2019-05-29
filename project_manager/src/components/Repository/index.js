@@ -3,7 +3,10 @@ import { Icon, Popconfirm, Button } from 'antd';
 import { Charts } from 'ant-design-pro';
 import { Api } from '../../services';
 import moment from 'moment';
-
+// * Redux imports *
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { TasksActions } from '../../modules/Tasks';
 
 const visitData = [];
 const beginDay = new Date().getTime();
@@ -14,8 +17,6 @@ for (let i = 0; i < 50; i += 1) {
         y: Math.floor(random * 100) + 10,
     });
 }
-
-
 
 class Repository extends React.Component {
     popconfirmPropsForAddMonitoring() {
@@ -67,7 +68,9 @@ class Repository extends React.Component {
                     </div>
 
                     <div style={{ display: 'flex', flex: 3, alignItems: 'center', justifyContent: 'flex-end' }}>
-                        <Button type="primary" size="large" icon="line-chart"> 
+                        <Button onClick={() => this.props.getTaskManager({
+                            projectId: repo.id,
+                        })} type="primary" size="large" icon="line-chart">
                             Gerenciar Tarefas
                         </Button>
                     </div>
@@ -120,4 +123,29 @@ class Repository extends React.Component {
     };
 }
 
-export default Repository;
+
+const mapStateToProps = (state) => {
+    const {
+        requestTaskManagerDone,
+        requestTaskManagerLoading,
+        createTaskManagerDone,
+        createTaskManagerLoading,
+        taskManager,
+    } = state.tasks;
+
+    return {
+        requestTaskManagerDone,
+        requestTaskManagerLoading,
+        createTaskManagerDone,
+        createTaskManagerLoading,
+        taskManager,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({
+        'getTaskManager': TasksActions.getTaskManager
+    }, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Repository);
