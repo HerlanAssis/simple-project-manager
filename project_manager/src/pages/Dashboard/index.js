@@ -1,14 +1,15 @@
 import React from 'react';
 
 import {
-    Layout, Menu, Icon, Progress
+    Layout, Menu, Icon, Modal
 } from 'antd';
+
 import {
     Switch,
 } from 'react-router-dom'
 
 import './styles.css';
-import { Route } from '../../components';
+import { Route, Header } from '../../components';
 import {
     Home,
     Pesquisar,
@@ -23,13 +24,20 @@ import {
     Commits,
     Page404,
 } from './subpages';
-import { Api } from '../../services';
-import moment from 'moment';
+
+// * Redux imports *
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { AuthActions } from '../../modules/Authentication';
+import { UserActions } from '../../modules/User';
+// * END Redux imports *
+import { KEYS } from '../../constants';
 
 const {
-    Header, Footer, Sider,
+    Footer, Sider,
 } = Layout;
 
+const confirm = Modal.confirm;
 
 const PAGES = [
     { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
@@ -66,32 +74,19 @@ const PAGES = [
 ];
 
 class Dashboard extends React.Component {
-    state = {
-        collapsed: true,
-        rate_limit: 0,
-        reset: new Date().getTime(),
-    };
-
-    componentDidMount() {
-        this.getLimits();
+    constructor(props) {
+        super(props);
+        this.state = {
+            collapsed: true,
+            rate_limit: 0,
+            reset: new Date().getTime(),
+        };
+        this.logout = this.logout.bind(this);
     }
 
-    getLimits() {
-        // Api.BackendServer.get('pm/user/').then(response => {
-        //     console.log('USER', response)
-        // });
-
-        Api.BackendServer.get('pm/limits/').then(response => {
-            const rate_limit = response.data;
-            this.setState({
-                rate_limit: parseInt((rate_limit.core.remaining / rate_limit.core.limit) * 100),
-                reset: rate_limit.core.reset,
-            });
-
-            setTimeout(() => {
-                this.getLimits()
-            }, 5000);
-        });
+    componentDidMount() {
+        this.props.getLimits();
+        this.props.getUser();
     }
 
     getPages(pages) {
@@ -110,9 +105,24 @@ class Dashboard extends React.Component {
         return builded_pages;
     }
 
+    logout() {
+        confirm({
+            title: 'Sair do sistema?',
+            content: 'Ao sair do sistema sua sessão será encerrada.',
+            okText: 'Sair',
+            cancelText: 'Cancelar',
+            onOk: () => {
+                this.props.logout({ token_key: KEYS.TOKEN_KEY });
+            },
+            onCancel: () => { },
+        });
+    }
+
     render() {
         const pages = this.getPages(PAGES);
         pages.push(<Route.Custom key={'page404'} component={Page404} />);
+
+        const { limits } = this.props;
 
         return (
             <Layout style={{ minHeight: '100vh' }}>
@@ -125,7 +135,8 @@ class Dashboard extends React.Component {
                         </div>
                     </div>
 
-                    <Menu theme="dark" defaultSelectedKeys={[this.props.location.pathname]} mode="inline">
+                    <Menu theme="dark" defaultSelectedKeys={[this.props.location.pathname]} mode="vertical">
+
                         {PAGES.map(value => (
                             <Menu.Item
                                 onClick={() => this.props.history.push(value.path)}
@@ -135,23 +146,15 @@ class Dashboard extends React.Component {
                                 <span>{value.name}</span>
                             </Menu.Item>
                         ))}
-
                     </Menu>
                 </Sider>
 
                 <Layout style={{ flex: 1 }} >
-                    <Header style={{ background: '#fff', padding: 10 }}>
-                        <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
-
-                            <div style={{ flex: 1 }}>
-                                <Progress width={100} successPercent={0} percent={this.state.rate_limit} showInfo />
-                            </div>
-
-                            <div style={{ width: 'auto', marginLeft: 10, textAlign: 'center' }}>
-                                <p>Atualiza {moment.unix(this.state.reset).fromNow()}</p>
-                            </div>
-
-                        </div>
+                    <Header
+                        rate_limit={parseInt((limits.core.remaining / limits.core.limit) * 100)}
+                        reset={limits.core.reset}
+                        logout={this.logout}
+                    >
 
                     </Header>
 
@@ -169,4 +172,42 @@ class Dashboard extends React.Component {
     }
 }
 
-export default Dashboard;
+const mapStateToProps = (state) => {
+    const {
+        removeTokenLoading,
+        removeTokenDone,
+    } = state.authentication;
+
+    const {
+        requestUserLoading,
+        requestUserDone,
+        user,
+
+        requestLimitsLoading,
+        requestLimitsDone,
+        limits,
+    } = state.user;
+
+    return {
+        removeTokenLoading,
+        removeTokenDone,
+
+        requestUserLoading,
+        requestUserDone,
+        user,
+
+        requestLimitsLoading,
+        requestLimitsDone,
+        limits,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({
+        'logout': AuthActions.authLogout,
+        'getUser': UserActions.getUser,
+        'getLimits': UserActions.getLimits,
+    }, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

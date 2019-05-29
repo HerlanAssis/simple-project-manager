@@ -2,8 +2,13 @@ import React from 'react';
 import { Button } from 'antd';
 import uuid from 'uuid';
 import { URLS, KEYS } from '../../constants';
-import { Api } from '../../services';
 import { Page } from '../../components';
+
+// * Redux imports *
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { AuthActions } from '../../modules/Authentication';
+// * END Redux imports *
 
 class Login extends React.Component {
     constructor(props) {
@@ -19,6 +24,14 @@ class Login extends React.Component {
             this.signinUser();
         } else {
             this.makeQuery();
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.requestTokenDone) {
+            // and redirects
+            this.setState({ loading: false });
+            nextProps.history.push('/');
         }
     }
 
@@ -47,18 +60,12 @@ class Login extends React.Component {
         const localState = window.localStorage.getItem(KEYS.STATE_KEY);
 
         if (state && state === localState) {
-            Api.BackendServer.post('login/social/token_user/github/', {
+            this.props.login({
                 code,
                 client_id: KEYS.CLIENT_ID,
                 redirect_uri: URLS.GITHUB_REDIRECT_URL,
-            }).then(response => {
-                const token = `Token ${response.data.token}`
-                Api.BackendServer.defaults.headers.Authorization = token;
-                window.localStorage.setItem(KEYS.TOKEN_KEY, token);
-                // and redirects
-                this.setState({ loading: false });
-                this.props.history.push('/');
-            })
+                token_key: KEYS.TOKEN_KEY,
+            });
         } else { // ocorreu algum erro
             console.log("A ERRO FROM DIRETENS STATES");
             this.setState({ loading: false });
@@ -76,4 +83,22 @@ class Login extends React.Component {
 
 }
 
-export default Login;
+const mapStateToProps = (state) => {
+    const {
+        requestTokenDone,
+        requestTokenLoading,
+    } = state.authentication;
+
+    return {
+        requestTokenDone,
+        requestTokenLoading,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({
+        'login': AuthActions.authLogin,
+    }, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
