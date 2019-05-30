@@ -70,6 +70,7 @@ class Repository extends React.Component {
                     <div style={{ display: 'flex', flex: 3, alignItems: 'center', justifyContent: 'flex-end' }}>
                         <Button onClick={() => this.props.getTaskManager({
                             projectId: repo.id,
+                            owner: repo.is_owner,
                         })} type="primary" size="large" icon="line-chart">
                             Gerenciar Tarefas
                         </Button>

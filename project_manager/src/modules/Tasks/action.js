@@ -1,10 +1,10 @@
 import * as TasksTypes from './types';
 
-const getTaskManager = ({ id, projectId, invitationCode }) => {
+const getTaskManager = ({ id, projectId, invitationCode, owner }) => {
     return {
         type: TasksTypes.SAGA_TASK_MANAGER,
         params: {
-            id, projectId: String(projectId), invitationCode,
+            id, projectId: projectId, invitationCode, owner
         }
     }
 };
