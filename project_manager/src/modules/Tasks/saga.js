@@ -4,8 +4,8 @@ import * as TaskManagerTypes from './types';
 import { AxiosGraphqlBuilder } from '../../helpers';
 
 const user_selection_set_query = `{id username}`;
-const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate responsible${user_selection_set_query}}`;
-const taskManager_selection_set_query = `{id projectName invitationCode tasks${task_selection_set_query}}`;
+const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate`;
+const taskManager_selection_set_query = `{id}`;
 
 function* getTaskManager({ params }) {
 
@@ -15,20 +15,18 @@ function* getTaskManager({ params }) {
     });
 
     // const body = {
-    //     query: `{
-    //         taskmanager(id: 1){
-    //         id
-    //       }
-    //     }`
+    //     query: `{taskmanager(id: 1){id}}`
     // };
+
+    const body = AxiosGraphqlBuilder.query({
+        operation_name: 'taskmanager',
+        variable_definitions: params,
+        selection_set_query: taskManager_selection_set_query
+    })
 
     try {
         const response = yield call(Api.BackendServer.post,
-            'graphql', AxiosGraphqlBuilder.query({
-                operation_name: 'taskmanager',
-                variable_definitions: params,
-                selection_set_query: taskManager_selection_set_query
-            })
+            'graphql', body
         );
 
         yield put({
