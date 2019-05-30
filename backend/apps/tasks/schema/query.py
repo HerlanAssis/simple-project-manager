@@ -7,7 +7,7 @@ from apps.core.utils import get_or_none
 
 class Query(object):
   all_taskmanagers = graphene.List(TaskManagerType)
-  taskmanager = graphene.Field(TaskManagerType, id=graphene.Int(), project_id=graphene.String(), invitation_code=graphene.String())
+  taskmanager = graphene.Field(TaskManagerType, id=graphene.Int(), project_id=graphene.Int(), invitation_code=graphene.String())
 
   all_tasks = graphene.List(TaskType)
   task = graphene.Field(TaskType, id=graphene.Int())
