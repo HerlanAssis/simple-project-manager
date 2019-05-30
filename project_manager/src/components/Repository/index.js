@@ -18,9 +18,34 @@ for (let i = 0; i < 50; i += 1) {
     });
 }
 
+const GerenciarOuVisualizarTarefas = ({ repo, match, history }) => {
+    if (repo.is_owner) {
+        return (
+            <Button onClick={() => {
+                history.push({
+                    pathname: `${match.url}/${repo.name}/taskmanager/`,
+                    state: { repo }
+                })
+            }} type="primary" size="large" icon="line-chart">
+                Gerenciar Tarefas
+            </Button>
+        )
+    }
+
+    return (
+        <Button onClick={() => {
+            history.push({
+                pathname: `${match.url}/${repo.name}/tasks/`,
+                state: { repo }
+            })
+        }} type="primary" size="large" icon="line-chart">
+            Visualizar Tarefas
+        </Button>
+    )
+}
+
 class Repository extends React.Component {
     popconfirmPropsForAddMonitoring() {
-
         return (
             {
                 title: 'Ativar monitoramento?',
@@ -67,13 +92,8 @@ class Repository extends React.Component {
                         <p className='one-line'>{repo.name}</p>
                     </div>
 
-                    <div style={{ display: 'flex', flex: 3, alignItems: 'center', justifyContent: 'flex-end' }}>
-                        <Button onClick={() => this.props.getTaskManager({
-                            projectId: repo.id,
-                            owner: repo.is_owner,
-                        })} type="primary" size="large" icon="line-chart">
-                            Gerenciar Tarefas
-                        </Button>
+                    <div style={{ display: 'flex', flex: 3, alignItems: 'center', justifyContent: 'flex-end' }}>                        
+                        <GerenciarOuVisualizarTarefas repo={repo} match={match} history={history} />
                     </div>
 
                 </div>

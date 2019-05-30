@@ -4,8 +4,8 @@ import * as TaskManagerTypes from './types';
 import { AxiosGraphqlBuilder } from '../../helpers';
 
 const user_selection_set_query = `{id username}`;
-const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate`;
-const taskManager_selection_set_query = `{id}`;
+const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate}`;
+const taskManager_selection_set_query = `{id tasks${task_selection_set_query}}`;
 
 function* getTaskManager({ params }) {
 
@@ -28,7 +28,7 @@ function* getTaskManager({ params }) {
         yield put({
             type: TaskManagerTypes.REQUEST_TASKMANAGER_SUCCESS,
             payload: {
-                taskManager: response.data,
+                taskManager: response.data.data,
             }
         });
 

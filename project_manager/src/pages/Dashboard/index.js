@@ -23,6 +23,8 @@ import {
     Laboratorio,
     Commits,
     Page404,
+    TarefasPorProjeto,
+    GerenciarTarefasPorProjeto
 } from './subpages';
 
 // * Redux imports *
@@ -35,31 +37,27 @@ const {
     Footer, Sider,
 } = Layout;
 
+const repository_sub_componentes = (fatherPath) => ([
+    // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
+    { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
+    { key: 'Colaboradores', path: `${fatherPath}/:projectname/colaboradores/`, component: Colaboradores },
+    { key: 'GerenciarTarejasProProjeto', path: `${fatherPath}/:projectname/taskmanager/`, component: GerenciarTarefasPorProjeto },
+    { key: 'TarejasProProjeto', path: `${fatherPath}/:projectname/tasks/`, component: TarefasPorProjeto },
+]);
+
 const PAGES = [
     { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
     {
         iconName: 'search', name: 'Pesquisar', path: '/pesquisar', component: Pesquisar,
-        subcomponents: (fatherPath) => [
-            // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
-            { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
-            { key: 'Colaboradores', path: `${fatherPath}/:projectname/colaboradores/`, component: Colaboradores },
-        ],
+        subcomponents: (fatherPath) => repository_sub_componentes(fatherPath),
     },
     {
         iconName: 'star', name: 'Projetos Assistidos', path: '/monitorando', component: ProjetosAssistidos,
-        subcomponents: (fatherPath) => [
-            // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
-            { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
-            { key: 'Colaboradores', path: `${fatherPath}/:projectname/colaboradores/`, component: Colaboradores },
-        ],
+        subcomponents: (fatherPath) => repository_sub_componentes(fatherPath),
     },
     {
         iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos,
-        subcomponents: (fatherPath) => [
-            // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
-            { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
-            { key: 'Colaboradores', path: `${fatherPath}/:projectname/colaboradores/`, component: Colaboradores },
-        ],
+        subcomponents: (fatherPath) => repository_sub_componentes(fatherPath),
     },
     { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
     { iconName: 'calendar', name: 'Agenda', path: '/agenda', component: Agenda },
@@ -145,16 +143,16 @@ class Dashboard extends React.Component {
 
 const mapStateToProps = (state) => {
     const {
-        
+
     } = state.authentication;
 
     return {
-        
+
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({    
+    return bindActionCreators({
     }, dispatch);
 };
 

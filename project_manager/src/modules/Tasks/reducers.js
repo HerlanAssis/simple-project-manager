@@ -5,7 +5,7 @@ const DEFAULT_STATE = {
     requestTaskManagerLoading: false,
     createTaskManagerDone: false,
     createTaskManagerLoading: false,
-    taskManager: {},
+    taskmanager: {},
 };
 
 const AuthReducer = (state = DEFAULT_STATE, action) => {
@@ -22,7 +22,7 @@ const AuthReducer = (state = DEFAULT_STATE, action) => {
                 ...state,
                 requestTaskManagerDone: true,
                 requestTaskManagerLoading: false,
-                taskManager: action.payload.taskManager,
+                taskmanager: action.payload.taskmanager,
             };
         case TaskManagerTypes.REQUEST_TASKMANAGER_ERROR:
             return {
@@ -44,7 +44,7 @@ const AuthReducer = (state = DEFAULT_STATE, action) => {
                 ...state,
                 createTaskManagerDone: true,
                 createTaskManagerLoading: false,
-                taskManager: action.payload.taskManager,
+                taskmanager: action.payload.taskmanager,
             };
         case TaskManagerTypes.CREATE_TASKMANAGER_ERROR:
             return {
@@ -52,7 +52,7 @@ const AuthReducer = (state = DEFAULT_STATE, action) => {
                 createTaskManagerDone: false,
                 createTaskManagerLoading: false,
             };
-        /**  CREATE TASK MANAGER */        
+        /**  CREATE TASK MANAGER */
 
         default:
             return state;
