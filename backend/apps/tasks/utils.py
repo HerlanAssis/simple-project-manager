@@ -1,9 +1,9 @@
 from apps.core.utils import get_or_none
-from github import github
+from github import Github
 
 def get_or_create_taskmanager(classmodel, **kwargs):
   taskmanager = get_or_none(classmodel, **kwargs)
-  
+
   if taskmanager is not None:
     return taskmanager    
 
@@ -12,12 +12,13 @@ def get_or_create_taskmanager(classmodel, **kwargs):
     access_token = kwargs['owner'].social_auth.get(
       provider='github').extra_data['access_token']
     github_instance = Github(login_or_token=access_token)
+    user = github_instance.get_user()
     repo = github_instance.get_repo(kwargs['project_id'])
-    if repo and repo.owner.id == kwargs['owner'].id:
-      return classmodel(project_id=kwargs['project_id']).save()
+    if repo and repo.owner.id == user.id:
+      taskmanager = classmodel(**kwargs)
+      taskmanager.save()
   except Exception as e:
-    print("ERRO DONO-{}".format(e))
     pass
   
-  return None
+  return taskmanager
   # segue o fluxo...

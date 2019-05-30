@@ -31,7 +31,7 @@ class Query(object):
       return get_or_none(TaskManager, pk=id, owner=info.context.user)      
 
     if project_id is not None: # caso o usuário envie o project_id ele pode criar o projecto
-      if(owner)
+      if owner:
         return get_or_create_taskmanager(TaskManager, project_id=project_id, owner=info.context.user)
       else:
         get_or_none(TaskManager, project_id=project_id, owner=info.context.user)
