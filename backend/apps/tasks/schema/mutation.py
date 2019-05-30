@@ -71,6 +71,7 @@ class CreateTask(graphene.Mutation):
           status=input.status,
           title=input.title,
           description=input.description,
+          expected_date=input.expected_date,
           owner=info.context.user,
           task_manager=taskmanager_instance,
         )
@@ -107,6 +108,7 @@ class UpdateTask(graphene.Mutation):
         task_instance.status=input.status
         task_instance.title=input.title
         task_instance.description=input.description
+        task_instance.expected_date=input.expected_date
         
         if responsible and context_user_is_the_task_owner:
           task_instance.responsible=responsible
@@ -118,7 +120,7 @@ class UpdateTask(graphene.Mutation):
 class CreateRelease(graphene.Mutation):
   class Arguments:
     taskmanager_id = graphene.Int(required=True)    
-    input = TaskInput(required=True)
+    input = ReleaseInput(required=True)
 
   ok = graphene.Boolean()
   release = graphene.Field(ReleaseType)
@@ -135,7 +137,8 @@ class CreateRelease(graphene.Mutation):
           completed_on=input.completed_on,
           is_final_release=input.is_final_release,
           title=input.title,
-          description=info.description.user,
+          closed=input.closed,
+          description=input.description,
           task_manager=taskmanager_instance,
         )
         release_instance.save()
