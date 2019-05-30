@@ -10,7 +10,7 @@ from django.utils.encoding import python_2_unicode_compatible
 @python_2_unicode_compatible
 class TaskManager(BaseModel):
     project_name = models.CharField(max_length=256)
-    project_id = models.CharField(max_length=256, unique=True, editable=False)
+    project_id = models.BigIntegerField(unique=True, editable=False)
     owner = models.ForeignKey(
         User, related_name="managed_tasks", on_delete=models.CASCADE)
     invitation_code = models.CharField(

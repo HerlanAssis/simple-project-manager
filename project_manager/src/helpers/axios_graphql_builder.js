@@ -15,7 +15,6 @@ const format_variable_definitions = (params) => {
                         break;
                     default:
                         variable_definitions = `${variable_definitions}${key}:${value},`
-
                 }
             }
         });

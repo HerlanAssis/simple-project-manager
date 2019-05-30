@@ -14,10 +14,6 @@ function* getTaskManager({ params }) {
         payload: {}
     });
 
-    // const body = {
-    //     query: `{taskmanager(id: 1){id}}`
-    // };
-
     const body = AxiosGraphqlBuilder.query({
         operation_name: 'taskmanager',
         variable_definitions: params,

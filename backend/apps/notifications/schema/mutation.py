@@ -37,7 +37,7 @@ class CreateWatcherAsGuest(graphene.Mutation):
 
 class CreateWatcherAsContributor(graphene.Mutation):
     class Arguments:
-        project_id = graphene.String(required=True)
+        project_id = graphene.Int(required=True)
         reponame = graphene.String(required=True)
 
     ok = graphene.Boolean()

@@ -5,7 +5,7 @@ from apps.core.graphql.input import UserInput
 
 class TaskManagerInput(graphene.InputObjectType):
   project_name = graphene.String()
-  project_id = graphene.String()
+  project_id = graphene.Int()
 
 class TaskInput(graphene.InputObjectType):
   title = graphene.String()
