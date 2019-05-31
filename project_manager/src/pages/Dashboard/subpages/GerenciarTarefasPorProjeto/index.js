@@ -126,7 +126,6 @@ class GerenciarTarefasPorProjeto extends React.Component {
 
 
                 <Divider />
-
                 <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                     <Card>
                         <Statistic title="Tarefas abertas" value={taskmanager.qtdOpenTasks} />
@@ -148,6 +147,8 @@ class GerenciarTarefasPorProjeto extends React.Component {
                         <Statistic title="Tarefas bloqueadas" value={taskmanager.qtdBlockedTasks} />
                     </Card>
                 </div>
+                <Divider />
+
 
                 <div style={{ display: 'flex', }}>
                     {/* <Table dataSource={[]} columns={columns} /> */}

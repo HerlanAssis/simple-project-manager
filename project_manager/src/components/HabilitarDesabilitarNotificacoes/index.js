@@ -8,14 +8,15 @@ import { NotificationsActions } from '../../modules/Notifications';
 // * END Redux imports *
 
 const NOTIFICATIONS = {
-  TELEGRAM: 'Telegram',
-  EMAIL: 'Email',
+  TELEGRAM: 'TELEGRAM',
+  EMAIL: 'EMAIL',
 };
 
 class HabilitarDesabilitarNotificacoes extends React.Component {
   notificationTypeEnable = (type) => {
     if (this.props.watcher && this.props.watcher.notification) {
-      return this.props.watcher.notification.includes(type)
+      const notification = this.props.watcher.notification.toUpperCase();
+      return notification.includes(type.toUpperCase())
     }
 
     return false;
@@ -27,11 +28,11 @@ class HabilitarDesabilitarNotificacoes extends React.Component {
     const notificationArray = [];
 
     if (telegram) {
-      notificationArray.push('TELEGRAM')
+      notificationArray.push(NOTIFICATIONS.TELEGRAM)
     }
 
     if (email) {
-      notificationArray.push('EMAIL')
+      notificationArray.push(NOTIFICATIONS.EMAIL)
     }
 
     this.props.updateWatcher({
@@ -41,15 +42,13 @@ class HabilitarDesabilitarNotificacoes extends React.Component {
   }
 
   render() {
-    const { repo } = this.props;
-
     const telegramHabilidado = this.notificationTypeEnable(NOTIFICATIONS.TELEGRAM);
     const emailHabilidado = this.notificationTypeEnable(NOTIFICATIONS.EMAIL);
 
     return (
       <div style={{ display: 'flex', height: '25px', alignItems: 'center', justifyContent: 'flex-end' }}>
         <div style={{ display: 'flex', marginLeft: '5px' }}>
-          <Tooltip placement="bottomLeft" title={'Habilitar/Desabilitar notificações por email'}>
+          <Tooltip placement="bottomLeft" title={`${emailHabilidado ? 'Desabilitar' : 'Habilitar'} notificações por email`}>
             <Button
               onClick={() => this.updateNotifications(telegramHabilidado, !emailHabilidado)}
               ghost={!emailHabilidado}
@@ -61,7 +60,7 @@ class HabilitarDesabilitarNotificacoes extends React.Component {
         </div>
 
         <div style={{ display: 'flex', marginLeft: '5px' }}>
-          <Tooltip placement="bottomLeft" title={'Habilitar/Desabilitar notificações por telegram'}>
+          <Tooltip placement="bottomLeft" title={`${telegramHabilidado ? 'Desabilitar' : 'Habilitar'} notificações por telegram`}>
             <Button
               onClick={() => this.updateNotifications(!telegramHabilidado, emailHabilidado)}
               ghost={!telegramHabilidado}

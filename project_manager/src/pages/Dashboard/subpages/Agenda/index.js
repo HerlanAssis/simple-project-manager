@@ -40,10 +40,26 @@ class Agenda extends React.Component {
         );
     }
 
+    monthCellRender(value) {
+        const tarefas = this.props.tasks.filter(item => {
+            return moment(item.createAt).format('MM/YYYY') === moment(value).format('MM/YYYY');
+        });
+
+        return (
+            <div>
+                {tarefas.map(item => (
+                    <p key={item.id}>
+                        <span><Badge status={STATUS[item.status]} text={item.title} /></span>
+                    </p>
+                ))}
+            </div>
+        );
+    }
+
     render() {
         return (
             <Page>
-                <Calendar onPanelChange={this.onPanelChange} dateCellRender={(e) => this.dateCellRender(e)} />
+                <Calendar onPanelChange={this.onPanelChange} dateCellRender={(e) => this.dateCellRender(e)} monthCellRender={(e) => this.monthCellRender(e)} />
             </Page>
         );
     }

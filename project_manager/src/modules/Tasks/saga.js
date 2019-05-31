@@ -67,6 +67,9 @@ function* getTasks({ params }) {
             'graphql', body
         );
 
+
+        console.log("TESPONSE", response)
+
         yield put({
             type: TaskManagerTypes.REQUEST_TASKS_SUCCESS,
             payload: {
