@@ -4,9 +4,10 @@ const OPERATIONS_TYPES = {
 }
 
 const format_variable_definitions = (params) => {
-    if (typeof params === typeof {}) {
-        let variable_definitions = '(';
-
+    console.log("DEUS", Object.keys(params).length > 0);
+    if (typeof params === typeof {} && Object.keys(params).length > 0) {
+        let variable_definitions = '(';        
+        
         Object.entries(params).forEach(([key, value]) => {
             if (key && value) {
                 switch (typeof value) {

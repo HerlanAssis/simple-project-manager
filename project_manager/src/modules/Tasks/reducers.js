@@ -1,30 +1,34 @@
-import * as TaskManagerTypes from './types';
+import * as TasksTypes from './types';
 
 const DEFAULT_STATE = {
     requestTaskManagerDone: false,
     requestTaskManagerLoading: false,
     createTaskManagerDone: false,
     createTaskManagerLoading: false,
-    taskManager: {},
+    taskmanager: {},
+
+    requestTasksDone: false,
+    requestTasksLoading: false,
+    tasks: [],
 };
 
-const AuthReducer = (state = DEFAULT_STATE, action) => {
+const TasksReducer = (state = DEFAULT_STATE, action) => {
     switch (action.type) {
         /**TASK MANAGER REQUEST LOADING */
-        case TaskManagerTypes.REQUEST_TASKMANAGER_LOADING:
+        case TasksTypes.REQUEST_TASKMANAGER_LOADING:
             return {
                 ...state,
                 requestTaskManagerDone: false,
                 requestTaskManagerLoading: true,
             };
-        case TaskManagerTypes.REQUEST_TASKMANAGER_SUCCESS:
+        case TasksTypes.REQUEST_TASKMANAGER_SUCCESS:
             return {
                 ...state,
                 requestTaskManagerDone: true,
                 requestTaskManagerLoading: false,
-                taskManager: action.payload.taskManager,
+                taskmanager: action.payload.taskmanager,
             };
-        case TaskManagerTypes.REQUEST_TASKMANAGER_ERROR:
+        case TasksTypes.REQUEST_TASKMANAGER_ERROR:
             return {
                 ...state,
                 requestTaskManagerDone: false,
@@ -32,31 +36,53 @@ const AuthReducer = (state = DEFAULT_STATE, action) => {
             };
         /** TASK MANAGER REQUEST LOADING */
 
+        /**TASK REQUEST LOADING */
+        case TasksTypes.REQUEST_TASKS_LOADING:
+            return {
+                ...state,
+                requestTasksDone: false,
+                requestTasksLoading: true,
+            };
+        case TasksTypes.REQUEST_TASKS_SUCCESS:
+            return {
+                ...state,
+                requestTasksDone: true,
+                requestTasksLoading: false,
+                tasks: action.payload.tasks,
+            };
+        case TasksTypes.REQUEST_TASKS_ERROR:
+            return {
+                ...state,
+                requestTasksDone: false,
+                requestTasksLoading: false,
+            };
+        /** TASK REQUEST LOADING */
+
         /** CREATE TASK MANAGER */
-        case TaskManagerTypes.CREATE_TASKMANAGER_LOADING:
+        case TasksTypes.CREATE_TASKMANAGER_LOADING:
             return {
                 ...state,
                 createTaskManagerDone: false,
                 createTaskManagerLoading: true,
             };
-        case TaskManagerTypes.CREATE_TASKMANAGER_SUCCESS:
+        case TasksTypes.CREATE_TASKMANAGER_SUCCESS:
             return {
                 ...state,
                 createTaskManagerDone: true,
                 createTaskManagerLoading: false,
-                taskManager: action.payload.taskManager,
+                taskmanager: action.payload.taskmanager,
             };
-        case TaskManagerTypes.CREATE_TASKMANAGER_ERROR:
+        case TasksTypes.CREATE_TASKMANAGER_ERROR:
             return {
                 ...state,
                 createTaskManagerDone: false,
                 createTaskManagerLoading: false,
             };
-        /**  CREATE TASK MANAGER */        
+        /**  CREATE TASK MANAGER */
 
         default:
             return state;
     }
 };
 
-export default AuthReducer;
+export default TasksReducer;
