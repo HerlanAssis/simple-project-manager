@@ -5,6 +5,19 @@ from django.dispatch import receiver
 from apps.core.models import BaseModel
 from apps.core.utils import HASH_MAX_LENGTH, create_hash, truncate, sendMail
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils import timezone
+
+
+TODO = 'TODO'
+    DOING = 'DOING'
+    BLOCKED = 'BLOCKED'
+    DONE = 'DONE'
+    PROGRESS = (
+        (TODO, 'To Do'),
+        (DOING, 'Doing'),
+        (BLOCKED, 'Blocked'),
+        (DONE, 'Done'),
+    )
 
 
 @python_2_unicode_compatible
@@ -18,6 +31,22 @@ class TaskManager(BaseModel):
 
     class Meta:
         unique_together = ['owner', 'project_id']
+
+    @property
+    def qtd_overdue_tasks(self):
+        return self.tasks.exclude(status=TODO).filter(expected_date__gt=timezone.now().date()).count()
+
+    @property
+    def qtd_tasks_completed_late(self):
+        return self.tasks.filter(status=TODO).filter(conclusion_date__gt=timezone.now().date()).count()
+
+    @property
+    def qtd_completed_tasks(self):
+        return self.tasks.filter(status=TODO).filter(conclusion_date__lte=timezone.now().date()).count()
+
+    @property
+    def qtd_open_tasks(self):
+        return self.tasks.exclude(status=TODO).count()
 
     def notify(self, message, **kwargs):
         created = kwargs['created']
@@ -36,16 +65,6 @@ class TaskManager(BaseModel):
 
 @python_2_unicode_compatible
 class Task(BaseModel):
-    TODO = 'TODO'
-    DOING = 'DOING'
-    BLOCKED = 'BLOCKED'
-    DONE = 'DONE'
-    PROGRESS = (
-        (TODO, 'To Do'),
-        (DOING, 'Doing'),
-        (BLOCKED, 'Blocked'),
-        (DONE, 'Done'),
-    )
     status = models.CharField(
         max_length=64,
         choices=PROGRESS,
@@ -60,6 +79,15 @@ class Task(BaseModel):
     responsible = models.ForeignKey(
         User, related_name="responsibilities_tasks", on_delete=models.CASCADE, blank=True)
     expected_date = models.DateField(blank=True)
+    conclusion_date = models.DateField(blank=True, editable=False)
+
+    def save(self, *args, *kwargs):
+        if self.status == TODO:
+            self.conclusion_date = timezone.now().date()
+        else:
+            self.conclusion_date = None
+        task = super(Task, self).save(*args, **kwargs)        
+        return task
 
     # notify_task_manager
     def notify(self, **kwargs):
@@ -101,5 +129,4 @@ class Release(BaseModel):
 # method for updating
 @receiver(post_save, sender=Task)
 def notify(sender, instance, **kwargs):
-    # root: To Do - Trabalho de Conclusão de Curso {'signal': <django.db.models.signals.ModelSignal object at 0x7f04b51be6d8>, 'created': False, 'update_fields': None, 'raw': False, 'using': 'default'}
     instance.notify(**kwargs)
