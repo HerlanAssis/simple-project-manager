@@ -34,19 +34,23 @@ class TaskManager(BaseModel):
 
     @property
     def qtd_overdue_tasks(self):
-        return self.tasks.exclude(status=TODO).filter(expected_date__gt=timezone.now().date()).count()
+        return self.tasks.exclude(status=DONE).filter(expected_date__gt=timezone.now().date()).count()
+
+    @property
+    def qtd_blocked_tasks(self):
+        return self.tasks.filter(status=BLOCKED).count()
 
     @property
     def qtd_tasks_completed_late(self):
-        return self.tasks.filter(status=TODO).filter(conclusion_date__gt=timezone.now().date()).count()
+        return self.tasks.filter(status=DONE).filter(conclusion_date__gt=timezone.now().date()).count()
 
     @property
     def qtd_completed_tasks(self):
-        return self.tasks.filter(status=TODO).filter(conclusion_date__lte=timezone.now().date()).count()
+        return self.tasks.filter(status=DONE).filter(conclusion_date__lte=timezone.now().date()).count()
 
     @property
     def qtd_open_tasks(self):
-        return self.tasks.exclude(status=TODO).count()
+        return self.tasks.exclude(status=DONE).count()
 
     def notify(self, message, **kwargs):
         created = kwargs['created']
