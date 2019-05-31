@@ -32,11 +32,11 @@ class Agenda extends React.Component {
         });
 
         return (
-            <ul className="events">
+            <div>
                 {tarefas.map(item => (
-                    <Badge status={STATUS[item.status]} text={item.title} />
+                    <span key={item.id}><Badge status={STATUS[item.status]} text={item.title} /></span>
                 ))}
-            </ul>
+            </div>
         );
     }
 

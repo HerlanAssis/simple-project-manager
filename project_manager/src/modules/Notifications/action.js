@@ -9,6 +9,16 @@ const getWacher = ({ id, projectId, authorizationCode }) => {
     }
 };
 
+const updateWatcher = ({ id, notification }) => {
+    return {
+        type: TasksTypes.SAGA_UPDATE_WATCHER,
+        params: {
+            id,
+            input: { notification }
+        }
+    }
+};
+
 export {
-    getWacher,
+    getWacher, updateWatcher
 }

@@ -4,7 +4,7 @@ const getTaskManager = ({ id, projectId, invitationCode, owner }) => {
     return {
         type: TasksTypes.SAGA_TASK_MANAGER,
         params: {
-            id, projectId: projectId, invitationCode, owner
+            id, projectId, invitationCode, owner
         }
     }
 };

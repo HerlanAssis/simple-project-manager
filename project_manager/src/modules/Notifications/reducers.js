@@ -2,7 +2,7 @@ import * as NotificationsTypes from './types';
 
 const DEFAULT_STATE = {
     requestWatcherDone: false,
-    requestWatcherLoading: false,    
+    requestWatcherLoading: false,
     watcher: {},
 };
 
@@ -28,7 +28,7 @@ const NotificationsReducer = (state = DEFAULT_STATE, action) => {
                 requestWatcherDone: false,
                 requestWatcherLoading: false,
             };
-        /** TASK MANAGER REQUEST LOADING */       
+        /** TASK MANAGER REQUEST LOADING */
 
         default:
             return state;

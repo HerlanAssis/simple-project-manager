@@ -5,7 +5,16 @@ import { AxiosGraphqlBuilder } from '../../helpers';
 
 const user_selection_set_query = `{id username}`;
 const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate}`;
-const taskManager_selection_set_query = `{id invitationCode tasks${task_selection_set_query}}`;
+const taskManager_selection_set_query = `{
+    id
+    invitationCode
+    qtdOverdueTasks
+    qtdOpenTasks
+    qtdTasksCompletedLate
+    qtdBlockedTasks
+    qtdCompletedTasks
+    tasks${task_selection_set_query}
+}`;
 
 function* getTaskManager({ params }) {
 
@@ -73,34 +82,34 @@ function* getTasks({ params }) {
     }
 };
 
-function* createTaskManager({ params }) {
+// function* createTaskManager({ params }) {
 
-    yield put({
-        type: TaskManagerTypes.CREATE_TASKMANAGER_LOADING,
-        payload: {}
-    });
+//     yield put({
+//         type: TaskManagerTypes.CREATE_TASKMANAGER_LOADING,
+//         payload: {}
+//     });
 
-    try {
-        const response = yield call(Api.BackendServer.post, 'graphql', params);
-        yield put({
-            type: TaskManagerTypes.CREATE_TASKMANAGER_SUCCESS,
-            payload: {
-                taskmanager: response.data.data.taskmanager,
-            }
-        });
+//     try {
+//         const response = yield call(Api.BackendServer.post, 'graphql', params);
+//         yield put({
+//             type: TaskManagerTypes.CREATE_TASKMANAGER_SUCCESS,
+//             payload: {
+//                 taskmanager: response.data.data.taskmanager,
+//             }
+//         });
 
-    } catch (error) {
-        yield put({
-            type: TaskManagerTypes.CREATE_TASKMANAGER_ERROR,
-            payload: {}
-        });
-    }
-};
+//     } catch (error) {
+//         yield put({
+//             type: TaskManagerTypes.CREATE_TASKMANAGER_ERROR,
+//             payload: {}
+//         });
+//     }
+// };
 
 const saga = [
     takeEvery(TaskManagerTypes.SAGA_TASK_MANAGER, getTaskManager),
     takeEvery(TaskManagerTypes.SAGA_TASKS, getTasks),
-    takeEvery(TaskManagerTypes.SAGA_CREATE_TASKMANAGER, createTaskManager),
+    // takeEvery(TaskManagerTypes.SAGA_CREATE_TASKMANAGER, createTaskManager),
 ]
 
 export default saga;

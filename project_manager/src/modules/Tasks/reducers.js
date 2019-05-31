@@ -3,8 +3,8 @@ import * as TasksTypes from './types';
 const DEFAULT_STATE = {
     requestTaskManagerDone: false,
     requestTaskManagerLoading: false,
-    createTaskManagerDone: false,
-    createTaskManagerLoading: false,
+    // createTaskManagerDone: false,
+    // createTaskManagerLoading: false,
     taskmanager: {},
 
     requestTasksDone: false,
@@ -59,25 +59,25 @@ const TasksReducer = (state = DEFAULT_STATE, action) => {
         /** TASK REQUEST LOADING */
 
         /** CREATE TASK MANAGER */
-        case TasksTypes.CREATE_TASKMANAGER_LOADING:
-            return {
-                ...state,
-                createTaskManagerDone: false,
-                createTaskManagerLoading: true,
-            };
-        case TasksTypes.CREATE_TASKMANAGER_SUCCESS:
-            return {
-                ...state,
-                createTaskManagerDone: true,
-                createTaskManagerLoading: false,
-                taskmanager: action.payload.taskmanager,
-            };
-        case TasksTypes.CREATE_TASKMANAGER_ERROR:
-            return {
-                ...state,
-                createTaskManagerDone: false,
-                createTaskManagerLoading: false,
-            };
+        // case TasksTypes.CREATE_TASKMANAGER_LOADING:
+        //     return {
+        //         ...state,
+        //         createTaskManagerDone: false,
+        //         createTaskManagerLoading: true,
+        //     };
+        // case TasksTypes.CREATE_TASKMANAGER_SUCCESS:
+        //     return {
+        //         ...state,
+        //         createTaskManagerDone: true,
+        //         createTaskManagerLoading: false,
+        //         taskmanager: action.payload.taskmanager,
+        //     };
+        // case TasksTypes.CREATE_TASKMANAGER_ERROR:
+        //     return {
+        //         ...state,
+        //         createTaskManagerDone: false,
+        //         createTaskManagerLoading: false,
+        //     };
         /**  CREATE TASK MANAGER */
 
         default:
