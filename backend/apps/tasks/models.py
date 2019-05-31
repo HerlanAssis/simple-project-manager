@@ -9,15 +9,15 @@ from django.utils import timezone
 
 
 TODO = 'TODO'
-    DOING = 'DOING'
-    BLOCKED = 'BLOCKED'
-    DONE = 'DONE'
-    PROGRESS = (
-        (TODO, 'To Do'),
-        (DOING, 'Doing'),
-        (BLOCKED, 'Blocked'),
-        (DONE, 'Done'),
-    )
+DOING = 'DOING'
+BLOCKED = 'BLOCKED'
+DONE = 'DONE'
+PROGRESS = (
+  (TODO, 'To Do'),
+  (DOING, 'Doing'),
+  (BLOCKED, 'Blocked'),
+  (DONE, 'Done'),
+)
 
 
 @python_2_unicode_compatible
@@ -81,7 +81,7 @@ class Task(BaseModel):
     expected_date = models.DateField(blank=True)
     conclusion_date = models.DateField(blank=True, editable=False)
 
-    def save(self, *args, *kwargs):
+    def save(self, *args, **kwargs):
         if self.status == TODO:
             self.conclusion_date = timezone.now().date()
         else:
