@@ -9,12 +9,17 @@ class OwnerType(DjangoObjectType):
 
 
 class TaskManagerType(DjangoObjectType):
+  qtd_overdue_tasks = graphene.Int(source='qtd_overdue_tasks')
+  qtd_tasks_completed_late = graphene.Int(source='qtd_tasks_completed_late')
+  qtd_completed_tasks = graphene.Int(source='qtd_completed_tasks')
+  qtd_open_tasks = graphene.Int(source='qtd_open_tasks')
   class Meta:
     model = TaskManager
 
 
 class TaskType(DjangoObjectType):
   status = graphene.Field(graphene.String, source='status')
+  is_overdue = graphene.Boolean(source='is_overdue')
   class Meta:
     model = Task
 

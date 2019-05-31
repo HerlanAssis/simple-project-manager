@@ -89,6 +89,12 @@ class Task(BaseModel):
         task = super(Task, self).save(*args, **kwargs)        
         return task
 
+    @property
+    def is_overdue(self):
+        if self.expected_date is None:
+            return False
+        return self.expected_date > timezone.now().date()
+
     # notify_task_manager
     def notify(self, **kwargs):
         self.task_manager.notify("{}: {} - {}".format(
