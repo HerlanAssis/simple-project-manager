@@ -16,6 +16,7 @@ def get_or_create_taskmanager(classmodel, **kwargs):
     repo = github_instance.get_repo(kwargs['project_id'])
     if repo and repo.owner.id == user.id:
       taskmanager = classmodel(**kwargs)
+      taskmanager.project_name = repo.name
       taskmanager.save()
   except Exception as e:
     pass

@@ -1,11 +1,16 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from ..models import TaskManager, Task, Note, Release
+from django.contrib.auth.models import User
+
+class OwnerType(DjangoObjectType):  
+  class Meta:
+    model = User
+
 
 class TaskManagerType(DjangoObjectType):
   class Meta:
     model = TaskManager
-    exclude_fields = ('owner')
 
 
 class TaskType(DjangoObjectType):

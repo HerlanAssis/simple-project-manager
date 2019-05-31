@@ -74,6 +74,15 @@ class Watcher(BaseModel):
       return get_or_none(TaskManager, project_id=project_id)
     
     return None
+  
+  @staticmethod
+  def getOrCreateVigilantWatcherBy(project_id = None, user = None):    
+    if project_id and user:
+      vigilant = Watcher.getVigilantBy(project_id = project_id)
+      watcher = vigilant.vigilantes.get_or_create(observer=user, vigilant=vigilant)
+
+      return watcher[0]
+    return None
 
   @staticmethod
   def notify(vigilantes, created, message):
