@@ -7,6 +7,7 @@ import moment from 'moment';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { TasksActions } from '../../../../modules/Tasks';
+import { NotificationsActions } from '../../../../modules/Notifications';
 // * END Redux imports *
 
 
@@ -47,6 +48,10 @@ class GerenciarTarefasPorProjeto extends React.Component {
                 projectId: repo.id,
                 owner: repo.is_owner,
             });
+
+            this.props.getWacher({
+                projectId: repo.id,
+            });
         }
     }
 
@@ -66,6 +71,10 @@ const mapStateToProps = (state) => {
 
     } = state.tasks;
 
+    const {
+
+    } = state.notifications;
+
     return {
 
     };
@@ -74,6 +83,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
         'getTaskManager': TasksActions.getTaskManager,
+        'getWacher': NotificationsActions.getWacher,
     }, dispatch);
 };
 

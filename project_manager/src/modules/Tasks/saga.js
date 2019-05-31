@@ -5,7 +5,7 @@ import { AxiosGraphqlBuilder } from '../../helpers';
 
 const user_selection_set_query = `{id username}`;
 const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate}`;
-const taskManager_selection_set_query = `{id tasks${task_selection_set_query}}`;
+const taskManager_selection_set_query = `{id invitationCode tasks${task_selection_set_query}}`;
 
 function* getTaskManager({ params }) {
 
@@ -28,13 +28,46 @@ function* getTaskManager({ params }) {
         yield put({
             type: TaskManagerTypes.REQUEST_TASKMANAGER_SUCCESS,
             payload: {
-                taskManager: response.data.data,
+                taskmanager: response.data.data.taskmanager,
             }
         });
 
     } catch (error) {
         yield put({
             type: TaskManagerTypes.REQUEST_TASKMANAGER_ERROR,
+            payload: {}
+        });
+    }
+};
+
+function* getTasks({ params }) {
+
+    yield put({
+        type: TaskManagerTypes.REQUEST_TASKS_LOADING,
+        payload: {}
+    });
+
+    const body = AxiosGraphqlBuilder.query({
+        operation_name: 'allTasks',
+        variable_definitions: params,
+        selection_set_query: task_selection_set_query
+    })
+
+    try {
+        const response = yield call(Api.BackendServer.post,
+            'graphql', body
+        );
+
+        yield put({
+            type: TaskManagerTypes.REQUEST_TASKS_SUCCESS,
+            payload: {
+                tasks: response.data.data.allTasks,
+            }
+        });
+
+    } catch (error) {
+        yield put({
+            type: TaskManagerTypes.REQUEST_TASKS_ERROR,
             payload: {}
         });
     }
@@ -52,7 +85,7 @@ function* createTaskManager({ params }) {
         yield put({
             type: TaskManagerTypes.CREATE_TASKMANAGER_SUCCESS,
             payload: {
-                taskManager: response.data,
+                taskmanager: response.data.data.taskmanager,
             }
         });
 
@@ -66,6 +99,7 @@ function* createTaskManager({ params }) {
 
 const saga = [
     takeEvery(TaskManagerTypes.SAGA_TASK_MANAGER, getTaskManager),
+    takeEvery(TaskManagerTypes.SAGA_TASKS, getTasks),
     takeEvery(TaskManagerTypes.SAGA_CREATE_TASKMANAGER, createTaskManager),
 ]
 

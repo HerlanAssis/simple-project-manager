@@ -18,7 +18,15 @@ const createTaskManager = ({ projectName, projectId }) => {
     }
 };
 
+const getTasks = () => {
+    return {
+        type: TasksTypes.SAGA_TASKS,
+        params: {}
+    }
+};
+
 export {
     getTaskManager,
     createTaskManager,
+    getTasks,
 }
