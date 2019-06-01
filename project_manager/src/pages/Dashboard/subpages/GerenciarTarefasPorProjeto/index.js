@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Card, Statistic, Button, Modal, Divider, Tooltip } from 'antd';
-import { Page, HabilitarDesabilitarNotificacoes } from '../../../../components';
+import { Page, HabilitarDesabilitarNotificacoes, CreateOrUpdateTask } from '../../../../components';
 // * Redux imports *
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -8,31 +8,46 @@ import { TasksActions } from '../../../../modules/Tasks';
 import { NotificationsActions } from '../../../../modules/Notifications';
 // * END Redux imports *
 
+import moment from 'moment';
+
 
 import './styles.css';
 import { URLS } from '../../../../constants';
 
-const columns = [{
-    title: 'Commiter',
-    dataIndex: 'commiter',
-}, {
-    title: 'Additions',
-    dataIndex: 'additions',
-},
-{
-    title: 'Deletions',
-    dataIndex: 'deletions',
-},
-{
-    title: 'Churn',
-    dataIndex: 'churn',
-},
-{
-    title: 'Data',
-    dataIndex: 'date',
-
-},
+const columns = [
+    {
+        title: 'Data de Criação',
+        dataIndex: 'createdAt',
+        render: date => moment(date).format('DD/MM/YYYY HH:mm'),
+    }, {
+        title: 'Última modificação',
+        dataIndex: 'updatedAt',
+        render: date => moment(date).format('DD/MM/YYYY HH:mm')
+    }, {
+        title: 'Situação',
+        dataIndex: 'status',
+    },
+    {
+        title: 'Título',
+        dataIndex: 'title',
+    },
+    {
+        title: 'Responsável',
+        dataIndex: 'responsible',
+        render: responsible => responsible.username
+    },
+    {
+        title: 'Data prevista de entrega',
+        dataIndex: 'expectedDate',
+        render: date => moment(date).format('DD/MM/YYYY')
+    },
+    {
+        title: 'Ação',
+        render: () => <a href="javascript:;">Editar</a>
+    },
 ];
+
+
 
 class GerenciarTarefasPorProjeto extends React.Component {
 
@@ -95,22 +110,24 @@ class GerenciarTarefasPorProjeto extends React.Component {
         const { repo } = this.props.location.state;
 
         return (
+
             <Page>
                 {/* <div style={{ display: 'flex', height: '25px', alignItems: 'center', justifyContent: 'flex-end' }}>
 
-                    <div style={{ display: 'flex', marginLeft: '5px' }}>
-                        <Tooltip placement="bottomLeft" title={'Habilitar/Desabilitar notificações por email'}>
-                            <Button type="primary" icon="mail" size={'default'} />
-                        </Tooltip>
-                    </div>
+                <div style={{ display: 'flex', marginLeft: '5px' }}>
+                <Tooltip placement="bottomLeft" title={'Habilitar/Desabilitar notificações por email'}>
+                <Button type="primary" icon="mail" size={'default'} />
+                </Tooltip>
+                </div>
 
-                    <div style={{ display: 'flex', marginLeft: '5px' }}>
-                        <Tooltip placement="bottomLeft" title={'Habilitar/Desabilitar notificações por telegram'}>
-                            <Button type="primary" icon="robot" size={'default'} />
-                        </Tooltip>
-                    </div>
+                <div style={{ display: 'flex', marginLeft: '5px' }}>
+                <Tooltip placement="bottomLeft" title={'Habilitar/Desabilitar notificações por telegram'}>
+                <Button type="primary" icon="robot" size={'default'} />
+                </Tooltip>
+                </div>
                 </div> */}
 
+                <CreateOrUpdateTask ref={'createOrUpdateTask'} vigilantes={this.props.taskmanager.vigilantes} />
                 <HabilitarDesabilitarNotificacoes repo={repo} />
 
 
@@ -150,10 +167,24 @@ class GerenciarTarefasPorProjeto extends React.Component {
                 <Divider />
 
 
-                <div style={{ display: 'flex', }}>
-                    {/* <Table dataSource={[]} columns={columns} /> */}
+                <div style={{ display: 'flex', height: '50px', alignItems: 'center', justifyContent: 'flex-end' }}>
+
+                    <Button onClick={() => this.refs.createOrUpdateTask.openModal()} type="primary" icon="plus" size={'default'} >
+                        Adicionar nova tarefa
+                    </Button>
                 </div>
-            </Page>
+
+                <div>
+                    <Table rowKey="id"
+                        pagination={{
+                            hideOnSinglePage: true,
+                        }}
+                        dataSource={this.props.taskmanager.tasks}
+                        columns={columns}
+                    />
+                </div>
+            </Page >
+
         );
     }
 }

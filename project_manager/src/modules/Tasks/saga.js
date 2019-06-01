@@ -4,7 +4,8 @@ import * as TaskManagerTypes from './types';
 import { AxiosGraphqlBuilder } from '../../helpers';
 
 const user_selection_set_query = `{id username}`;
-const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate}`;
+const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate responsible${user_selection_set_query}}`;
+const vigilantes_selection_set_query = `{id observer${user_selection_set_query}}`
 const taskManager_selection_set_query = `{
     id
     invitationCode
@@ -14,6 +15,7 @@ const taskManager_selection_set_query = `{
     qtdBlockedTasks
     qtdCompletedTasks
     tasks${task_selection_set_query}
+    vigilantes${vigilantes_selection_set_query}
 }`;
 
 function* getTaskManager({ params }) {

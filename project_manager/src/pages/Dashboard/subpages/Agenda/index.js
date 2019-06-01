@@ -28,7 +28,7 @@ class Agenda extends React.Component {
 
     dateCellRender(value) {
         const tarefas = this.props.tasks.filter(item => {
-            return moment(item.createAt).format('DD/MM/YYYY') === moment(value).format('DD/MM/YYYY');
+            return moment(item.expectedDate).format('DD/MM/YYYY') === moment(value).format('DD/MM/YYYY');
         });
 
         return (
@@ -42,7 +42,7 @@ class Agenda extends React.Component {
 
     monthCellRender(value) {
         const tarefas = this.props.tasks.filter(item => {
-            return moment(item.createAt).format('MM/YYYY') === moment(value).format('MM/YYYY');
+            return moment(item.expectedDate).format('MM/YYYY') === moment(value).format('MM/YYYY');
         });
 
         return (
@@ -58,7 +58,7 @@ class Agenda extends React.Component {
 
     render() {
         return (
-            <Page>
+            <Page loading={this.props.requestTasksLoading}>
                 <Calendar onPanelChange={this.onPanelChange} dateCellRender={(e) => this.dateCellRender(e)} monthCellRender={(e) => this.monthCellRender(e)} />
             </Page>
         );
