@@ -108,7 +108,6 @@ class GerenciarTarefasPorProjeto extends React.Component {
     render() {
         const { watcher, taskmanager } = this.props;
         const { repo } = this.props.location.state;
-
         return (
 
             <Page>
@@ -127,7 +126,7 @@ class GerenciarTarefasPorProjeto extends React.Component {
                 </div>
                 </div> */}
 
-                <CreateOrUpdateTask ref={'createOrUpdateTask'} vigilantes={this.props.taskmanager.vigilantes} />
+                <CreateOrUpdateTask ref={'createOrUpdateTask'} />
                 <HabilitarDesabilitarNotificacoes repo={repo} />
 
 

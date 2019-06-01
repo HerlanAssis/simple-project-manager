@@ -25,8 +25,29 @@ const getTasks = () => {
     }
 };
 
+const createTask = ({ responsibleId, taskmanagerId, input }) => {
+    return {
+        type: TasksTypes.SAGA_CREATE_TASK,
+        params: {
+            responsibleId, taskmanagerId, input
+        }
+    }
+}
+
+const updateTask = ({ id, responsibleId, input }) => {
+    return {
+        type: TasksTypes.SAGA_CREATE_TASK,
+        params: {
+            id, responsibleId, input
+        }
+    }
+}
+
+
 export {
     getTaskManager,
     createTaskManager,
     getTasks,
+    createTask,
+    updateTask,
 }
