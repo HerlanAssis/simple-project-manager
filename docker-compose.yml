@@ -71,13 +71,13 @@ services:
       - backend
 
   # Frontend Machines
-  project_manager:
-    build: project_manager/
-    restart: always
-    ports:
-      - "80:80"
-    depends_on:
-      - server      
+  # project_manager:
+  #   build: project_manager/
+  #   restart: always
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - server      
   #client:
   #  build: client/
   #  restart: always    

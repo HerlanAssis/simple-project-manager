@@ -6,6 +6,7 @@ from apps.core.models import BaseModel
 from apps.core.utils import HASH_MAX_LENGTH, create_hash, truncate, sendMail
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
+from django.db.models import F
 
 
 TODO = 'TODO'
@@ -34,7 +35,7 @@ class TaskManager(BaseModel):
 
     @property
     def qtd_overdue_tasks(self):
-        return self.tasks.exclude(status=DONE).filter(expected_date__gt=timezone.now().date()).count()
+        return self.tasks.exclude(status=DONE).filter(expected_date__lt=timezone.now().date()).count()
 
     @property
     def qtd_blocked_tasks(self):
@@ -42,11 +43,11 @@ class TaskManager(BaseModel):
 
     @property
     def qtd_tasks_completed_late(self):
-        return self.tasks.filter(status=DONE).filter(conclusion_date__gt=timezone.now().date()).count()
+        return self.tasks.filter(status=DONE).filter(conclusion_date__gt=F('expected_date')).count()
 
     @property
     def qtd_completed_tasks(self):
-        return self.tasks.filter(status=DONE).filter(conclusion_date__lte=timezone.now().date()).count()
+        return self.tasks.filter(status=DONE).count()
 
     @property
     def qtd_open_tasks(self):

@@ -5,11 +5,21 @@ const DEFAULT_STATE = {
     requestTaskManagerLoading: false,
     // createTaskManagerDone: false,
     // createTaskManagerLoading: false,
-    taskmanager: {},
+    taskmanager: {
+        qtdOpenTasks: 0,
+        qtdCompletedTasks: 0,
+        qtdTasksCompletedLate: 0,
+        qtdOverdueTasks: 0,
+        qtdBlockedTasks: 0,
+        tasks: [],
+    },
 
     requestTasksDone: false,
     requestTasksLoading: false,
     tasks: [],
+
+    createTaskLoading: false,
+    createTaskSuccess: false,
 };
 
 const TasksReducer = (state = DEFAULT_STATE, action) => {
@@ -79,6 +89,27 @@ const TasksReducer = (state = DEFAULT_STATE, action) => {
         //         createTaskManagerLoading: false,
         //     };
         /**  CREATE TASK MANAGER */
+
+        /**TASK MANAGER REQUEST LOADING */
+        case TasksTypes.CREATE_UPDATE_TASK_LOADING:
+            return {
+                ...state,
+                createTaskLoading: true,
+                createTaskSuccess: false,
+            };
+        case TasksTypes.CREATE_UPDATE_TASK_SUCCESS:
+            return {
+                ...state,
+                createTaskLoading: false,
+                createTaskSuccess: true,
+            };
+        case TasksTypes.CREATE_UPDATE_TASK_ERROR:
+            return {
+                ...state,
+                createTaskLoading: false,
+                createTaskSuccess: false,
+            };
+        /** TASK MANAGER REQUEST LOADING */
 
         default:
             return state;

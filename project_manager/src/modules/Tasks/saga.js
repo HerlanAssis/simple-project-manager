@@ -20,6 +20,8 @@ const taskManager_selection_set_query = `{
 
 function* getTaskManager({ params }) {
 
+    console.log("TESTE - getTask", params)
+
     yield put({
         type: TasksTypes.REQUEST_TASKMANAGER_LOADING,
         payload: {}
@@ -111,27 +113,27 @@ function* getTasks({ params }) {
 function* createTask({ params }) {
 
     yield put({
-        type: TasksTypes.CREATE_TASK_LOADING,
+        type: TasksTypes.CREATE_UPDATE_TASK_LOADING,
         payload: {}
     });
 
     const body = AxiosGraphqlBuilder.mutation({
         operation_name: 'createTask',
         variable_definitions: params,
-        selection_set_query: `{id}`
+        selection_set_query: `{ok}`
     })
 
     try {
-        const response = yield call(Api.BackendServer.post,
+        yield call(Api.BackendServer.post,
             'graphql', body
         );
 
         yield put({
-            type: TasksTypes.CREATE_TASK_SUCCESS,            
-            payload: {
-                watcher: response.data.data.updateWatcher.watcher,
-            }
+            type: TasksTypes.CREATE_UPDATE_TASK_SUCCESS,
+            payload: {}
         });
+
+        // yield call(getTaskManager, { params: { id: params.taskmanagerId } });
 
     } catch (error) {
         yield put({
@@ -142,42 +144,44 @@ function* createTask({ params }) {
 };
 
 
-// function* updateTask({ params }) {
+function* updateTask({ params }) {
 
-//     yield put({
-//         type: WatcherTypes.REQUEST_WATCHER_LOADING,
-//         payload: {}
-//     });
+    yield put({
+        type: TasksTypes.CREATE_UPDATE_TASK_LOADING,
+        payload: {}
+    });
 
-//     const body = AxiosGraphqlBuilder.mutation({
-//         operation_name: 'updateWatcher',
-//         variable_definitions: params,
-//         selection_set_query: `{watcher${watcher_selection_set_query}}`
-//     })
+    const body = AxiosGraphqlBuilder.mutation({
+        operation_name: 'updateTask',
+        variable_definitions: params,
+        selection_set_query: `{ok}`
+    })
 
-//     try {
-//         const response = yield call(Api.BackendServer.post,
-//             'graphql', body
-//         );
+    try {
+        yield call(Api.BackendServer.post,
+            'graphql', body
+        );
 
-//         yield put({
-//             type: WatcherTypes.REQUEST_WATCHER_SUCCESS,            
-//             payload: {
-//                 watcher: response.data.data.updateWatcher.watcher,
-//             }
-//         });
+        yield put({
+            type: TasksTypes.CREATE_UPDATE_TASK_SUCCESS,
+            payload: {}
+        });
 
-//     } catch (error) {
-//         yield put({
-//             type: WatcherTypes.REQUEST_WATCHER_ERROR,
-//             payload: {}
-//         });
-//     }
-// };
+        // yield call(getTaskManager, { params: { id: params.taskmanagerId } });
+
+    } catch (error) {
+        yield put({
+            type: TasksTypes.CREATE_TASKMANAGER_ERROR,
+            payload: {}
+        });
+    }
+};
 
 const saga = [
     takeEvery(TasksTypes.SAGA_TASK_MANAGER, getTaskManager),
     takeEvery(TasksTypes.SAGA_TASKS, getTasks),
+    takeEvery(TasksTypes.SAGA_CREATE_TASK, createTask),
+    takeEvery(TasksTypes.SAGA_UPDATE_TASK, updateTask),
     // takeEvery(TasksTypes.SAGA_CREATE_TASKMANAGER, createTaskManager),
 ]
 
