@@ -135,7 +135,7 @@ class GerenciarTarefasPorProjeto extends React.Component {
                 </div>
                 </div> */}
 
-                <CreateOrUpdateTask ref={'createOrUpdateTask'} reloadTaskManager={this.reloadTaskManager} />
+                <CreateOrUpdateTask ref={'createOrUpdateTask'} reloadData={this.reloadTaskManager} />
                 <HabilitarDesabilitarNotificacoes repo={repo} />
 
 

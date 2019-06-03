@@ -1,6 +1,6 @@
 import React from 'react';
-import { Calendar, Badge } from 'antd';
-import { Page } from '../../../../components';
+import { Calendar, Badge, Button } from 'antd';
+import { Page, CreateOrUpdateTask } from '../../../../components';
 // * Redux imports *
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -32,9 +32,9 @@ class Agenda extends React.Component {
         });
 
         return (
-            <div>
-                {tarefas.map(item => (
-                    <span key={item.id}><Badge status={STATUS[item.status]} text={item.title} /></span>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {tarefas.map(task => (
+                    <span style={{ flex: 1, display: 'flex' }} key={task.id}><Badge status={STATUS[task.status]} text={task.title} /> <Button onClick={() => this.refs.createOrUpdateTask.openModal(task)} type="link" icon="edit" size={'small'} /> </span>
                 ))}
             </div>
         );
@@ -46,11 +46,9 @@ class Agenda extends React.Component {
         });
 
         return (
-            <div>
-                {tarefas.map(item => (
-                    <p key={item.id}>
-                        <span><Badge status={STATUS[item.status]} text={item.title} /></span>
-                    </p>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {tarefas.map(task => (
+                    <span style={{ flex: 1, display: 'flex' }} key={task.id}><Badge status={STATUS[task.status]} text={task.title} /> <Button onClick={() => this.refs.createOrUpdateTask.openModal(task)} type="link" icon="edit" size={'small'} /> </span>
                 ))}
             </div>
         );
@@ -59,6 +57,8 @@ class Agenda extends React.Component {
     render() {
         return (
             <Page loading={this.props.requestTasksLoading}>
+                <CreateOrUpdateTask ref={'createOrUpdateTask'} reloadData={this.props.getTasks} />
+
                 <Calendar onPanelChange={this.onPanelChange} dateCellRender={(e) => this.dateCellRender(e)} monthCellRender={(e) => this.monthCellRender(e)} />
             </Page>
         );

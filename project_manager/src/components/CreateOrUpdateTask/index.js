@@ -125,7 +125,7 @@ class CreateOrUpdateTask extends React.Component {
       showModal: false,
       task: null,
       canCloseModalAfterSave: false,
-    });    
+    });
     this.refs.taskForm.resetFields();
   }
 
@@ -163,7 +163,7 @@ class CreateOrUpdateTask extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.createTaskSuccess && this.state.canCloseModalAfterSave) {
-      this.props.reloadTaskManager();
+      if (nextProps.reloadData) nextProps.reloadData();
       this.closeModal();
     }
   }
