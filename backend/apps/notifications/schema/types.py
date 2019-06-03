@@ -15,5 +15,6 @@ class WatcherType(DjangoObjectType):
 
 
 class HistoryType(DjangoObjectType):
+  sources = graphene.Field(graphene.String, source='sources')
   class Meta:
     model = History

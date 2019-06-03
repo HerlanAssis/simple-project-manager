@@ -99,10 +99,14 @@ class UpdateTask(graphene.Mutation):
     ok = False
     task_instance = get_or_none(Task, pk=id)
     responsible = get_or_none(User, pk=responsible_id)
+    print("TASK {}".format(task_instance))
+    print("RESPONS {}".format(responsible))
     
     if task_instance:
       context_user_is_the_task_owner = task_instance.owner.pk == info.context.user.pk      
       context_user_is_the_task_responsible = task_instance.responsible.pk == info.context.user.pk
+      print("context_user_is_the_task_owner {}".format(context_user_is_the_task_owner))
+      print("context_user_is_the_task_responsible {}".format(context_user_is_the_task_responsible))
 
       if context_user_is_the_task_owner or context_user_is_the_task_responsible:
         task_instance.status=input.status
@@ -112,6 +116,8 @@ class UpdateTask(graphene.Mutation):
         
         if responsible and context_user_is_the_task_owner:
           task_instance.responsible=responsible
+
+        task_instance.save()
 
         return UpdateTask(ok=ok, task=task_instance)
     return UpdateTask(ok=ok, task=None)
