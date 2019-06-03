@@ -36,7 +36,7 @@ const createTask = ({ responsibleId, taskmanagerId, input }) => {
 
 const updateTask = ({ id, responsibleId, input }) => {
     return {
-        type: TasksTypes.SAGA_CREATE_TASK,
+        type: TasksTypes.SAGA_UPDATE_TASK,
         params: {
             id, responsibleId, input
         }

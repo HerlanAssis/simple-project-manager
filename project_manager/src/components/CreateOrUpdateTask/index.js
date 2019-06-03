@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, DatePicker, Button, Modal, TimePicker, Select, Cascader, InputNumber } from 'antd';
+import { Form, Input, DatePicker, Button, Modal, Select, Spin } from 'antd';
 // * Redux imports *
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -73,7 +73,7 @@ class TaskForm extends React.Component {
 
         <Form.Item label="Responsável">
           {getFieldDecorator('responsibleId', {
-            initialValue: task.responsibleId,
+            initialValue: task.responsible ? task.responsible.id : '',
             rules: [{ required: false, message: 'Responsável pela tarefa.' }],
           })(
             <Select>
@@ -86,7 +86,7 @@ class TaskForm extends React.Component {
 
         <Form.Item label="Data prevista de entrega">
           {getFieldDecorator('expectedDate', {
-            initialValue: task.expectedDate ? moment(task.expectedDate).format(dateFormat) : null,
+            initialValue: task.expectedDate ? moment(task.expectedDate, 'YYYY-MM-DD') : null,
             rules: [{ required: true, message: 'Data prevista de entrega.' }],
           })(
             <DatePicker format={dateFormat} style={{ width: '100%' }} />
@@ -105,6 +105,7 @@ class CreateOrUpdateTask extends React.Component {
     this.state = {
       showModal: false,
       task: null,
+      canCloseModalAfterSave: false,
     }
 
     this.openModal = this.openModal.bind(this);
@@ -123,9 +124,9 @@ class CreateOrUpdateTask extends React.Component {
     this.setState({
       showModal: false,
       task: null,
-    });
-
-    this.refs.taskForm.resetFields()
+      canCloseModalAfterSave: false,
+    });    
+    this.refs.taskForm.resetFields();
   }
 
   salvarTask(task) {
@@ -133,30 +134,38 @@ class CreateOrUpdateTask extends React.Component {
       title: task.title,
       description: task.description,
       status: task.status,
-      expectedDate: task.expectedDate,
-    }
-
-    const params = {
-      input,
-      responsibleId: task.responsibleId,
+      expectedDate: task.expectedDate.format('YYYY-MM-DD'),
     }
 
     if (this.state.task) {
       const update = {
-        ...params,
-        id: this.state.task.id,
+        input,
+        id: Number(this.state.task.id),
+        responsibleId: Number(task.responsibleId),
       }
 
       this.props.updateTask(update);
     } else {
       const create = {
-        ...params,
-        taskmanagerId: this.props.taskmanager.id,
+        input,
+        responsibleId: Number(task.responsibleId),
+        taskmanagerId: Number(this.props.taskmanager.id),
       }
 
       this.props.createTask(create);
     }
 
+  }
+
+  static defaultProps = {
+    loading: false,
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.createTaskSuccess && this.state.canCloseModalAfterSave) {
+      this.props.reloadTaskManager();
+      this.closeModal();
+    }
   }
 
   render() {
@@ -166,24 +175,28 @@ class CreateOrUpdateTask extends React.Component {
       vigilantes = this.props.taskmanager.vigilantes;
     }
 
+    const loading = this.props.createTaskLoading || this.props.loading;
+
     return (
       <Modal
         visible={this.state.showModal}
         title={this.state.task ? this.state.task.title : 'Nova Tarefa'}
         onCancel={this.closeModal}
         footer={[
-          <Button onClick={this.closeModal} key='cancelar'>
+          <Button disabled={loading} onClick={this.closeModal} key='cancelar'>
             Cancelar
           </Button>,
-          <Button htmlType="submit" form="myForm" key='salvar' type="primary" loading={false}>
+          <Button onClick={() => this.setState({ canCloseModalAfterSave: true })} disabled={loading} htmlType="submit" form="myForm" key='salvar' type="primary" loading={false}>
             Salvar
           </Button>,
         ]}>
-        <FormTask ref={'taskForm'}
-          salvarTask={this.salvarTask}
-          vigilantes={vigilantes}
-          task={this.state.task}
-        />
+        <Spin spinning={loading}>
+          <FormTask ref={'taskForm'}
+            salvarTask={this.salvarTask}
+            vigilantes={vigilantes}
+            task={this.state.task}
+          />
+        </Spin>
       </Modal>
     );
   }
@@ -192,16 +205,18 @@ class CreateOrUpdateTask extends React.Component {
 const mapStateToProps = (state) => {
   const {
     requestTaskManagerLoading,
-    requestTasksDone,
-    requestTasksLoading,
     taskmanager,
+
+    createTaskLoading,
+    createTaskSuccess,
   } = state.tasks;
 
   return {
     requestTaskManagerLoading,
-    requestTasksDone,
-    requestTasksLoading,
     taskmanager,
+
+    createTaskLoading,
+    createTaskSuccess,
   };
 };
 

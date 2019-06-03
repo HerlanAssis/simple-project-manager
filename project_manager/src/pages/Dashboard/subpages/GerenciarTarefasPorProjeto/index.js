@@ -14,46 +14,45 @@ import moment from 'moment';
 import './styles.css';
 import { URLS } from '../../../../constants';
 
-const columns = [
-    {
-        title: 'Data de Criação',
-        dataIndex: 'createdAt',
-        render: date => moment(date).format('DD/MM/YYYY HH:mm'),
-    }, {
-        title: 'Última modificação',
-        dataIndex: 'updatedAt',
-        render: date => moment(date).format('DD/MM/YYYY HH:mm')
-    }, {
-        title: 'Situação',
-        dataIndex: 'status',
-    },
-    {
-        title: 'Título',
-        dataIndex: 'title',
-    },
-    {
-        title: 'Responsável',
-        dataIndex: 'responsible',
-        render: responsible => responsible.username
-    },
-    {
-        title: 'Data prevista de entrega',
-        dataIndex: 'expectedDate',
-        render: date => moment(date).format('DD/MM/YYYY')
-    },
-    {
-        title: 'Ação',
-        render: () => <a href="javascript:;">Editar</a>
-    },
-];
-
-
-
 class GerenciarTarefasPorProjeto extends React.Component {
+
+    columns = [
+        {
+            title: 'Data de Criação',
+            dataIndex: 'createdAt',
+            render: date => moment(date).format('DD/MM/YYYY HH:mm'),
+        }, {
+            title: 'Última modificação',
+            dataIndex: 'updatedAt',
+            render: date => moment(date).format('DD/MM/YYYY HH:mm')
+        }, {
+            title: 'Situação',
+            dataIndex: 'status',
+        },
+        {
+            title: 'Título',
+            dataIndex: 'title',
+        },
+        {
+            title: 'Responsável',
+            dataIndex: 'responsible',
+            render: responsible => responsible.username
+        },
+        {
+            title: 'Data prevista de entrega',
+            dataIndex: 'expectedDate',
+            render: date => moment(date).format('DD/MM/YYYY')
+        },
+        {
+            title: 'Ações',
+            render: (text, row) => <div><Button disabled type="link">Detalhar</Button> <Button onClick={() => this.refs.createOrUpdateTask.openModal(row)} type="link">Editar</Button> </div>
+        },
+    ];
 
     constructor(props) {
         super(props);
         this.showMonitoringCodes = this.showMonitoringCodes.bind(this);
+        this.reloadTaskManager = this.reloadTaskManager.bind(this);
     }
 
     componentDidMount() {
@@ -66,6 +65,16 @@ class GerenciarTarefasPorProjeto extends React.Component {
 
             this.props.getWacher({
                 projectId: repo.id,
+            });
+        }
+    }
+
+    reloadTaskManager() {
+        const { repo } = this.props.location.state;
+        if (repo.is_owner) {
+            this.props.getTaskManager({
+                projectId: repo.id,
+                owner: repo.is_owner,
             });
         }
     }
@@ -110,7 +119,7 @@ class GerenciarTarefasPorProjeto extends React.Component {
         const { repo } = this.props.location.state;
         return (
 
-            <Page>
+            <Page loading={this.props.requestTaskManagerLoading || this.props.requestWatcherLoading}>
                 {/* <div style={{ display: 'flex', height: '25px', alignItems: 'center', justifyContent: 'flex-end' }}>
 
                 <div style={{ display: 'flex', marginLeft: '5px' }}>
@@ -126,7 +135,7 @@ class GerenciarTarefasPorProjeto extends React.Component {
                 </div>
                 </div> */}
 
-                <CreateOrUpdateTask ref={'createOrUpdateTask'} />
+                <CreateOrUpdateTask ref={'createOrUpdateTask'} reloadTaskManager={this.reloadTaskManager} />
                 <HabilitarDesabilitarNotificacoes repo={repo} />
 
 
@@ -179,7 +188,7 @@ class GerenciarTarefasPorProjeto extends React.Component {
                             hideOnSinglePage: true,
                         }}
                         dataSource={this.props.taskmanager.tasks}
-                        columns={columns}
+                        columns={this.columns}
                     />
                 </div>
             </Page >
