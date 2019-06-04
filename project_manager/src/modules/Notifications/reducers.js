@@ -4,11 +4,37 @@ const DEFAULT_STATE = {
     requestWatcherDone: false,
     requestWatcherLoading: false,
     watcher: {},
+
+    requestAllWatchersDone: false,
+    requestAllWatchersLoading: false,
+    watchers: [],
 };
 
 const NotificationsReducer = (state = DEFAULT_STATE, action) => {
     switch (action.type) {
-        /**TASK MANAGER REQUEST LOADING */
+        /** WATCHERS REQUEST LOADING */
+        case NotificationsTypes.REQUEST_ALL_WATCHERS_LOADING:
+            return {
+                ...state,
+                requestAllWatchersDone: false,
+                requestAllWatchersLoading: true,
+            };
+        case NotificationsTypes.REQUEST_ALL_WATCHERS_SUCCESS:
+            return {
+                ...state,
+                requestAllWatchersDone: true,
+                requestAllWatchersLoading: false,
+                watchers: action.payload.watchers,
+            };
+        case NotificationsTypes.REQUEST_ALL_WATCHERS_ERROR:
+            return {
+                ...state,
+                requestAllWatchersDone: false,
+                requestAllWatchersLoading: false,
+            };
+        /**  WATCHERS REQUEST LOADING */
+
+        /**WATCHER REQUEST LOADING */
         case NotificationsTypes.REQUEST_WATCHER_LOADING:
             return {
                 ...state,
@@ -28,7 +54,7 @@ const NotificationsReducer = (state = DEFAULT_STATE, action) => {
                 requestWatcherDone: false,
                 requestWatcherLoading: false,
             };
-        /** TASK MANAGER REQUEST LOADING */
+        /** WATCHER REQUEST LOADING */
 
         default:
             return state;

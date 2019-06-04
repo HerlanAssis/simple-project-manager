@@ -16,6 +16,16 @@ const STATUS = {
     'BLOCKED': 'error',
 }
 
+const DotTask = ({ task, onClick }) => {
+    return (
+        <span style={{ flex: 1, display: 'flex' }} key={task.id}>
+            <Button onClick={onClick} type="link" size={'small'} >
+                <Badge status={STATUS[task.status]} text={task.title} />
+            </Button>
+        </span>
+    );
+}
+
 class Agenda extends React.Component {
 
     componentDidMount() {
@@ -34,7 +44,7 @@ class Agenda extends React.Component {
         return (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {tarefas.map(task => (
-                    <span style={{ flex: 1, display: 'flex' }} key={task.id}><Badge status={STATUS[task.status]} text={task.title} /> <Button onClick={() => this.refs.createOrUpdateTask.openModal(task)} type="link" icon="edit" size={'small'} /> </span>
+                    <DotTask key={task.id} task={task} onClick={() => this.refs.createOrUpdateTask.openModal(task)} />
                 ))}
             </div>
         );
@@ -48,7 +58,7 @@ class Agenda extends React.Component {
         return (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {tarefas.map(task => (
-                    <span style={{ flex: 1, display: 'flex' }} key={task.id}><Badge status={STATUS[task.status]} text={task.title} /> <Button onClick={() => this.refs.createOrUpdateTask.openModal(task)} type="link" icon="edit" size={'small'} /> </span>
+                    <DotTask key={task.id} task={task} onClick={() => this.refs.createOrUpdateTask.openModal(task)} />
                 ))}
             </div>
         )
