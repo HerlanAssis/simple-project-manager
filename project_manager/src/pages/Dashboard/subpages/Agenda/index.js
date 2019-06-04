@@ -19,7 +19,7 @@ const STATUS = {
 class Agenda extends React.Component {
 
     componentDidMount() {
-        this.props.getTasks();
+        this.props.getAllTasks();
     }
 
     onPanelChange(value, mode) {
@@ -51,13 +51,13 @@ class Agenda extends React.Component {
                     <span style={{ flex: 1, display: 'flex' }} key={task.id}><Badge status={STATUS[task.status]} text={task.title} /> <Button onClick={() => this.refs.createOrUpdateTask.openModal(task)} type="link" icon="edit" size={'small'} /> </span>
                 ))}
             </div>
-        );
+        )
     }
 
     render() {
         return (
             <Page loading={this.props.requestTasksLoading}>
-                <CreateOrUpdateTask ref={'createOrUpdateTask'} reloadData={this.props.getTasks} />
+                <CreateOrUpdateTask ref={'createOrUpdateTask'} reloadData={this.props.getAllTasks} />
 
                 <Calendar onPanelChange={this.onPanelChange} dateCellRender={(e) => this.dateCellRender(e)} monthCellRender={(e) => this.monthCellRender(e)} />
             </Page>
@@ -81,7 +81,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
-        'getTasks': TasksActions.getTasks,
+        'getAllTasks': TasksActions.getAllTasks,
     }, dispatch);
 };
 

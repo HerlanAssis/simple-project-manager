@@ -71,7 +71,7 @@ class TaskForm extends React.Component {
           )}
         </Form.Item>
 
-        <Form.Item label="Responsável">
+        {vigilantes.length > 0 && <Form.Item label="Responsável">
           {getFieldDecorator('responsibleId', {
             initialValue: task.responsible ? task.responsible.id : '',
             rules: [{ required: false, message: 'Responsável pela tarefa.' }],
@@ -82,7 +82,7 @@ class TaskForm extends React.Component {
               )}
             </Select>
           )}
-        </Form.Item>
+        </Form.Item>}
 
         <Form.Item label="Data prevista de entrega">
           {getFieldDecorator('expectedDate', {

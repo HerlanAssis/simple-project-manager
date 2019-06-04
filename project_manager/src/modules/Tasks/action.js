@@ -18,7 +18,7 @@ const createTaskManager = ({ projectName, projectId }) => {
     }
 };
 
-const getTasks = () => {
+const getAllTasks = () => {
     return {
         type: TasksTypes.SAGA_TASKS,
         params: {}
@@ -47,7 +47,7 @@ const updateTask = ({ id, responsibleId, input }) => {
 export {
     getTaskManager,
     createTaskManager,
-    getTasks,
+    getAllTasks,
     createTask,
     updateTask,
 }

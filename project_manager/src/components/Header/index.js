@@ -5,6 +5,7 @@ import {
 } from 'antd';
 
 import { URLS, KEYS } from '../../constants';
+import { CreateOrUpdateTask } from '../../components';
 
 import {
   NoticeIcon, HeaderDropdown
@@ -16,6 +17,7 @@ import moment from 'moment';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { AuthActions } from '../../modules/Authentication';
+import { TasksActions } from '../../modules/Tasks';
 // * END Redux imports *
 
 const {
@@ -27,15 +29,24 @@ const confirm = Modal.confirm;
 
 class CustomHeader extends React.Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
 
     this.logout = this.logout.bind(this);
   }
 
   componentDidMount() {
-    this.props.getLimits();
     this.props.getUser();
+    this.atualizarDados();
+  }
+  
+  atualizarDados() {
+    setTimeout(() => {
+      this.atualizarDados()
+    }, 10000) // a cada 10 segundos
+    
+    this.props.getAllTasks();
+    this.props.getLimits();
   }
 
   logout() {
@@ -66,8 +77,11 @@ class CustomHeader extends React.Component {
       </Menu>
     );
 
+    const task_expires_today = this.props.tasks.filter(task => task.expiresToday);
+
     return (
       <Header style={{ display: 'flex', backgroundColor: '#fff', padding: 10 }}>
+        <CreateOrUpdateTask ref={'createOrUpdateTask'} />
         <div style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
           {/* <Progress width={100} successPercent={0} percent={100} showInfo /> */}
 
@@ -95,12 +109,13 @@ class CustomHeader extends React.Component {
               bell={
                 <Icon type="bell" style={{ fontSize: 24 }} />
               }
-              count={7}
+              count={task_expires_today.length}
               onItemClick={(item, tabProps) => {
-                console.log(item, tabProps); // eslint-disable-line
-                this.changeReadState(item, tabProps);
+                // console.log(item, tabProps); // eslint-disable-line
+                // this.changeReadState(item, tabProps);
+                item.onClick()
               }}
-              loading={false}
+              loading={this.props.requestTasksLoading}
               locale={{
                 emptyText: '',
                 clear: '',
@@ -109,31 +124,19 @@ class CustomHeader extends React.Component {
                 message: '',
                 event: '',
               }}
-              onClear={() => { }}
-              onPopupVisibleChange={() => { }}
-              onViewMore={() => ''}
-              clearClose
+              // onClear={() => { }}
+              // onPopupVisibleChange={() => { }}
+              // onViewMore={() => ''}
+              // clearClose
             >
               <NoticeIcon.Tab
-                count={1}
-                list={[]}
-                title="notification"
-                emptyText={''}
-                showViewMore
-              />
-              <NoticeIcon.Tab
-                count={1}
-                list={[]}
-                title="message"
-                emptyText={''}
-                showViewMore
-              />
-              <NoticeIcon.Tab
-                count={1}
-                list={[]}
-                title="event"
-                emptyText={''}
-                showViewMore
+                title="Expiram hoje"
+                count={task_expires_today.length}
+                list={task_expires_today.map(task => {
+                  return { title: task.title, onClick: () => { this.refs.createOrUpdateTask.openModal(task) } }
+                })}
+                emptyText={'Nada a exibir.'}
+              // showViewMore
               />
             </NoticeIcon>
           </div>
@@ -163,7 +166,17 @@ const mapStateToProps = (state) => {
     limits,
   } = state.authentication;
 
+  const {
+    requestTasksDone,
+    requestTasksLoading,
+    tasks,
+  } = state.tasks;
+
   return {
+    requestTasksDone,
+    requestTasksLoading,
+    tasks,
+
     removeTokenLoading,
     removeTokenDone,
 
@@ -182,6 +195,7 @@ const mapDispatchToProps = (dispatch) => {
     'logout': AuthActions.authLogout,
     'getUser': AuthActions.getUser,
     'getLimits': AuthActions.getLimits,
+    'getAllTasks': TasksActions.getAllTasks,
   }, dispatch);
 };
 

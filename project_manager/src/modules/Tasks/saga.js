@@ -4,7 +4,7 @@ import * as TasksTypes from './types';
 import { AxiosGraphqlBuilder } from '../../helpers';
 
 const user_selection_set_query = `{id username}`;
-const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate responsible${user_selection_set_query}}`;
+const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate expiresToday responsible${user_selection_set_query}}`;
 const vigilantes_selection_set_query = `{id observer${user_selection_set_query}}`
 const taskManager_selection_set_query = `{
     id
@@ -53,7 +53,7 @@ function* getTaskManager({ params }) {
     }
 };
 
-function* getTasks({ params }) {
+function* getAllTasks({ params }) {
 
     yield put({
         type: TasksTypes.REQUEST_TASKS_LOADING,
@@ -179,7 +179,7 @@ function* updateTask({ params }) {
 
 const saga = [
     takeEvery(TasksTypes.SAGA_TASK_MANAGER, getTaskManager),
-    takeEvery(TasksTypes.SAGA_TASKS, getTasks),
+    takeEvery(TasksTypes.SAGA_TASKS, getAllTasks),
     takeEvery(TasksTypes.SAGA_CREATE_TASK, createTask),
     takeEvery(TasksTypes.SAGA_UPDATE_TASK, updateTask),
     // takeEvery(TasksTypes.SAGA_CREATE_TASKMANAGER, createTaskManager),

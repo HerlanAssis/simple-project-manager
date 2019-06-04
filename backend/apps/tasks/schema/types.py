@@ -21,6 +21,8 @@ class TaskManagerType(DjangoObjectType):
 class TaskType(DjangoObjectType):
   status = graphene.Field(graphene.String, source='status')
   is_overdue = graphene.Boolean(source='is_overdue')
+  expires_today = graphene.Boolean(source='expires_today')
+  
   class Meta:
     model = Task
 

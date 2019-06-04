@@ -7,6 +7,7 @@ from apps.core.utils import HASH_MAX_LENGTH, create_hash, truncate, sendMail
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
 from django.db.models import F
+import datetime
 
 
 TODO = 'TODO'
@@ -35,7 +36,7 @@ class TaskManager(BaseModel):
 
     @property
     def qtd_overdue_tasks(self):
-        return self.tasks.exclude(status=DONE).filter(expected_date__lt=timezone.now().date()).count()
+        return self.tasks.exclude(status=DONE).filter(expected_date__lt=datetime.date.today()).count()
 
     @property
     def qtd_blocked_tasks(self):
@@ -88,7 +89,7 @@ class Task(BaseModel):
 
     def save(self, *args, **kwargs):
         if self.status == DONE:
-            self.conclusion_date = timezone.now().date()
+            self.conclusion_date = datetime.date.today()
         else:
             self.conclusion_date = None
         task = super(Task, self).save(*args, **kwargs)        
@@ -98,7 +99,13 @@ class Task(BaseModel):
     def is_overdue(self):
         if self.expected_date is None:
             return False
-        return self.expected_date > timezone.now().date()
+        return self.expected_date > datetime.date.today()
+
+    @property
+    def expires_today(self):
+        if self.expected_date is None:
+            return False
+        return self.expected_date == datetime.date.today() and self.status != DONE
 
     # notify_task_manager
     def notify(self, **kwargs):
