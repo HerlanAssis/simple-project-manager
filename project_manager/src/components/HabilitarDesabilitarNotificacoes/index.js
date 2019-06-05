@@ -38,7 +38,8 @@ class HabilitarDesabilitarNotificacoes extends React.Component {
     this.props.updateWatcher({
       id: Number(watcher.id),
       notification: notificationArray.join(','),
-    })
+    });    
+    if (this.props.reloadData) this.props.reloadData();
   }
 
   render() {
@@ -81,15 +82,15 @@ const mapStateToProps = (state) => {
   } = state.tasks;
 
   const {
-    requestWatcherDone,
-    requestWatcherLoading,
-    watcher,
+    // requestWatcherDone,
+    // requestWatcherLoading,
+    // watcher,
   } = state.notifications;
 
   return {
-    requestWatcherDone,
-    requestWatcherLoading,
-    watcher,
+    // requestWatcherDone,
+    // requestWatcherLoading,
+    // watcher,
   };
 };
 

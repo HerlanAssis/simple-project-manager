@@ -136,7 +136,7 @@ class GerenciarTarefasPorProjeto extends React.Component {
                 </div> */}
 
                 <CreateOrUpdateTask ref={'createOrUpdateTask'} reloadData={this.reloadTaskManager} />
-                <HabilitarDesabilitarNotificacoes repo={repo} />
+                <HabilitarDesabilitarNotificacoes watcher={this.props.watcher} />
 
 
                 <div style={{ display: 'flex', height: '75px', alignItems: 'center', justifyContent: 'center' }}>
