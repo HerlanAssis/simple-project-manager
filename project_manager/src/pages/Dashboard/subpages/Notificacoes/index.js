@@ -1,6 +1,6 @@
 import React from 'react';
-import { Page } from '../../../../components';
-import { List, Button, Tooltip } from 'antd';
+import { Page, CreateOrUpdateTask, List, HabilitarDesabilitarNotificacoes } from '../../../../components';
+import { Button, Tooltip, Divider } from 'antd';
 import moment from 'moment';
 
 // * Redux imports *
@@ -17,54 +17,44 @@ class Notificacoes extends React.Component {
         this.props.getAllWatchers();
     }
 
-    notificationEnabled(term='', notification = '') {
+    notificationEnabled(term = '', notification = '') {
         return notification.toUpperCase().search(term.toUpperCase()) >= 0;
     }
 
     render() {
         return (
-            <Page loading={this.props.requestAllWatchersLoading}>
+            <Page
+                loading={this.props.requestAllWatchersLoading}
+            >
                 <List
-                    dataSource={this.props.watchers}
-                    renderItem={watcher => (
-                        <List.Item style={{ display: 'flex', flex: 1, alignItems: 'flex-start', flexDirection: 'column' }}>
+                    columns={1}
+                    items={this.props.watchers}
+                    renderItem={(watcher) => (
+                        <div>
+                            <Divider><h1>{watcher.vigilant.projectName}</h1></Divider>
 
-                            <List.Item.Meta
-                                title={watcher.vigilant.projectName}
-                                description={`Canais de notificação disponíveis: ${watcher.notification}.`}
-                            />
+                            <div style={{ display: 'flex', flex: 1 }}>
+                                <List
+                                    columns={1}
+                                    items={watcher.histories}
+                                    renderItem={(history) => (
+                                        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                            <div style={{ display: 'flex', flex: 1 }}>
+                                                <h3>{`Mensagem enviada ${moment(history.createdAt).fromNow()} via ${history.sources}.`}</h3>
+                                            </div>
 
-                            <List
-                                dataSource={watcher.histories}
-                                renderItem={history => (
-                                    <List.Item
-                                        actions={[
-                                            <Tooltip placement="bottomLeft" title={`O Email estava ${this.notificationEnabled('EMAIL', history.sources) ? 'ativo' : 'desativado'}.`}>
-                                                <Button
-                                                    disabled
-                                                    icon='mail'
-                                                    type={'ghost'} />
-                                            </Tooltip>,
-                                            <Tooltip placement="bottomLeft" title={`O TelegramBot estava ${this.notificationEnabled('TELEGRAM', history.sources) ? 'ativo' : 'desativado'}.`}>
-                                                <Button
-                                                    disabled
-                                                    icon='robot'
-                                                    type={'ghost'}
-                                                />
-                                            </Tooltip>
-                                        ]}
-                                    >
-                                        <List.Item.Meta
-                                            title={moment(history.createdAt).fromNow()}
-                                            description={history.message}
-                                        />
-                                    </List.Item>
-                                )}
-                            />
-                        </List.Item>
+                                            <div style={{ display: 'flex', flex: 9 }}>
+                                                <p>{history.message}</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    keyExtractor={(watcher) => watcher.id}
+                                />
+                            </div>
+                        </div>
                     )}
+                    keyExtractor={(watcher) => watcher.id}
                 />
-
             </Page>
         );
     }
