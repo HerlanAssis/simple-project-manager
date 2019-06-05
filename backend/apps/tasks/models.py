@@ -77,7 +77,7 @@ class Task(BaseModel):
         default=TODO,
     )
     title = models.CharField(max_length=32)
-    description = models.CharField(max_length=256, blank=True)
+    description = models.CharField(max_length=256, blank=True, null=True)
     task_manager = models.ForeignKey(
         TaskManager, related_name="tasks", on_delete=models.CASCADE)
     owner = models.ForeignKey(
