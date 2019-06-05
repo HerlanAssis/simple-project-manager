@@ -12,6 +12,7 @@ import {
 } from 'ant-design-pro';
 
 import moment from 'moment';
+import { array } from 'prop-types';
 
 // * Redux imports *
 import { bindActionCreators } from 'redux';
@@ -33,18 +34,27 @@ class CustomHeader extends React.Component {
     super(props);
 
     this.logout = this.logout.bind(this);
+    this.atualizarDados = this.atualizarDados.bind(this);
+  }
+
+  static defaultProps = {
+    tasks: [],
+  }
+
+  static propTypes = {
+    tasks: array
   }
 
   componentDidMount() {
     this.props.getUser();
     this.atualizarDados();
   }
-  
+
   atualizarDados() {
     setTimeout(() => {
       this.atualizarDados()
-    }, 10000) // a cada 10 segundos
-    
+    }, 90000) // a cada 90 segundos
+
     this.props.getAllTasks();
     this.props.getLimits();
   }
@@ -77,11 +87,11 @@ class CustomHeader extends React.Component {
       </Menu>
     );
 
-    const task_expires_today = this.props.tasks.filter(task => task.expiresToday);
+    let task_expires_today = this.props.tasks.filter(task => task.expiresToday);
 
     return (
       <Header style={{ display: 'flex', backgroundColor: '#fff', padding: 10 }}>
-        <CreateOrUpdateTask ref={'createOrUpdateTask'} />
+        <CreateOrUpdateTask ref={'createOrUpdateTask'} reloadData={this.atualizarDados} />
         <div style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
           {/* <Progress width={100} successPercent={0} percent={100} showInfo /> */}
 
@@ -105,32 +115,27 @@ class CustomHeader extends React.Component {
           </div>
 
           <div style={{ marginRight: 20 }}>
-            <NoticeIcon
-              bell={
-                <Icon type="bell" style={{ fontSize: 24 }} />
-              }
+            <NoticeIcon ref={'noticeIcon'}
+              bell={<Icon type="bell" style={{ fontSize: 24 }} />}
               count={task_expires_today.length}
               onItemClick={(item, tabProps) => {
-                // console.log(item, tabProps); // eslint-disable-line
-                // this.changeReadState(item, tabProps);
-                item.onClick()
+                item.onClick();
+                this.refs.noticeIcon.onClear();
               }}
               loading={this.props.requestTasksLoading}
               locale={{
-                emptyText: '',
-                clear: '',
-                viewMore: '',
-                notification: '',
-                message: '',
-                event: '',
+                emptyText: 'Nada a exibir',
+                clear: 'Limpar',
+                // viewMore: '',
+                expires_today: 'Expiram hoje',
               }}
               // onClear={() => { }}
               // onPopupVisibleChange={() => { }}
               // onViewMore={() => ''}
-              // clearClose
+              clearClose
             >
               <NoticeIcon.Tab
-                title="Expiram hoje"
+                title="expires_today"
                 count={task_expires_today.length}
                 list={task_expires_today.map(task => {
                   return { title: task.title, onClick: () => { this.refs.createOrUpdateTask.openModal(task) } }

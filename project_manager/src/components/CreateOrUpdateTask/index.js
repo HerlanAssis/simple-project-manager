@@ -126,6 +126,7 @@ class CreateOrUpdateTask extends React.Component {
       task: null,
       canCloseModalAfterSave: false,
     });
+
     this.refs.taskForm.resetFields();
   }
 
@@ -141,7 +142,7 @@ class CreateOrUpdateTask extends React.Component {
       const update = {
         input,
         id: Number(this.state.task.id),
-        responsibleId: Number(task.responsibleId),
+        responsibleId: Number(task.responsibleId || this.state.task.responsible.id),
       }
 
       this.props.updateTask(update);

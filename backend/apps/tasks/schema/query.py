@@ -1,5 +1,6 @@
 import graphene
 from graphene_django.types import DjangoObjectType
+from django.db.models import Q
 from apps.core.utils import get_or_none
 from ..models import TaskManager, Task, Note, Release
 from .types import TaskManagerType, TaskType, ReleaseType, NoteType
@@ -42,7 +43,8 @@ class Query(object):
     return None
   
   def resolve_all_tasks(self, info, **kwargs):
-    return Task.objects.filter(owner=info.context.user)
+    user=info.context.user
+    return Task.objects.filter(Q(owner=user) | Q(responsible=user))    
 
   def resolve_task(self, info, **kwargs):
     id = kwargs.get('id')    

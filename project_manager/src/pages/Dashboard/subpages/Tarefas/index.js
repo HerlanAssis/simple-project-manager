@@ -1,5 +1,6 @@
 import React from 'react';
-import { Page, List } from '../../../../components';
+import { List, Button } from 'antd'
+import { Page, CreateOrUpdateTask } from '../../../../components';
 import moment from 'moment';
 
 // * Redux imports *
@@ -11,16 +12,55 @@ import { TasksActions } from '../../../../modules/Tasks';
 import './styles.css';
 
 
+const STATUS = {
+    'TODO': 'irá fazer',
+    'DOING': 'fazendo',
+    'DONE': 'fez',
+    'BLOCKED': 'bloqueou',
+}
+
 class Tarefas extends React.Component {
+
+    componentDidMount(){
+        this.props.getAllTasks();
+    }
+
+    getStatus(key) {
+        return STATUS[key];
+    }
 
     render() {
         return (
             <Page loading={this.props.requestTasksLoading}>
+
+                <CreateOrUpdateTask
+                    ref='createOrUpdateTask'
+                    reloadData={this.props.getAllTasks}
+                />
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <h2>Minhas Tarefas</h2>
+                </div>
+
                 <List
-                    items={this.props.tasks}
-                    columns={1}
-                    renderItem={(tasks) => <p>{tasks.title}</p>}
-                    keyExtractor={(task) => task.id}
+                    dataSource={this.props.tasks}
+                    renderItem={task => (
+                        <List.Item
+                            actions={[
+                                <Button disabled type={'link'}>Detalhar</Button>,
+                                <Button
+                                    onClick={() => {
+                                        this.refs.createOrUpdateTask.openModal(task)
+                                    }} type={'link'}>
+                                    Editar
+                                </Button>]}>
+                            <List.Item.Meta
+                                title={task.title}
+                                description={`Criada ${moment(task.createdAt).fromNow()} com a previsão de entrega para ${moment(task.expectedDate).format('DD/MM/YYYY')}. Foi atualizada pela última vez ${moment(task.updatedAt).fromNow()} e no momento ${task.responsible.username} ${this.getStatus(task.status)} a tarefa.`}
+                            />
+                        </List.Item>
+                    )}
+
                 />
             </Page>
         );
@@ -42,7 +82,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({        
+    return bindActionCreators({
         'getAllTasks': TasksActions.getAllTasks,
     }, dispatch);
 };
