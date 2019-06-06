@@ -71,7 +71,7 @@ class TaskForm extends React.Component {
           )}
         </Form.Item>
 
-        {vigilantes.length > 0 && <Form.Item label="Responsável">
+        {vigilantes.length > 0 && !this.props.contributor && <Form.Item label="Responsável">
           {getFieldDecorator('responsibleId', {
             initialValue: task.responsible ? task.responsible.id : '',
             rules: [{ required: false, message: 'Responsável pela tarefa.' }],
@@ -160,6 +160,7 @@ class CreateOrUpdateTask extends React.Component {
 
   static defaultProps = {
     loading: false,
+    contributor: false,
   }
 
   componentWillReceiveProps(nextProps) {
@@ -172,7 +173,7 @@ class CreateOrUpdateTask extends React.Component {
   render() {
     let vigilantes = []
 
-    if (Array.isArray(this.props.taskmanager.vigilantes)) {
+    if (this.props.taskmanager && Array.isArray(this.props.taskmanager.vigilantes)) {
       vigilantes = this.props.taskmanager.vigilantes;
     }
 
@@ -196,6 +197,7 @@ class CreateOrUpdateTask extends React.Component {
             salvarTask={this.salvarTask}
             vigilantes={vigilantes}
             task={this.state.task}
+            contributor={this.props.contributor}
           />
         </Spin>
       </Modal>

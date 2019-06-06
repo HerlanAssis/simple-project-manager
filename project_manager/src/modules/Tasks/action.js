@@ -21,7 +21,14 @@ const createTaskManager = ({ projectName, projectId }) => {
 const getAllTasks = () => {
     return {
         type: TasksTypes.SAGA_TASKS,
-        params: {}
+        params: { }
+    }
+};
+
+const getAllTasksBy = ({ projectId }) => {
+    return {
+        type: TasksTypes.SAGA_TASKS_BY,
+        params: { projectId }
     }
 };
 
@@ -48,6 +55,7 @@ export {
     getTaskManager,
     createTaskManager,
     getAllTasks,
+    getAllTasksBy,
     createTask,
     updateTask,
 }

@@ -13,6 +13,14 @@ const NOTIFICATIONS = {
 };
 
 class HabilitarDesabilitarNotificacoes extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      canReloadData: false,
+    }
+  }
+
   notificationTypeEnable = (type) => {
     if (this.props.watcher && this.props.watcher.notification) {
       const notification = this.props.watcher.notification.toUpperCase();
@@ -25,26 +33,37 @@ class HabilitarDesabilitarNotificacoes extends React.Component {
   updateNotifications = (telegram, email) => {
     const { watcher } = this.props;
 
-    const notificationArray = [];
+    if (watcher) {
+      const notificationArray = [];
 
-    if (telegram) {
-      notificationArray.push(NOTIFICATIONS.TELEGRAM)
+      if (telegram) {
+        notificationArray.push(NOTIFICATIONS.TELEGRAM)
+      }
+
+      if (email) {
+        notificationArray.push(NOTIFICATIONS.EMAIL)
+      }
+
+      this.props.updateWatcher({
+        id: Number(watcher.id),
+        notification: notificationArray.join(','),
+      });
+
+      this.setState({ canReloadData: true });
     }
+  }
 
-    if (email) {
-      notificationArray.push(NOTIFICATIONS.EMAIL)
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.requestWatcherDone && this.state.canReloadData) {
+      if (nextProps.reloadData) nextProps.reloadData();
+      this.setState({ canReloadData: false });
     }
-
-    this.props.updateWatcher({
-      id: Number(watcher.id),
-      notification: notificationArray.join(','),
-    });    
-    if (this.props.reloadData) this.props.reloadData();
   }
 
   render() {
     const telegramHabilidado = this.notificationTypeEnable(NOTIFICATIONS.TELEGRAM);
     const emailHabilidado = this.notificationTypeEnable(NOTIFICATIONS.EMAIL);
+    const disable = this.props.watcher ? false : true;
 
     return (
       <div style={{ display: 'flex', height: '25px', alignItems: 'center', justifyContent: 'flex-end' }}>
@@ -53,6 +72,7 @@ class HabilitarDesabilitarNotificacoes extends React.Component {
             <Button
               onClick={() => this.updateNotifications(telegramHabilidado, !emailHabilidado)}
               ghost={!emailHabilidado}
+              disabled={disable}
               type="primary"
               icon="mail"
               size={'default'}
@@ -65,6 +85,7 @@ class HabilitarDesabilitarNotificacoes extends React.Component {
             <Button
               onClick={() => this.updateNotifications(!telegramHabilidado, emailHabilidado)}
               ghost={!telegramHabilidado}
+              disabled={disable}
               type="primary"
               icon="robot"
               size={'default'}
@@ -82,14 +103,14 @@ const mapStateToProps = (state) => {
   } = state.tasks;
 
   const {
-    // requestWatcherDone,
-    // requestWatcherLoading,
+    requestWatcherDone,
+    requestWatcherLoading,
     // watcher,
   } = state.notifications;
 
   return {
-    // requestWatcherDone,
-    // requestWatcherLoading,
+    requestWatcherDone,
+    requestWatcherLoading,
     // watcher,
   };
 };

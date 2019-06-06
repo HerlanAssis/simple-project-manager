@@ -86,6 +86,39 @@ function* getAllTasks({ params }) {
     }
 };
 
+function* getAllTasksBy({ params }) {
+
+    yield put({
+        type: TasksTypes.REQUEST_TASKS_LOADING,
+        payload: {}
+    });
+
+    const body = AxiosGraphqlBuilder.query({
+        operation_name: 'allTasksBy',
+        variable_definitions: params,
+        selection_set_query: task_selection_set_query
+    })
+
+    try {
+        const response = yield call(Api.BackendServer.post,
+            'graphql', body
+        );
+
+        yield put({
+            type: TasksTypes.REQUEST_TASKS_SUCCESS,
+            payload: {
+                tasks: response.data.data.allTasks,
+            }
+        });
+
+    } catch (error) {
+        yield put({
+            type: TasksTypes.REQUEST_TASKS_ERROR,
+            payload: {}
+        });
+    }
+};
+
 // function* createTaskManager({ params }) {
 
 //     yield put({
@@ -180,6 +213,7 @@ function* updateTask({ params }) {
 const saga = [
     takeEvery(TasksTypes.SAGA_TASK_MANAGER, getTaskManager),
     takeEvery(TasksTypes.SAGA_TASKS, getAllTasks),
+    takeEvery(TasksTypes.SAGA_TASKS_BY, getAllTasksBy),
     takeEvery(TasksTypes.SAGA_CREATE_TASK, createTask),
     takeEvery(TasksTypes.SAGA_UPDATE_TASK, updateTask),
     // takeEvery(TasksTypes.SAGA_CREATE_TASKMANAGER, createTaskManager),

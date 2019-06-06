@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from apps.core.models import BaseModel
-from apps.core.utils import HASH_MAX_LENGTH, create_hash, truncate, sendMail
+from apps.core.utils import HASH_MAX_LENGTH, create_hash, truncate
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
 from django.db.models import F
