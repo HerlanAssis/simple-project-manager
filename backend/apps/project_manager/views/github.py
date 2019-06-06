@@ -10,6 +10,7 @@ from django.conf import settings
 from apps.core.serializers import CurrentUserSerializer
 from rest_framework.settings import api_settings
 from ..utils import PyGithubJSONRenderer, manual_dump
+from apps.core.utils import generate_cache_key_by_user
 # enable_console_debug_logging()
 
 
@@ -36,13 +37,14 @@ class GithubAPIView(APIView):
     def get_repo(self, request, repo_full_name):
         return self.get_github_instance(request).get_repo(repo_full_name)
 
-    def get_paginated_github_object(self, data, page, key, object_modeler, extra_args):
+    def get_paginated_github_object(self, request, data, page, key, object_modeler, extra_args):
         total_items = data.totalCount
 
         if page is None:
             page = 0
 
         cache_key = '{}-{}'.format(key, page)
+        by_user_cache_key = generate_cache_key_by_user(request.user, cache_key)
 
         # pygithub pages api start from 0
         # page_limit = ceil(total_items/self.per_page) -1
@@ -54,11 +56,11 @@ class GithubAPIView(APIView):
         # if(prev_page > 0):
         #     prev_page -= 1
 
-        current_page = cache.get(key=cache_key, default=None)
+        current_page = cache.get(key=by_user_cache_key, default=None)
         if current_page is None:
             current_page = manual_dump(
                 object_modeler(data.get_page(int(page)), extra_args))
-            cache.set(cache_key, current_page, settings.CACHE_LEVEL['THREE'])
+            cache.set(by_user_cache_key, current_page, settings.CACHE_LEVEL['THREE'])
 
         return {
             # 'next': next_page,
@@ -87,7 +89,7 @@ class Repos(GithubAPIView):
 
         extra_args = {'user': user}
 
-        content = self.get_paginated_github_object(
+        content = self.get_paginated_github_object(request, 
             repos, page, key, repo_object_modeler, extra_args)
 
         return Response(content)
@@ -103,7 +105,7 @@ class Watchers(GithubAPIView):
 
         extra_args = {'user': user}
 
-        content = self.get_paginated_github_object(
+        content = self.get_paginated_github_object(request, 
             watchers, page, key, repo_object_modeler, extra_args)
 
         return Response(content)
@@ -149,7 +151,7 @@ class Stargazers(GithubAPIView):
 
         extra_args = {'user': user}
 
-        content = self.get_paginated_github_object(
+        content = self.get_paginated_github_object(request, 
             stargazers, page, key, repo_object_modeler, extra_args)
 
         return Response(content)
@@ -196,7 +198,7 @@ class SearchByRepositories(GithubAPIView):
 
         extra_args = {'user': user}
 
-        content = self.get_paginated_github_object(
+        content = self.get_paginated_github_object(request, 
             repos, page, key, repo_object_modeler, extra_args)
 
         return Response(content)
@@ -216,7 +218,7 @@ class Contributors(GithubAPIView):
         def object_modeler(data, extra_args): return [
             contributor for contributor in data]
 
-        content = self.get_paginated_github_object(
+        content = self.get_paginated_github_object(request, 
             contributors, page, key, object_modeler, None)
 
         return Response(content)
@@ -234,7 +236,7 @@ class Commits(GithubAPIView):
         def object_modeler(data, extra_args): return [
             {'commit': commit.commit, 'committer': commit.committer, 'stats': commit.stats} for commit in data]
 
-        content = self.get_paginated_github_object(
+        content = self.get_paginated_github_object(request, 
             commits, page, key, object_modeler, {})
 
         return Response(content)

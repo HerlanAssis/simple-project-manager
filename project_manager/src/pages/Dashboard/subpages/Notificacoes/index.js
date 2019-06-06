@@ -1,6 +1,6 @@
 import React from 'react';
-import { Page, CreateOrUpdateTask, List, HabilitarDesabilitarNotificacoes } from '../../../../components';
-import { Button, Tooltip, Divider } from 'antd';
+import { Page, CreateOrUpdateTask, HabilitarDesabilitarNotificacoes } from '../../../../components';
+import { Button, Tooltip, Divider, List } from 'antd';
 import moment from 'moment';
 
 // * Redux imports *
@@ -27,33 +27,35 @@ class Notificacoes extends React.Component {
                 loading={this.props.requestAllWatchersLoading}
             >
                 <List
-                    columns={1}
-                    items={this.props.watchers}
-                    renderItem={(watcher) => (
-                        <div>
-                            <Divider><h1>{watcher.vigilant.projectName}</h1></Divider>
+                    itemLayout="vertical"
+                    rowKey='id'
+                    dataSource={this.props.watchers}
+                    renderItem={watcher => (
+                        <List.Item>
+                            <HabilitarDesabilitarNotificacoes watcher={watcher} reloadData={this.props.getAllWatchers} />
 
-                            <div style={{ display: 'flex', flex: 1 }}>
-                                <List
-                                    columns={1}
-                                    items={watcher.histories}
-                                    renderItem={(history) => (
-                                        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                                            <div style={{ display: 'flex', flex: 1 }}>
-                                                <h3>{`Mensagem enviada ${moment(history.createdAt).fromNow()} via ${history.sources}.`}</h3>
-                                            </div>
+                            <List.Item.Meta title={
+                                <div style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                                    <h2>{watcher.vigilant.projectName}</h2>
+                                </div>
+                            } />
 
-                                            <div style={{ display: 'flex', flex: 9 }}>
-                                                <p>{history.message}</p>
-                                            </div>
-                                        </div>
-                                    )}
-                                    keyExtractor={(watcher) => watcher.id}
-                                />
-                            </div>
-                        </div>
+                            <List
+                                itemLayout="vertical"
+                                rowKey='id'
+                                dataSource={watcher.histories}
+                                renderItem={history => (
+                                    <List.Item>
+                                        <List.Item.Meta
+                                            title={history.message}
+                                            description={`Mensagem enviada ${moment(history.createdAt).fromNow()} via ${history.sources}.`}
+                                        />
+                                    </List.Item>
+                                )}
+                            />
+
+                        </List.Item>
                     )}
-                    keyExtractor={(watcher) => watcher.id}
                 />
             </Page>
         );

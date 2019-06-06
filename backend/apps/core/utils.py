@@ -11,13 +11,15 @@ def truncate(string, width):
         string = string[:width-3] + '...'
     return string
 
-def sendMail(subject, message, recipient_list):  
-  email_from = settings.EMAIL_HOST_USER
-  # send_mail(subject, message, email_from, recipient_list)
-  send_mail(subject, message, email_from, ['herlanassis@gmail.com'])
-
 def get_or_none(classmodel, **kwargs):
   try:
     return classmodel.objects.get(**kwargs)
   except classmodel.DoesNotExist:
     return None
+
+def generate_cache_key_by_user(user, key):
+  username = 'anonymous'
+  if not user.is_anonymous:
+    username = user.username
+  
+  return "{}-{}".format(username, key)

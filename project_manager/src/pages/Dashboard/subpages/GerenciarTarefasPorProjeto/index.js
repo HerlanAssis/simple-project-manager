@@ -16,6 +16,7 @@ import { URLS } from '../../../../constants';
 
 class GerenciarTarefasPorProjeto extends React.Component {
 
+
     columns = [
         {
             title: 'Data de Criação',
@@ -53,6 +54,10 @@ class GerenciarTarefasPorProjeto extends React.Component {
         super(props);
         this.showMonitoringCodes = this.showMonitoringCodes.bind(this);
         this.reloadTaskManager = this.reloadTaskManager.bind(this);
+
+        this.state = {
+            canRequestWatcher: true,
+        }
     }
 
     componentDidMount() {
@@ -62,10 +67,18 @@ class GerenciarTarefasPorProjeto extends React.Component {
                 projectId: repo.id,
                 owner: repo.is_owner,
             });
+        }
+    }
 
-            this.props.getWacher({
+    componentWillReceiveProps(nextProps) {
+        if (this.state.canRequestWatcher && nextProps.requestTaskManagerDone) {
+            this.setState({ canRequestWatcher: false });
+            
+            const { repo } = nextProps.location.state;
+            nextProps.getWacher({
                 projectId: repo.id,
             });
+
         }
     }
 
@@ -115,25 +128,12 @@ class GerenciarTarefasPorProjeto extends React.Component {
     }
 
     render() {
-        const { watcher, taskmanager } = this.props;
+        const { taskmanager } = this.props;
         const { repo } = this.props.location.state;
+
         return (
 
             <Page loading={this.props.requestTaskManagerLoading || this.props.requestWatcherLoading}>
-                {/* <div style={{ display: 'flex', height: '25px', alignItems: 'center', justifyContent: 'flex-end' }}>
-
-                <div style={{ display: 'flex', marginLeft: '5px' }}>
-                <Tooltip placement="bottomLeft" title={'Habilitar/Desabilitar notificações por email'}>
-                <Button type="primary" icon="mail" size={'default'} />
-                </Tooltip>
-                </div>
-
-                <div style={{ display: 'flex', marginLeft: '5px' }}>
-                <Tooltip placement="bottomLeft" title={'Habilitar/Desabilitar notificações por telegram'}>
-                <Button type="primary" icon="robot" size={'default'} />
-                </Tooltip>
-                </div>
-                </div> */}
 
                 <CreateOrUpdateTask ref={'createOrUpdateTask'} reloadData={this.reloadTaskManager} />
                 <HabilitarDesabilitarNotificacoes watcher={this.props.watcher} />
@@ -201,8 +201,7 @@ class GerenciarTarefasPorProjeto extends React.Component {
 const mapStateToProps = (state) => {
     const {
         requestTaskManagerLoading,
-        requestTasksDone,
-        requestTasksLoading,
+        requestTaskManagerDone,
         taskmanager,
     } = state.tasks;
 
@@ -214,8 +213,7 @@ const mapStateToProps = (state) => {
 
     return {
         requestTaskManagerLoading,
-        requestTasksDone,
-        requestTasksLoading,
+        requestTaskManagerDone,
         taskmanager,
 
         requestWatcherDone,
