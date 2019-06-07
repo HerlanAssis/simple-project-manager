@@ -37,7 +37,7 @@ class TarefasPorProjeto extends React.Component {
         {
             title: 'Responsável',
             dataIndex: 'responsible',
-            render: responsible => responsible.username
+            render: responsible => responsible ? responsible.username : '-'
         },
         {
             title: 'Data prevista de entrega',

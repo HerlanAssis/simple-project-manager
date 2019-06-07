@@ -26,6 +26,9 @@ const DEFAULT_STATE = {
 
     createTaskLoading: false,
     createTaskSuccess: false,
+
+    createNoteLoading: false,
+    createNoteSuccess: false,
 };
 
 const TasksReducer = (state = DEFAULT_STATE, action) => {
@@ -118,7 +121,7 @@ const TasksReducer = (state = DEFAULT_STATE, action) => {
         //     };
         /**  CREATE TASK MANAGER */
 
-        /**TASK MANAGER REQUEST LOADING */
+        /**TASK REQUEST LOADING */
         case TasksTypes.CREATE_UPDATE_TASK_LOADING:
             return {
                 ...state,
@@ -137,7 +140,28 @@ const TasksReducer = (state = DEFAULT_STATE, action) => {
                 createTaskLoading: false,
                 createTaskSuccess: false,
             };
-        /** TASK MANAGER REQUEST LOADING */
+        /** TASK REQUEST LOADING */
+
+        /**NOTE REQUEST LOADING */
+        case TasksTypes.CREATE_UPDATE_NOTE_LOADING:
+            return {
+                ...state,
+                createNoteLoading: true,
+                createNoteSuccess: false,
+            };
+        case TasksTypes.CREATE_UPDATE_NOTE_SUCCESS:
+            return {
+                ...state,
+                createNoteLoading: false,
+                createNoteSuccess: true,
+            };
+        case TasksTypes.CREATE_UPDATE_NOTE_ERROR:
+            return {
+                ...state,
+                createNoteLoading: false,
+                createNoteSuccess: false,
+            };
+        /** NOTE REQUEST LOADING */
 
         default:
             return state;

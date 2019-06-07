@@ -6,6 +6,7 @@ import { AxiosGraphqlBuilder } from '../../helpers';
 const user_selection_set_query = `{id username}`;
 const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate expiresToday responsible${user_selection_set_query}}`;
 const vigilantes_selection_set_query = `{id observer${user_selection_set_query}}`
+const notes_selection_set_query = `{id description owner${user_selection_set_query}}`;
 const taskManager_selection_set_query = `{
     id
     invitationCode
@@ -20,7 +21,6 @@ const taskManager_selection_set_query = `{
     vigilantes${vigilantes_selection_set_query}
     owner${user_selection_set_query}
 }`;
-const notes_selection_set_query = `{id description}`;
 
 function* getTaskManager({ params }) {
 
@@ -212,12 +212,44 @@ function* getNotes({ params }) {
     }
 };
 
+function* createNote({ params }) {
+
+    yield put({
+        type: TasksTypes.CREATE_UPDATE_NOTE_LOADING,
+        payload: {}
+    });
+
+    const body = AxiosGraphqlBuilder.mutation({
+        operation_name: 'createNote',
+        variable_definitions: params,
+        selection_set_query: `{ok}`
+    })
+
+    try {
+        yield call(Api.BackendServer.post,
+            'graphql', body
+        );
+
+        yield put({
+            type: TasksTypes.CREATE_UPDATE_NOTE_SUCCESS,
+            payload: {}
+        });
+
+    } catch (error) {
+        yield put({
+            type: TasksTypes.CREATE_UPDATE_NOTE_ERROR,
+            payload: {}
+        });
+    }
+};
+
 const saga = [
     takeEvery(TasksTypes.SAGA_TASK_MANAGER, getTaskManager),
     takeEvery(TasksTypes.SAGA_TASKS, getAllTasks),
     takeEvery(TasksTypes.SAGA_CREATE_TASK, createTask),
     takeEvery(TasksTypes.SAGA_UPDATE_TASK, updateTask),
     takeEvery(TasksTypes.SAGA_NOTES, getNotes),
+    takeEvery(TasksTypes.SAGA_CREATE_NOTE, createNote),
     // takeEvery(TasksTypes.SAGA_CREATE_TASKMANAGER, createTaskManager),
 ]
 

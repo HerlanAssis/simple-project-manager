@@ -52,6 +52,15 @@ const getNotes = ({ taskId }) => {
     }
 };
 
+const createNote = ({ taskId, input }) => {
+    return {
+        type: TasksTypes.SAGA_CREATE_NOTE,
+        params: {
+            taskId, input
+        }
+    }
+}
+
 
 export {
     getTaskManager,
@@ -60,4 +69,5 @@ export {
     createTask,
     updateTask,
     getNotes,
+    createNote,
 }

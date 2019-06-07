@@ -38,7 +38,7 @@ class TaskForm extends React.Component {
     if (!task) task = {};
 
     return (
-      <Form id="myForm" onSubmit={this.handleOk}>
+      <Form id="myFormTask" onSubmit={this.handleOk}>
         <Form.Item label="Título">
           {getFieldDecorator('title', {
             initialValue: task.title,
@@ -188,7 +188,15 @@ class CreateOrUpdateTask extends React.Component {
           <Button disabled={loading} onClick={this.closeModal} key='cancelar'>
             Cancelar
           </Button>,
-          <Button onClick={() => this.setState({ canCloseModalAfterSave: true })} disabled={loading} htmlType="submit" form="myForm" key='salvar' type="primary" loading={false}>
+          <Button
+            onClick={() => this.setState({ canCloseModalAfterSave: true })}
+            disabled={loading}
+            form="myFormTask"
+            key='salvar'
+            type="primary"
+            loading={false}
+            htmlType='submit'
+          >
             Salvar
           </Button>,
         ]}>

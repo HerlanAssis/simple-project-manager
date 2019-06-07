@@ -7,10 +7,11 @@ import { TasksActions } from '../../modules/Tasks';
 // * END Redux imports *
 
 import { FORMATS } from '../../constants';
+import { CreateNote } from '../../components';
 
 import moment from 'moment';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 
 class DetailTask extends React.Component {
   constructor(props) {
@@ -30,7 +31,7 @@ class DetailTask extends React.Component {
       showModal: true,
       task: task,
     });
-    this.loadData(task)
+    this.props.getNotes({ taskId: Number(task.id) });
   }
 
   closeModal() {
@@ -40,9 +41,8 @@ class DetailTask extends React.Component {
     });
   }
 
-  loadData(task) {
-
-    this.props.getNotes({ taskId: Number(task.id) });
+  loadData() {
+    this.props.getNotes({ taskId: Number(this.state.task.id) });
   }
 
   static defaultProps = {
@@ -64,6 +64,7 @@ class DetailTask extends React.Component {
           </Button>,
         ]}>
         <div style={{ display: "flex", flex: 1, flexDirection: 'column' }}>
+          <CreateNote reloadData={this.loadData} ref={'createNote'} />
 
           {task.description && <Title level={2}>{task.description}</Title>}
 
@@ -72,7 +73,6 @@ class DetailTask extends React.Component {
               {task.status} - {task.responsible.username}
             </Title>
           }
-
 
           <Divider />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -95,19 +95,23 @@ class DetailTask extends React.Component {
 
           <div style={{ display: "flex", flex: 1, flexDirection: 'column' }}>
             <div style={{ display: 'flex', height: '50px', alignItems: 'center', justifyContent: 'flex-end' }}>
-              <Button onClick={() => { }} type="primary" icon="plus" size={'default'} >
+              <Button onClick={() => {
+                this.refs.createNote.openModal(task);
+              }} type="primary" icon="plus" size={'default'} >
                 Adicionar nova nota
               </Button>
             </div>
 
             <List
+              loading={this.props.requestNotesLoading}
               itemLayout="vertical"
               rowKey='id'
               dataSource={this.props.notes}
               renderItem={note => (
-                <List.Item extra={moment(note.createdAt).format(FORMATS.DATA_PTBR)}>
+                <List.Item extra={moment(note.createdAt).format(FORMATS.DATA_PTBR_DMYHMS)}>
                   <List.Item.Meta
                     title={note.description}
+                    description={note.owner.username}
                   />
                 </List.Item>
               )}

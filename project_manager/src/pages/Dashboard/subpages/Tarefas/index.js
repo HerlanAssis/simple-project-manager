@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, Button } from 'antd'
-import { Page, CreateOrUpdateTask } from '../../../../components';
+import { Page, CreateOrUpdateTask, DetailTask } from '../../../../components';
 import moment from 'moment';
 
 // * Redux imports *
@@ -21,7 +21,7 @@ const STATUS = {
 
 class Tarefas extends React.Component {
 
-    componentDidMount(){
+    componentDidMount() {
         this.props.getAllTasks();
     }
 
@@ -37,6 +37,7 @@ class Tarefas extends React.Component {
                     ref='createOrUpdateTask'
                     reloadData={this.props.getAllTasks}
                 />
+                <DetailTask ref={'detailTask'} />
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <h2>Minhas Tarefas</h2>
@@ -47,11 +48,16 @@ class Tarefas extends React.Component {
                     renderItem={task => (
                         <List.Item
                             actions={[
-                                <Button disabled type={'link'}>Detalhar</Button>,
+                                <Button
+                                    onClick={() => {
+                                        this.refs.detailTask.openModal(task)
+                                    }}
+                                    type={'link'}>Detalhar</Button>,
                                 <Button
                                     onClick={() => {
                                         this.refs.createOrUpdateTask.openModal(task)
-                                    }} type={'link'}>
+                                    }}
+                                    type={'link'}>
                                     Editar
                                 </Button>]}>
                             <List.Item.Meta

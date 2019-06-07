@@ -6,6 +6,7 @@ import Repository from './Repository';
 import Header from './Header';
 import HabilitarDesabilitarNotificacoes from './HabilitarDesabilitarNotificacoes';
 import CreateOrUpdateTask from './CreateOrUpdateTask';
+import CreateNote from './CreateNote';
 import DetailTask from './DetailTask';
 
 export {
@@ -18,4 +19,5 @@ export {
     HabilitarDesabilitarNotificacoes,
     CreateOrUpdateTask,
     DetailTask,
+    CreateNote,
 }

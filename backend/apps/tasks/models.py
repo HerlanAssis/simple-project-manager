@@ -91,7 +91,7 @@ class Task(BaseModel):
     owner = models.ForeignKey(
         User, related_name="tasks", on_delete=models.CASCADE)
     responsible = models.ForeignKey(
-        User, related_name="responsibilities_tasks", on_delete=models.CASCADE, blank=True)
+        User, related_name="responsibilities_tasks", on_delete=models.CASCADE, null=True, blank=True)
     expected_date = models.DateField(blank=True)
     conclusion_date = models.DateField(blank=True, null=True, editable=False)
 

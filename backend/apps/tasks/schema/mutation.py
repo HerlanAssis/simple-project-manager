@@ -59,7 +59,9 @@ class CreateTask(graphene.Mutation):
   task = graphene.Field(TaskType)
 
   @staticmethod
-  def mutate(root, info, taskmanager_id, responsible_id, input=None):              
+  def mutate(root, info, taskmanager_id, input=None, **kwargs):
+    responsible_id = kwargs.get('responsible_id', None)
+    
     ok = False
     taskmanager_instance = get_or_none(TaskManager, pk=taskmanager_id)
     if taskmanager_instance:
@@ -102,7 +104,11 @@ class UpdateTask(graphene.Mutation):
     
     if task_instance:
       context_user_is_the_task_owner = task_instance.owner.pk == info.context.user.pk      
-      context_user_is_the_task_responsible = task_instance.responsible.pk == info.context.user.pk
+      
+      context_user_is_the_task_responsible = False
+      
+      if task_instance.responsible is not None:
+        context_user_is_the_task_responsible = task_instance.responsible.pk == info.context.user.pk
 
       if context_user_is_the_task_owner or context_user_is_the_task_responsible:
         task_instance.status=input.status
@@ -176,27 +182,26 @@ class UpdateRelease(graphene.Mutation):
 
 class CreateNote(graphene.Mutation):
   class Arguments:
-    taskmanager_id = graphene.Int(required=True)    
+    task_id = graphene.Int(required=True)    
     input = NoteInput(required=True)
 
   ok = graphene.Boolean()
   note = graphene.Field(NoteType)
 
   @staticmethod
-  def mutate(root, info, taskmanager_id, task_id, input=None):              
+  def mutate(root, info, task_id, input=None):              
     ok = False
-    taskmanager_instance = get_or_none(TaskManager, pk=taskmanager_id)
-    if taskmanager_instance:      
+    
+    task_instance = get_or_none(Task, pk=task_id)
+    
+    if task_instance:
       ok = True
+      
       note_instance = Note(
         description=input.description,
-        task_manager=taskmanager_instance,
+        task=task_instance,
         owner=info.context.user,
-      )      
-      
-      task_instance = get_or_none(Task, pk=task_id)
-      if task_instance:        
-        note_instance.task=task_instance
+      )
 
       note_instance.save()
 

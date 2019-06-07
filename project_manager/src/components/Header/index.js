@@ -127,7 +127,7 @@ class CustomHeader extends React.Component {
                 emptyText: 'Nada a exibir',
                 clear: 'Limpar',
                 expires_today: 'Expiram hoje',
-                next_releases: 'Próximas entregas',
+                // next_releases: 'Próximas entregas',
               }}
               clearClose
             >
@@ -139,14 +139,14 @@ class CustomHeader extends React.Component {
                 })}
                 emptyText={'Nada a exibir.'}              
               />
-              <NoticeIcon.Tab
+              {/* <NoticeIcon.Tab
                 title="next_releases"
                 count={task_expires_today.length}
                 list={task_expires_today.map(task => {
                   return { title: task.title, onClick: () => { this.refs.createOrUpdateTask.openModal(task) } }
                 })}
                 emptyText={'Nada a exibir.'}              
-              />
+              /> */}
             </NoticeIcon>
           </div>
 
