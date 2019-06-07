@@ -14,6 +14,8 @@ class TaskManagerType(DjangoObjectType):
   qtd_completed_tasks = graphene.Int(source='qtd_completed_tasks')
   qtd_open_tasks = graphene.Int(source='qtd_open_tasks')
   qtd_blocked_tasks = graphene.Int(source='qtd_blocked_tasks')
+  qtd_tasks = graphene.Int(source='qtd_tasks')
+  progress = graphene.Float(source='progress')
   class Meta:
     model = TaskManager
 

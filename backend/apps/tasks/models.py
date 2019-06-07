@@ -47,6 +47,14 @@ class TaskManager(BaseModel):
         return self.tasks.filter(status=DONE).filter(conclusion_date__gt=F('expected_date')).count()
 
     @property
+    def qtd_tasks(self):
+        return self.tasks.all().count()
+
+    @property
+    def progress(self):
+        return self.tasks.filter(status=DONE).count()/self.tasks.all().count() * 100
+
+    @property
     def qtd_completed_tasks(self):
         return self.tasks.filter(status=DONE).count()
 
@@ -77,7 +85,7 @@ class Task(BaseModel):
         default=TODO,
     )
     title = models.CharField(max_length=32)
-    description = models.CharField(max_length=256, blank=True)
+    description = models.CharField(max_length=256, null=True, blank=True)
     task_manager = models.ForeignKey(
         TaskManager, related_name="tasks", on_delete=models.CASCADE)
     owner = models.ForeignKey(
@@ -119,9 +127,7 @@ class Task(BaseModel):
 @python_2_unicode_compatible
 class Note(BaseModel):
     owner = models.ForeignKey(
-        User, related_name="notes", on_delete=models.CASCADE)
-    task_manager = models.ForeignKey(
-        TaskManager, related_name="taskmanager_notes", on_delete=models.CASCADE)
+        User, related_name="notes", on_delete=models.CASCADE)    
     task = models.ForeignKey(
         Task, related_name="task_notes", on_delete=models.CASCADE, blank=True)
     description = models.CharField(max_length=256)

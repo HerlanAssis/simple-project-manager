@@ -6,6 +6,7 @@ import Repository from './Repository';
 import Header from './Header';
 import HabilitarDesabilitarNotificacoes from './HabilitarDesabilitarNotificacoes';
 import CreateOrUpdateTask from './CreateOrUpdateTask';
+import DetailTask from './DetailTask';
 
 export {
     Route,
@@ -16,4 +17,5 @@ export {
     Header,
     HabilitarDesabilitarNotificacoes,
     CreateOrUpdateTask,
+    DetailTask,
 }

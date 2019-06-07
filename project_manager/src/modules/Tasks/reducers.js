@@ -11,12 +11,18 @@ const DEFAULT_STATE = {
         qtdTasksCompletedLate: 0,
         qtdOverdueTasks: 0,
         qtdBlockedTasks: 0,
+        progress: 0,
         tasks: [],
+        owner: {},
     },
 
     requestTasksDone: false,
     requestTasksLoading: false,
     tasks: [],
+
+    requestNotesDone: false,
+    requestNotessLoading: false,
+    notes: [],
 
     createTaskLoading: false,
     createTaskSuccess: false,
@@ -67,6 +73,28 @@ const TasksReducer = (state = DEFAULT_STATE, action) => {
                 requestTasksLoading: false,
             };
         /** TASK REQUEST LOADING */
+
+        /**NOTES REQUEST LOADING */
+        case TasksTypes.REQUEST_NOTES_LOADING:
+            return {
+                ...state,
+                requestNotesDone: false,
+                requestNotesLoading: true,
+            };
+        case TasksTypes.REQUEST_NOTES_SUCCESS:
+            return {
+                ...state,
+                requestNotesDone: true,
+                requestNotesLoading: false,
+                notes: action.payload.notes,
+            };
+        case TasksTypes.REQUEST_NOTES_ERROR:
+            return {
+                ...state,
+                requestNotesDone: false,
+                requestNotesLoading: false,
+            };
+        /** NOTES REQUEST LOADING */
 
         /** CREATE TASK MANAGER */
         // case TasksTypes.CREATE_TASKMANAGER_LOADING:

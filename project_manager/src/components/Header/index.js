@@ -126,12 +126,9 @@ class CustomHeader extends React.Component {
               locale={{
                 emptyText: 'Nada a exibir',
                 clear: 'Limpar',
-                // viewMore: '',
                 expires_today: 'Expiram hoje',
+                next_releases: 'Próximas entregas',
               }}
-              // onClear={() => { }}
-              // onPopupVisibleChange={() => { }}
-              // onViewMore={() => ''}
               clearClose
             >
               <NoticeIcon.Tab
@@ -140,8 +137,15 @@ class CustomHeader extends React.Component {
                 list={task_expires_today.map(task => {
                   return { title: task.title, onClick: () => { this.refs.createOrUpdateTask.openModal(task) } }
                 })}
-                emptyText={'Nada a exibir.'}
-              // showViewMore
+                emptyText={'Nada a exibir.'}              
+              />
+              <NoticeIcon.Tab
+                title="next_releases"
+                count={task_expires_today.length}
+                list={task_expires_today.map(task => {
+                  return { title: task.title, onClick: () => { this.refs.createOrUpdateTask.openModal(task) } }
+                })}
+                emptyText={'Nada a exibir.'}              
               />
             </NoticeIcon>
           </div>

@@ -1,0 +1,1 @@
+export const DATA_PTBR = 'DD/MM/YYYY';

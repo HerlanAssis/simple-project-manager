@@ -24,7 +24,6 @@ import {
     Commits,
     Page404,
     TarefasPorProjeto,
-    GerenciarTarefasPorProjeto
 } from './subpages';
 
 // * Redux imports *
@@ -41,8 +40,7 @@ const repository_sub_componentes = (fatherPath) => ([
     // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
     { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
     { key: 'Colaboradores', path: `${fatherPath}/:projectname/colaboradores/`, component: Colaboradores },
-    { key: 'GerenciarTarejasProProjeto', path: `${fatherPath}/:projectname/taskmanager/`, component: GerenciarTarefasPorProjeto },
-    { key: 'TarejasProProjeto', path: `${fatherPath}/:projectname/tasks/`, component: TarefasPorProjeto },
+    { key: 'TarejasProProjeto', path: `${fatherPath}/:projectname/tarefas/`, component: TarefasPorProjeto },
 ]);
 
 const PAGES = [

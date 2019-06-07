@@ -14,13 +14,15 @@ const taskManager_selection_set_query = `{
     qtdTasksCompletedLate
     qtdBlockedTasks
     qtdCompletedTasks
+    qtdTasks
+    progress
     tasks${task_selection_set_query}
     vigilantes${vigilantes_selection_set_query}
+    owner${user_selection_set_query}
 }`;
+const notes_selection_set_query = `{id description}`;
 
 function* getTaskManager({ params }) {
-
-    console.log("TESTE - getTask", params)
 
     yield put({
         type: TasksTypes.REQUEST_TASKMANAGER_LOADING,
@@ -62,39 +64,6 @@ function* getAllTasks({ params }) {
 
     const body = AxiosGraphqlBuilder.query({
         operation_name: 'allTasks',
-        variable_definitions: params,
-        selection_set_query: task_selection_set_query
-    })
-
-    try {
-        const response = yield call(Api.BackendServer.post,
-            'graphql', body
-        );
-
-        yield put({
-            type: TasksTypes.REQUEST_TASKS_SUCCESS,
-            payload: {
-                tasks: response.data.data.allTasks,
-            }
-        });
-
-    } catch (error) {
-        yield put({
-            type: TasksTypes.REQUEST_TASKS_ERROR,
-            payload: {}
-        });
-    }
-};
-
-function* getAllTasksBy({ params }) {
-
-    yield put({
-        type: TasksTypes.REQUEST_TASKS_LOADING,
-        payload: {}
-    });
-
-    const body = AxiosGraphqlBuilder.query({
-        operation_name: 'allTasksBy',
         variable_definitions: params,
         selection_set_query: task_selection_set_query
     })
@@ -210,12 +179,45 @@ function* updateTask({ params }) {
     }
 };
 
+function* getNotes({ params }) {
+
+    yield put({
+        type: TasksTypes.REQUEST_NOTES_LOADING,
+        payload: {}
+    });
+
+    const body = AxiosGraphqlBuilder.query({
+        operation_name: 'allNotes',
+        variable_definitions: params,
+        selection_set_query: notes_selection_set_query
+    })
+
+    try {
+        const response = yield call(Api.BackendServer.post,
+            'graphql', body
+        );
+
+        yield put({
+            type: TasksTypes.REQUEST_NOTES_SUCCESS,
+            payload: {
+                notes: response.data.data.allNotes,
+            }
+        });
+
+    } catch (error) {
+        yield put({
+            type: TasksTypes.REQUEST_NOTES_ERROR,
+            payload: {}
+        });
+    }
+};
+
 const saga = [
     takeEvery(TasksTypes.SAGA_TASK_MANAGER, getTaskManager),
     takeEvery(TasksTypes.SAGA_TASKS, getAllTasks),
-    takeEvery(TasksTypes.SAGA_TASKS_BY, getAllTasksBy),
     takeEvery(TasksTypes.SAGA_CREATE_TASK, createTask),
     takeEvery(TasksTypes.SAGA_UPDATE_TASK, updateTask),
+    takeEvery(TasksTypes.SAGA_NOTES, getNotes),
     // takeEvery(TasksTypes.SAGA_CREATE_TASKMANAGER, createTaskManager),
 ]
 

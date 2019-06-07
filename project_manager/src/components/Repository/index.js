@@ -23,7 +23,7 @@ const GerenciarOuVisualizarTarefas = ({ repo, match, history }) => {
         return (
             <Button onClick={() => {
                 history.push({
-                    pathname: `${match.url}/${repo.name}/taskmanager/`,
+                    pathname: `${match.url}/${repo.name}/tarefas/`,
                     state: { repo }
                 })
             }} type="primary" size="large" icon="line-chart">
@@ -35,7 +35,7 @@ const GerenciarOuVisualizarTarefas = ({ repo, match, history }) => {
     return (
         <Button onClick={() => {
             history.push({
-                pathname: `${match.url}/${repo.name}/tasks/`,
+                pathname: `${match.url}/${repo.name}/tarefas/`,
                 state: { repo }
             })
         }} type="primary" size="large" icon="line-chart">

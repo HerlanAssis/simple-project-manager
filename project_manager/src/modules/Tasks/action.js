@@ -21,14 +21,7 @@ const createTaskManager = ({ projectName, projectId }) => {
 const getAllTasks = () => {
     return {
         type: TasksTypes.SAGA_TASKS,
-        params: { }
-    }
-};
-
-const getAllTasksBy = ({ projectId }) => {
-    return {
-        type: TasksTypes.SAGA_TASKS_BY,
-        params: { projectId }
+        params: {}
     }
 };
 
@@ -50,12 +43,21 @@ const updateTask = ({ id, responsibleId, input }) => {
     }
 }
 
+const getNotes = ({ taskId }) => {
+    return {
+        type: TasksTypes.SAGA_NOTES,
+        params: {
+            taskId
+        }
+    }
+};
+
 
 export {
     getTaskManager,
     createTaskManager,
     getAllTasks,
-    getAllTasksBy,
     createTask,
     updateTask,
+    getNotes,
 }
