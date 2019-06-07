@@ -4,7 +4,6 @@ from graphene_django.types import DjangoObjectType
 from apps.core.utils import get_or_none
 from ..models import TaskManager, Task, Note, Release
 from .types import TaskManagerType, TaskType, ReleaseType, NoteType
-from ..utils import get_or_create_taskmanager
 
 class Query(object):
   all_taskmanagers = graphene.List(TaskManagerType)
@@ -26,17 +25,39 @@ class Query(object):
     id = kwargs.get('id')
     project_id = kwargs.get('project_id')
     invitation_code = kwargs.get('invitation_code')
-    owner = kwargs.get('owner')
+    owner = False
 
     if id is not None:
       return get_or_none(TaskManager, pk=id, owner=info.context.user)      
 
-    if project_id is not None: # caso o usuário envie o project_id ele pode criar o projecto
-      if owner:
-        return get_or_create_taskmanager(TaskManager, project_id=project_id, owner=info.context.user)
-      else:
-        get_or_none(TaskManager, project_id=project_id, owner=info.context.user)
-    
+    if project_id is not None:
+      taskmanager = get_or_none(TaskManager, project_id=project_id)
+      
+      if taskmanager is None:
+        # verificar se ele é o 'dono'
+        try:
+          access_token = info.context.user.social_auth.get(
+            provider='github').extra_data['access_token']
+
+          github_instance = Github(login_or_token=access_token)
+
+          user = github_instance.get_user()
+          repo = github_instance.get_repo(kwargs['project_id'])
+          
+          if repo and repo.owner.id == user.id:
+            taskmanager = TaskManager(project_id=project_id, owner=info.context.user, project_name=repo.name)
+            taskmanager.save()
+        except Exception as e:
+          pass
+
+      if taskmanager:
+        owner = taskmanager.owner.id == info.context.user.id
+        
+        if not owner:
+          taskmanager.invitation_code = 'xxxxxxxxxx'
+        
+      return taskmanager
+ 
     if invitation_code is not None:
       return get_or_none(TaskManager, invitation_code=invitation_code, owner=info.context.user)
 
@@ -68,7 +89,7 @@ class Query(object):
 
   def resolve_all_notes(self, info, **kwargs):    
     task_id = kwargs.get('task_id')
-    task = get_or_create_taskmanager(Task, id=task_id)
+    task = get_or_none(Task, id=task_id)
     
     if task is not None:
       return Note.objects.filter(task=task)

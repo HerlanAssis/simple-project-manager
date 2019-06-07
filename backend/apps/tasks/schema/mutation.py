@@ -111,6 +111,7 @@ class UpdateTask(graphene.Mutation):
         context_user_is_the_task_responsible = task_instance.responsible.pk == info.context.user.pk
 
       if context_user_is_the_task_owner or context_user_is_the_task_responsible:
+        ok=True
         task_instance.status=input.status
         task_instance.title=input.title
         task_instance.description=input.description

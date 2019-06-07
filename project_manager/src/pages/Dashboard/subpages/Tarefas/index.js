@@ -34,6 +34,7 @@ class Tarefas extends React.Component {
             <Page loading={this.props.requestTasksLoading}>
 
                 <CreateOrUpdateTask
+                    contributor
                     ref='createOrUpdateTask'
                     reloadData={this.props.getAllTasks}
                 />

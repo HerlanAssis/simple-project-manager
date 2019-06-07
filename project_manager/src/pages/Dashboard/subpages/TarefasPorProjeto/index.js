@@ -98,7 +98,7 @@ class TarefasPorProjeto extends React.Component {
 
         // validar dados
         if (task && task.responsible && task.responsible.id) {
-            return this.props.user.id === task.responsible.id;
+            return this.props.user.id == task.responsible.id;
         }
 
         return false;
@@ -107,12 +107,10 @@ class TarefasPorProjeto extends React.Component {
 
     reloadTaskManager() {
         const { repo } = this.props.location.state;
-        if (repo.is_owner) {
-            this.props.getTaskManager({
-                projectId: repo.id,
-                owner: repo.is_owner,
-            });
-        }
+          this.props.getTaskManager({
+              projectId: repo.id,
+              owner: repo.is_owner,
+          });
     }
 
     showMonitoringCodes() {
