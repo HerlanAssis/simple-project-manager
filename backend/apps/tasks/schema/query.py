@@ -1,4 +1,5 @@
 import graphene
+from github import Github
 from graphene_django.types import DjangoObjectType
 # from django.db.models import Q
 from apps.core.utils import get_or_none
@@ -42,9 +43,9 @@ class Query(object):
           github_instance = Github(login_or_token=access_token)
 
           user = github_instance.get_user()
-          repo = github_instance.get_repo(kwargs['project_id'])
+          repo = github_instance.get_repo(project_id)
           
-          if repo and repo.owner.id == user.id:
+          if repo.owner.id == user.id:
             taskmanager = TaskManager(project_id=project_id, owner=info.context.user, project_name=repo.name)
             taskmanager.save()
         except Exception as e:

@@ -13,12 +13,21 @@ from ..utils import PyGithubJSONRenderer, manual_dump
 from apps.core.utils import generate_cache_key_by_user
 # enable_console_debug_logging()
 
+def repo_totalCount(repo, attr):
+    count = 0
+    try: 
+        count = getattr(repo, attr)().totalCount
+    except Exception as e:
+        pass
+    return count
+    
 
 def repo_object_modeler(data, extra_args): return [
     {
         'name': repo.name, 'full_name': repo.full_name, 'id': repo.id,
-        'num_contributors': repo.get_contributors().totalCount,
-        'num_commits': repo.get_commits().totalCount, 'has_in_starred': extra_args['user'].has_in_starred(repo),'is_owner': extra_args['user'].id == repo.owner.id
+        'num_contributors': repo_totalCount(repo, 'get_contributors'),
+        'num_commits':  repo_totalCount(repo, 'get_commits'), 'has_in_starred': extra_args['user'].has_in_starred(repo),
+        'is_owner': extra_args['user'].id == repo.owner.id
     } for repo in data
 ]
 

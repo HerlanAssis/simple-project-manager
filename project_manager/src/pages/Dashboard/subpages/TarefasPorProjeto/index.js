@@ -83,14 +83,8 @@ class TarefasPorProjeto extends React.Component {
     }
 
     amIManager() {
-        // validar dados
-        if (this.props.user && this.props.user.id) {
-            if (this.props.taskmanager && this.props.taskmanager.owner && this.props.taskmanager.owner.id) {
-                return this.props.user.id == this.props.taskmanager.owner.id; // não precisa comparar tipos
-            }
-        }
-
-        return false;
+        const { repo } = this.props.location.state;
+        return repo.is_owner;
     }
 
     canIEditThisTask(task) {
