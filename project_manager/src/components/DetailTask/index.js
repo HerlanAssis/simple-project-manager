@@ -74,6 +74,12 @@ class DetailTask extends React.Component {
             </Title>
           }
 
+          {task.conclusionDate &&
+            <Title level={4}>
+              Concluído em: {moment(task.conclusionDate).format(FORMATS.DATA_PTBR_DMYHMS)}
+            </Title>
+          }
+
           <Divider />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', justifyContent: 'space-around' }}>

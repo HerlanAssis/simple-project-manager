@@ -93,11 +93,11 @@ class Task(BaseModel):
     responsible = models.ForeignKey(
         User, related_name="responsibilities_tasks", on_delete=models.CASCADE, null=True, blank=True)
     expected_date = models.DateField(blank=True)
-    conclusion_date = models.DateField(blank=True, null=True, editable=False)
+    conclusion_date = models.DateTimeField(blank=True, null=True, editable=False)
 
     def save(self, *args, **kwargs):
         if self.status == DONE:
-            self.conclusion_date = datetime.date.today()
+            self.conclusion_date = datetime.datetime.now()
         else:
             self.conclusion_date = None
         task = super(Task, self).save(*args, **kwargs)        

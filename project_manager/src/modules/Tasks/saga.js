@@ -4,7 +4,7 @@ import * as TasksTypes from './types';
 import { AxiosGraphqlBuilder } from '../../helpers';
 
 const user_selection_set_query = `{id username}`;
-const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate expiresToday responsible${user_selection_set_query}}`;
+const task_selection_set_query = `{id createdAt updatedAt status title description expectedDate conclusionDate expiresToday responsible${user_selection_set_query}}`;
 const vigilantes_selection_set_query = `{id observer${user_selection_set_query}}`
 const notes_selection_set_query = `{id createdAt description owner${user_selection_set_query}}`;
 const taskManager_selection_set_query = `{
