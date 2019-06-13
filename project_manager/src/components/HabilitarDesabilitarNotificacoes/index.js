@@ -3,7 +3,6 @@ import { Button, Tooltip } from 'antd';
 // * Redux imports *
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { TasksActions } from '../../modules/Tasks';
 import { NotificationsActions } from '../../modules/Notifications';
 // * END Redux imports *
 
@@ -98,9 +97,9 @@ class HabilitarDesabilitarNotificacoes extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const {
+  // const {
 
-  } = state.tasks;
+  // } = state.tasks;
 
   const {
     requestWatcherDone,

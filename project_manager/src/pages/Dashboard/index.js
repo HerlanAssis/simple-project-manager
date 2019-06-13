@@ -20,7 +20,7 @@ import {
     Colaboradores,
     Relatorios,
     Notificacoes,
-    Laboratorio,
+    // Laboratorio,
     Commits,
     Page404,
     TarefasPorProjeto,
@@ -62,7 +62,7 @@ const PAGES = [
     // { iconName: 'robot', name: 'Colaboradores', path: '/colaboradores', component: Colaboradores },
     { iconName: 'file-pdf', name: 'Relatórios', path: '/relatorios', component: Relatorios },
     { iconName: 'notification', name: 'Notificações', path: '/notificacoes', component: Notificacoes },
-    { iconName: 'experiment', name: 'Laboratório', path: '/laboratorio', component: Laboratorio },
+    // { iconName: 'experiment', name: 'Laboratório', path: '/laboratorio', component: Laboratorio },
 ];
 
 class Dashboard extends React.Component {
@@ -140,9 +140,9 @@ class Dashboard extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    const {
+    // const {
 
-    } = state.authentication;
+    // } = state.authentication;
 
     return {
 

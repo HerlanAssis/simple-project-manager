@@ -52,7 +52,14 @@ class TaskManager(BaseModel):
 
     @property
     def progress(self):
-        return self.tasks.filter(status=DONE).count()/self.tasks.all().count() * 100
+        resultado = 0
+
+        try:
+            resultado = self.tasks.filter(status=DONE).count()/self.tasks.all().count() * 100
+        except ZeroDivisionError as e:
+            pass
+
+        return resultado
 
     @property
     def qtd_completed_tasks(self):
@@ -64,7 +71,7 @@ class TaskManager(BaseModel):
 
     def notify(self, message, **kwargs):
         created = kwargs['created']
-        message = "[{}] {}".format(self.project_name, message)
+        message = "[{}]\n{}".format(self.project_name, message)
 
         notify_model = self.vigilantes.model
         notify_model.notify(self.vigilantes.all(), created, message)
@@ -117,11 +124,17 @@ class Task(BaseModel):
 
     # notify_task_manager
     def notify(self, **kwargs):
-        self.task_manager.notify("{}: {} - {}".format(
-            self.responsible.get_username(), self.get_status_display(), self.title), **kwargs)
+        responsible_name = "-"
+
+        if self.responsible is not None:
+            responsible_name = self.responsible.get_username()
+
+        message = "Código: {}\nTítulo: {}\nStatus: {}\nResponsável: {}".format(self.id, self.title, self.get_status_display(), responsible_name )
+
+        self.task_manager.notify(message, **kwargs)
 
     def __str__(self):
-        return "{}: {} - {}".format(self.responsible.get_username(), self.get_status_display(), self.title)
+        return "{}-{}".format(self.id, self.title)
 
 
 @python_2_unicode_compatible

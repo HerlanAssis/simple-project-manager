@@ -4,7 +4,6 @@ import { Form, Input, DatePicker, Button, Modal, Select, Spin } from 'antd';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { TasksActions } from '../../modules/Tasks';
-import { NotificationsActions } from '../../modules/Notifications';
 // * END Redux imports *
 
 import moment from 'moment';
@@ -42,7 +41,10 @@ class TaskForm extends React.Component {
         <Form.Item label="Título">
           {getFieldDecorator('title', {
             initialValue: task.title,
-            rules: [{ required: true, message: 'Insira um título.' }],
+            rules: [
+              { required: true, message: 'Insira um título.' },
+              { max: 32, message: 'Tamanho máximo de 32 caracteres.' }
+            ],
           })(
             <Input />
           )}
@@ -51,7 +53,10 @@ class TaskForm extends React.Component {
         <Form.Item label="Descrição" >
           {getFieldDecorator('description', {
             initialValue: task.description,
-            rules: [{ message: 'Descreva a tarefa.' }],
+            rules: [
+              { message: 'Descreva a tarefa.' },
+              { max: 256, message: 'Tamanho máximo de 256 caracteres.' },
+            ],
           })(
             <Input.TextArea />
           )}
@@ -89,7 +94,14 @@ class TaskForm extends React.Component {
             initialValue: task.expectedDate ? moment(task.expectedDate, 'YYYY-MM-DD') : null,
             rules: [{ required: true, message: 'Data prevista de entrega.' }],
           })(
-            <DatePicker format={dateFormat} style={{ width: '100%' }} />
+            <DatePicker
+              format={dateFormat}
+              style={{ width: '100%' }}
+              disabledDate={(current) => {
+                // desabilita a escolha de datas já passadas
+                return current && current < moment().subtract(1, 'days').endOf('day');
+              }}
+            />
           )}
         </Form.Item>
       </Form>
@@ -131,31 +143,42 @@ class CreateOrUpdateTask extends React.Component {
   }
 
   salvarTask(task) {
-    const input = {
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      expectedDate: task.expectedDate.format('YYYY-MM-DD'),
-    }
-
     if (this.state.task) {
-      const update = {
-        input,
-        id: Number(this.state.task.id),
-        responsibleId: Number(task.responsibleId || this.state.task.responsible.id),
-      }
-
-      this.props.updateTask(update);
+      this.updateTask(task)
     } else {
-      const create = {
-        input,
-        responsibleId: Number(task.responsibleId),
-        taskmanagerId: Number(this.props.taskmanager.id),
-      }
+      this.createTask(task);
+    }
+  }
 
-      this.props.createTask(create);
+  createTask(task) {
+    const newTask = {
+      input: {
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        expectedDate: task.expectedDate.format('YYYY-MM-DD'),
+      },
+      responsibleId: Number(task.responsibleId) || null,
+      taskmanagerId: Number(this.props.taskmanager.id),
     }
 
+    this.props.createTask(newTask);
+  }
+
+
+  updateTask(task) {
+    const updatedTask = {
+      input: {
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        expectedDate: moment(task.expectedDate).format('YYYY-MM-DD'),
+      },
+      id: Number(this.state.task.id),
+      responsibleId: Number(task.responsibleId),
+    }
+
+    this.props.updateTask(updatedTask);
   }
 
   static defaultProps = {
@@ -201,12 +224,14 @@ class CreateOrUpdateTask extends React.Component {
           </Button>,
         ]}>
         <Spin spinning={loading}>
-          <FormTask ref={'taskForm'}
-            salvarTask={this.salvarTask}
-            vigilantes={vigilantes}
-            task={this.state.task}
-            contributor={this.props.contributor}
-          />
+          {this.state.showModal && // force recriate form component
+            <FormTask ref={'taskForm'}
+              salvarTask={this.salvarTask}
+              vigilantes={vigilantes}
+              task={this.state.task}
+              contributor={this.props.contributor}
+            />
+          }
         </Spin>
       </Modal>
     );

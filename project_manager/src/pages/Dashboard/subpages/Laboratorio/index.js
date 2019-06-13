@@ -1,7 +1,7 @@
 import React from 'react';
 import { Page } from '../../../../components';
 import { Api } from '../../../../services';
-import { Tooltip, Card, Icon, Button } from 'antd';
+import { Tooltip, Card, Icon } from 'antd';
 import './styles.css';
 
 

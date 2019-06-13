@@ -1,6 +1,6 @@
 import React from 'react';
-import { Page, CreateOrUpdateTask, HabilitarDesabilitarNotificacoes } from '../../../../components';
-import { Button, Tooltip, Divider, List } from 'antd';
+import { Page, HabilitarDesabilitarNotificacoes } from '../../../../components';
+import { List } from 'antd';
 import moment from 'moment';
 
 // * Redux imports *

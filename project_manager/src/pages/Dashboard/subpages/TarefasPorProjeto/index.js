@@ -92,7 +92,7 @@ class TarefasPorProjeto extends React.Component {
 
         // validar dados
         if (task && task.responsible && task.responsible.id) {
-            return this.props.user.id == task.responsible.id;
+            return Number(this.props.user.id) === Number(task.responsible.id);
         }
 
         return false;

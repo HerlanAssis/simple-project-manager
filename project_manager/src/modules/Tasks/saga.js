@@ -251,6 +251,9 @@ const saga = [
     takeEvery(TasksTypes.SAGA_NOTES, getNotes),
     takeEvery(TasksTypes.SAGA_CREATE_NOTE, createNote),
     // takeEvery(TasksTypes.SAGA_CREATE_TASKMANAGER, createTaskManager),
+
+    // condições especiais
+    takeEvery(TasksTypes.CREATE_UPDATE_TASK_SUCCESS, getAllTasks),
 ]
 
 export default saga;
