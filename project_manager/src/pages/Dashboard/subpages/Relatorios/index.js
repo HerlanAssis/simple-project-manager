@@ -86,7 +86,12 @@ class TabResumeReport extends React.Component {
                     <Button
                         disabled={this.state.checkedList.length === 0}
                         onClick={() => {
-                            Api.BackendServer.get(`r/resume/${this.state.checkedList.map(item => item)}`);
+                            Api.BackendServer.get(`r/resume/${this.state.checkedList.map(item => item)}`, { responseType: 'blob', }).then(response => {
+                                let blob = new Blob([response.data], { type: 'application/pdf' }),
+                                    url = window.URL.createObjectURL(blob)
+
+                                window.open(url);
+                            })
                         }}
                         size={'large'}
                     >
@@ -109,7 +114,12 @@ class TabDetailReport extends React.Component {
                     >
                         <Button
                             onClick={() => {
-                                Api.BackendServer.get(`r/detail/${taskmanager.id}`);
+                                Api.BackendServer.get(`r/detail/${taskmanager.id}`, { responseType: 'blob', }).then(response => {
+                                    let blob = new Blob([response.data], { type: 'application/pdf' }),
+                                        url = window.URL.createObjectURL(blob)
+
+                                    window.open(url);
+                                })
                             }}
                             icon={'download'}
                             size={'large'}
