@@ -1,4 +1,5 @@
 import React from 'react';
+import { Empty } from 'antd';
 import './styles.css';
 
 function createRows(list, columns) {
@@ -42,6 +43,11 @@ class List extends React.Component {
 
     render() {
         const { items, renderItem, keyExtractor, columns, horizontal } = this.props;
+
+        if(this.props.items.length===0){
+            return (<Empty />)
+        }
+
         return (
             <div className='list-content' style={{ flexWrap: horizontal ? 'nowrap' : 'wrap' }}>
                 {createRows(items, columns).map((item, index) => {
