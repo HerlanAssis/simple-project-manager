@@ -236,11 +236,18 @@ class Contributors(GithubAPIView):
 class Commits(GithubAPIView):
     def get(self, request, format=None):        
         repo_full_name = request.GET.get('repo_full_name')
-        repo = self.get_repo(request, repo_full_name)        
+        repo = self.get_repo(request, repo_full_name)
+        author=request.GET.get('author', None)
 
-        commits = repo.get_commits()
+        if author is not None:
+            commits = repo.get_commits(author=author)
+            key = 'repo-{}-{}-commit-page'.format(repo_full_name, author)
+        else:
+            key = 'repo-{}-commit-page'.format(repo_full_name)
+            commits = repo.get_commits()
+
         page = request.GET.get('page')
-        key = 'repo-{}-commit-page'.format(repo_full_name)
+
 
         def object_modeler(data, extra_args): return [
             {'commit': commit.commit, 'committer': commit.committer, 'stats': commit.stats} for commit in data]
