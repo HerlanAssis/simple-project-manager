@@ -13,6 +13,14 @@ from ..utils import PyGithubJSONRenderer, manual_dump
 from apps.core.utils import generate_cache_key_by_user
 # enable_console_debug_logging()
 
+def repo_secure_get(repo, attr, **kwargs):
+    data = []
+    try: 
+        data = getattr(repo, attr)(**kwargs)
+    except Exception as e:
+        pass
+    return data
+
 def repo_totalCount(repo, attr):
     count = 0
     try: 
@@ -240,11 +248,11 @@ class Commits(GithubAPIView):
         author=request.GET.get('author', None)
 
         if author is not None:
-            commits = repo.get_commits(author=author)
+            commits = repo_secure_get(repo, 'get_commits', { 'author':author })
             key = 'repo-{}-{}-commit-page'.format(repo_full_name, author)
         else:
             key = 'repo-{}-commit-page'.format(repo_full_name)
-            commits = repo.get_commits()
+            commits = repo_secure_get(repo, 'get_commits')
 
         page = request.GET.get('page')
 
