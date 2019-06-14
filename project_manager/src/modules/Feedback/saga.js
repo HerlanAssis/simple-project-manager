@@ -2,7 +2,7 @@ import { takeEvery } from 'redux-saga/effects';
 import { NotificationWindow } from '../../services'
 
 import * as TasksTypes from '../Tasks/types';
-import * as NotificationTypes from '../Notifications/types';
+// import * as NotificationTypes from '../Notifications/types';
 import * as AuthenticationTypes from '../Authentication/types';
 
 
