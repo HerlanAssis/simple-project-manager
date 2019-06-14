@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Popconfirm, Button, Card, Tooltip } from 'antd';
+import { Spin, Button, Card, Tooltip } from 'antd';
 import { Charts } from 'ant-design-pro';
 import { Api } from '../../services';
 import moment from 'moment';
@@ -45,6 +45,21 @@ const GerenciarOuVisualizarTarefas = ({ repo, match, history }) => {
 }
 
 class Repository extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading: false,
+            data: [],
+            commits: {
+                per_page: 0,
+                total_itens: 0,
+                current_page: 1,
+                results: [],
+            },
+            graphData: []
+        }
+    }
+
     popconfirmPropsForAddMonitoring() {
         return (
             {
@@ -75,6 +90,29 @@ class Repository extends React.Component {
         )
     }
 
+    componentDidMount() {
+        const { repo } = this.props;
+        
+        this.setState({ loading: true });
+        Api.BackendServer.get(`pm/commits/`, { params: { repo_full_name: repo.full_name } }).then(response => {
+            const commits = response.data;
+
+            // const data = commits.results.map((value, index) => ({
+            //     additions: value.stats.additions,
+            //     deletions: value.stats.deletions,
+            //     churn: value.stats.total,
+            //     date: moment(value.commit.author.date || value.committer.author.date).format('LLLL'),
+            // }));
+
+            const graphData = commits.results.map((value, index) => ({
+                x: `Churn de ${moment(value.commit.author.date || value.committer.author.date).format('LLLL')}`,
+                y: value.stats.total,
+            }));
+
+            this.setState({ loading: false, data: [], commits, graphData });
+        });
+    }
+
     render() {
         const { match, history, repo } = this.props;
         const popconfirmProps = repo.has_in_starred ? this.popconfirmPropsForRemoveMonitoring() : this.popconfirmPropsForAddMonitoring();
@@ -88,13 +126,13 @@ class Repository extends React.Component {
                 style={{ width: '100%' }}
                 actions={[
                     <Tooltip placement="bottom" title={repo.has_in_starred ? 'Desfavoritar' : 'Favoritar'}><Button onClick={popconfirmProps.onConfirm} ghost={!repo.has_in_starred} type={'link'} icon="star" /></Tooltip>,
-                    <Tooltip placement="bottom" title={'Contribuidores'}><Button onClick={() =>
+                    <Tooltip placement="bottom" title={`${repo.num_contributors} Contribuidores`}><Button onClick={() =>
                         history.push({
                             pathname: `${match.url}/${repo.name}/commits/`,
                             state: { repo }
                         })
                     } type={'link'} icon="robot" /></Tooltip>,
-                    <Tooltip placement="bottom" title={'Commits'}><Button onClick={() => {
+                    <Tooltip placement="bottom" title={`${repo.num_commits} Commits`}><Button onClick={() => {
                         history.push({
                             pathname: `${match.url}/${repo.name}/commits/`,
                             state: { repo }
@@ -102,13 +140,15 @@ class Repository extends React.Component {
                     }} type={'link'} icon="number" /></Tooltip>,
                 ]}
             >
-                <Charts.MiniArea
-                    line
-                    animate={true}
-                    color="#cceafe"
-                    height={100}
-                    data={visitData}
-                />
+                <Spin spinning={this.state.loading} size={'large'}>
+                    <Charts.MiniArea
+                        line
+                        animate={true}
+                        color="#cceafe"
+                        height={100}
+                        data={this.state.graphData}
+                    />
+                </Spin>
             </Card>
         );
     };
