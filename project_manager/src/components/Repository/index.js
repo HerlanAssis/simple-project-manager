@@ -128,7 +128,7 @@ class Repository extends React.Component {
                     <Tooltip placement="bottom" title={repo.has_in_starred ? 'Desfavoritar' : 'Favoritar'}><Button onClick={popconfirmProps.onConfirm} ghost={!repo.has_in_starred} type={'link'} icon="star" /></Tooltip>,
                     <Tooltip placement="bottom" title={`${repo.num_contributors} Contribuidores`}><Button onClick={() =>
                         history.push({
-                            pathname: `${match.url}/${repo.name}/commits/`,
+                            pathname: `${match.url}/${repo.name}/colaboradores/`,
                             state: { repo }
                         })
                     } type={'link'} icon="robot" /></Tooltip>,
