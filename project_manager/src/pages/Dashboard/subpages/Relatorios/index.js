@@ -6,8 +6,8 @@ import { connect } from 'react-redux';
 import { TasksActions } from '../../../../modules/Tasks';
 // * END Redux imports *
 import { Page } from '../../../../components';
-import { API_BASE_URL } from '../../../../constants/urls';
 import './styles.css';
+import { Api } from '../../../../services';
 
 const { TabPane } = Tabs;
 const CheckboxGroup = Checkbox.Group;
@@ -83,7 +83,15 @@ class TabResumeReport extends React.Component {
                 <br />
 
                 <div style={{ display: 'flex', height: '50px', width: '100%', justifyContent: 'center', alignItems: 'flex-end' }}>
-                    <Button disabled={this.state.checkedList.length === 0} href={`${API_BASE_URL}/r/resume/${this.state.checkedList.map(item => item)}`} size={'large'}>Gerar relatório</Button>
+                    <Button
+                        disabled={this.state.checkedList.length === 0}
+                        onClick={() => {
+                            Api.BackendServer.get(`r/resume/${this.state.checkedList.map(item => item)}`);
+                        }}
+                        size={'large'}
+                    >
+                        Gerar relatório
+                    </Button>
                 </div>
             </div>
         )
@@ -100,7 +108,9 @@ class TabDetailReport extends React.Component {
                         style={{ width: '100%', textAlign: 'center' }}
                     >
                         <Button
-                            href={`${API_BASE_URL}/r/detail/${taskmanager.id}`}
+                            onClick={() => {
+                                Api.BackendServer.get(`r/detail/${taskmanager.id}`);
+                            }}
                             icon={'download'}
                             size={'large'}
                             type={'link'}

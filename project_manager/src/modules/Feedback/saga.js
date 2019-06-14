@@ -15,7 +15,7 @@ const noteSuccess = () => {
 }
 
 const tokenSuccess = () => {
-  NotificationWindow({ type: 'success', message: 'Bem vindo!' });
+  NotificationWindow({ type: 'success', message: 'Bem vindo!',  description: ':D'});
 }
 
 const saga = [
