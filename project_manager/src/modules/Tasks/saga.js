@@ -9,6 +9,7 @@ const vigilantes_selection_set_query = `{id observer${user_selection_set_query}}
 const notes_selection_set_query = `{id createdAt description owner${user_selection_set_query}}`;
 const taskManager_selection_set_query = `{
     id
+    projectName
     invitationCode
     qtdOverdueTasks
     qtdOpenTasks
@@ -21,6 +22,53 @@ const taskManager_selection_set_query = `{
     vigilantes${vigilantes_selection_set_query}
     owner${user_selection_set_query}
 }`;
+
+const taskManagers_selection_set_query = `{
+    id
+    createdAt
+    projectName
+    invitationCode
+    qtdOverdueTasks
+    qtdOpenTasks
+    qtdTasksCompletedLate
+    qtdBlockedTasks
+    qtdCompletedTasks
+    qtdTasks
+    progress
+}`;
+
+function* getAllTaskManagers({ params }) {
+
+    yield put({
+        type: TasksTypes.REQUEST_TASKMANAGERS_LOADING,
+        payload: {}
+    });
+
+    const body = AxiosGraphqlBuilder.query({
+        operation_name: 'allTaskmanagers',
+        variable_definitions: params,
+        selection_set_query: taskManagers_selection_set_query
+    })
+
+    try {
+        const response = yield call(Api.BackendServer.post,
+            'graphql', body
+        );
+
+        yield put({
+            type: TasksTypes.REQUEST_TASKMANAGERS_SUCCESS,
+            payload: {
+                taskmanagers: response.data.data.allTaskmanagers,
+            }
+        });
+
+    } catch (error) {
+        yield put({
+            type: TasksTypes.REQUEST_TASKMANAGERS_ERROR,
+            payload: {}
+        });
+    }
+};
 
 function* getTaskManager({ params }) {
 
@@ -244,6 +292,7 @@ function* createNote({ params }) {
 };
 
 const saga = [
+    takeEvery(TasksTypes.SAGA_ALL_TASK_MANAGERS, getAllTaskManagers),
     takeEvery(TasksTypes.SAGA_TASK_MANAGER, getTaskManager),
     takeEvery(TasksTypes.SAGA_TASKS, getAllTasks),
     takeEvery(TasksTypes.SAGA_CREATE_TASK, createTask),

@@ -1,6 +1,10 @@
 import * as TasksTypes from './types';
 
 const DEFAULT_STATE = {
+    requestTaskManagersDone: false,
+    requestTaskManagersLoading: false,
+    taskmanagers: [],
+
     requestTaskManagerDone: false,
     requestTaskManagerLoading: false,
     // createTaskManagerDone: false,
@@ -33,6 +37,28 @@ const DEFAULT_STATE = {
 
 const TasksReducer = (state = DEFAULT_STATE, action) => {
     switch (action.type) {
+        /**TASK MANAGER REQUEST LOADING */
+        case TasksTypes.REQUEST_TASKMANAGERS_LOADING:
+            return {
+                ...state,
+                requestTaskManagersDone: false,
+                requestTaskManagersLoading: true,
+            };
+        case TasksTypes.REQUEST_TASKMANAGERS_SUCCESS:
+            return {
+                ...state,
+                requestTaskManagersDone: true,
+                requestTaskManagersLoading: false,
+                taskmanagers: action.payload.taskmanagers,
+            };
+        case TasksTypes.REQUEST_TASKMANAGERS_ERROR:
+            return {
+                ...state,
+                requestTaskManagersDone: false,
+                requestTaskManagersLoading: false,
+            };
+        /** TASK MANAGER REQUEST LOADING */
+
         /**TASK MANAGER REQUEST LOADING */
         case TasksTypes.REQUEST_TASKMANAGER_LOADING:
             return {

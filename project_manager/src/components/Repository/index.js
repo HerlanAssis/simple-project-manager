@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Popconfirm, Button } from 'antd';
+import { Icon, Popconfirm, Button, Card, Tooltip } from 'antd';
 import { Charts } from 'ant-design-pro';
 import { Api } from '../../services';
 import moment from 'moment';
@@ -26,7 +26,7 @@ const GerenciarOuVisualizarTarefas = ({ repo, match, history }) => {
                     pathname: `${match.url}/${repo.name}/tarefas/`,
                     state: { repo }
                 })
-            }} type="primary" size="large" icon="line-chart">
+            }} type="link" size="large" icon="line-chart">
                 Gerenciar Tarefas
             </Button>
         )
@@ -38,7 +38,7 @@ const GerenciarOuVisualizarTarefas = ({ repo, match, history }) => {
                 pathname: `${match.url}/${repo.name}/tarefas/`,
                 state: { repo }
             })
-        }} type="primary" size="large" icon="line-chart">
+        }} type="link" size="large" icon="line-chart">
             Visualizar Tarefas
         </Button>
     )
@@ -78,68 +78,38 @@ class Repository extends React.Component {
     render() {
         const { match, history, repo } = this.props;
         const popconfirmProps = repo.has_in_starred ? this.popconfirmPropsForRemoveMonitoring() : this.popconfirmPropsForAddMonitoring();
+
         return (
-            <div style={{ display: 'flex', flex: 9, flexDirection: 'column', height: '200px', width: '100%', marginBottom: '30px' }}>
-                {/* Nome do projeto */}
-                <div style={{ display: 'flex', flexDirection: 'row' }} className='project-head'>
-                    <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                        <Popconfirm placement="topRight" {...popconfirmProps} okText="Sim" cancelText="Não">
-                            <Icon style={{ fontSize: '26px', color: repo.has_in_starred ? 'yellow' : 'gray' }} type={'star'} />
-                        </Popconfirm>
-                    </div>
-
-                    <div style={{ flex: 6, backgroundColor: "red" }}>
-                        <p className='one-line'>{repo.name}</p>
-                    </div>
-
-                    <div style={{ display: 'flex', flex: 3, alignItems: 'center', justifyContent: 'flex-end' }}>                        
-                        <GerenciarOuVisualizarTarefas repo={repo} match={match} history={history} />
-                    </div>
-
-                </div>
-
-                <div style={{ display: 'flex', flex: 1 }}>
-                    <div style={{ display: 'flex', flex: 2, flexDirection: 'row' }}>
-                        <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'pink' }} />
-
-                        <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'purple' }} />
-
-                        <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'blue' }} />
-                    </div>
-
-                    <div style={{ display: 'flex', flex: 1, flexDirection: 'row' }}>
-                        <div onClick={() => {
-                            history.push({
-                                pathname: `${match.url}/${repo.name}/commits/`,
-                                state: { repo }
-                            })
-                        }} style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'yellow', cursor: 'pointer' }}>
-                            <p>COMMITS: {repo.num_commits}</p>
-                        </div>
-
-                        <div onClick={() => {
-                            history.push({
-                                pathname: `${match.url}/${repo.name}/colaboradores/`,
-                                state: { repo }
-                            })
-                        }} style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'orange', cursor: 'pointer' }}>
-                            <p>CONTRIBUTORS: {repo.num_contributors}</p>
-                        </div>
-                    </div>
-
-                </div>
-
-                {/* Dados de gráfico */}
-                <div style={{ flex: 2 }}>
-                    <Charts.MiniArea
-                        line
-                        animate={true}
-                        color="#cceafe"
-                        height={100}
-                        data={visitData}
-                    />
-                </div>
-            </div>
+            <Card
+                title={repo.name} extra={<GerenciarOuVisualizarTarefas
+                    repo={repo}
+                    match={match}
+                    history={history} />}
+                style={{ width: '100%' }}
+                actions={[
+                    <Tooltip placement="bottom" title={repo.has_in_starred ? 'Desfavoritar' : 'Favoritar'}><Button onClick={popconfirmProps.onConfirm} ghost={!repo.has_in_starred} type={'link'} icon="star" /></Tooltip>,
+                    <Tooltip placement="bottom" title={'Contribuidores'}><Button onClick={() =>
+                        history.push({
+                            pathname: `${match.url}/${repo.name}/commits/`,
+                            state: { repo }
+                        })
+                    } type={'link'} icon="robot" /></Tooltip>,
+                    <Tooltip placement="bottom" title={'Commits'}><Button onClick={() => {
+                        history.push({
+                            pathname: `${match.url}/${repo.name}/commits/`,
+                            state: { repo }
+                        })
+                    }} type={'link'} icon="number" /></Tooltip>,
+                ]}
+            >
+                <Charts.MiniArea
+                    line
+                    animate={true}
+                    color="#cceafe"
+                    height={100}
+                    data={visitData}
+                />
+            </Card>
         );
     };
 }

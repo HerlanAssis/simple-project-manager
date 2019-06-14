@@ -3,5 +3,5 @@ from .views import pdf
 
 urlpatterns = [
     path('detail/<int:id>', pdf.DetailReportByTaskManager.as_view()),
-    path('resume/<int:id>', pdf.ResumeReportByTaskManager.as_view()),
+    path('resume/<str:ids>', pdf.ResumeReportByTaskManager.as_view()),
 ]

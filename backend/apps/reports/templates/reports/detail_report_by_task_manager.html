@@ -3,10 +3,6 @@
 <head>
   <title>{{ title }}</title>
   <style>
-    h1 {
-      text-align: "center";
-    }
-
     table {
       font-family: arial, sans-serif;
       border-collapse: collapse;
@@ -23,11 +19,21 @@
     tr:nth-child(even) {
       background-color: #dddddd;
     }
+
+    @page {
+      @bottom-center {
+        content: 'Simple Project Manager'
+      }
+
+      @bottom-right {
+        content: counter(page)"/"counter(pages)
+      }
+    }
   </style>
 </head>
 
 <body>
-  <h1>{{ title }}</h1>
+  <h1 style="text-align: center">{{ title }}</h1>
 
   <table>
     {% for line in lines %}

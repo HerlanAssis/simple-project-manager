@@ -1,5 +1,12 @@
 import * as TasksTypes from './types';
 
+const getAllTaskManagers = () => {
+    return {
+        type: TasksTypes.SAGA_ALL_TASK_MANAGERS,
+        params: {}
+    }
+};
+
 const getTaskManager = ({ id, projectId, invitationCode, owner }) => {
     return {
         type: TasksTypes.SAGA_TASK_MANAGER,
@@ -63,6 +70,7 @@ const createNote = ({ taskId, input }) => {
 
 
 export {
+    getAllTaskManagers,
     getTaskManager,
     createTaskManager,
     getAllTasks,

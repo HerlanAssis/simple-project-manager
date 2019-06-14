@@ -1,4 +1,5 @@
 import axios from 'axios';
+import ErrorResponseHandler from './ErrorResponseHandler';
 import {KEYS, URLS} from '../constants';
 
 const BackendServer = axios.create({
@@ -8,6 +9,8 @@ const BackendServer = axios.create({
         "Authorization": window.localStorage.getItem(KEYS.TOKEN_KEY),
     }
 });
+
+BackendServer.interceptors.response.use(null, (error) => ErrorResponseHandler(error));
 
 export default {
     BackendServer,

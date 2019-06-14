@@ -1,16 +1,50 @@
 <html>
+
 <head>
   <title>{{ title }}</title>
   <style>
-    body {
-      background-color: #f7f7f7;
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td,
+    th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+
+    @page {
+      @bottom-center {
+        content: 'Simple Project Manager'
+      }
+
+      @bottom-right {
+        content: counter(page)"/"counter(pages)
+      }
     }
   </style>
 </head>
+
 <body>
-  <h1>Test Template</h1>
-  {% for paragraph in paragraphs %}
-    <p>{{ paragraph }}</p>
-  {% endfor %}
+  <h1 style="text-align: center">{{ title }}</h1>
+
+  <table>
+    {% for line in lines %}
+    <tr>
+      {% for cell in line %}
+      <td>{{ cell }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
 </body>
+
 </html>
