@@ -130,7 +130,7 @@ class Dashboard extends React.Component {
                     </Switch>
 
                     <Footer style={{ textAlign: 'center' }}>
-                        Ant Design ©2018 Created by Ant UED
+                        Simple Project Manager ©2019
                     </Footer>
 
                 </Layout>

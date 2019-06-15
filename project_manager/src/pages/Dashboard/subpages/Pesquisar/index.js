@@ -1,6 +1,6 @@
 import React from 'react';
-import { Input } from 'antd';
-import { Page, List, Repository } from '../../../../components';
+import { Input, List } from 'antd';
+import { Page, Repository } from '../../../../components';
 import { Api } from '../../../../services';
 import './styles.css';
 
@@ -78,11 +78,14 @@ class Pesquisar extends React.Component {
                 {/* RESULTADOS DA PESQUISA  */}
                 <div style={{ flex: 9 }}>
                     <List
-                        columns={2}
-                        items={this.state.search_repos.results}
-                        renderItem={(project) => this.renderItem(project)}
-                        keyExtractor={this._keyExtractor}
-                    />
+                        grid={{ gutter: 16, column: 2 }}
+                        dataSource={this.state.search_repos.results}
+                        renderItem={item => (
+                            <List.Item>
+                                {this.renderItem(item)}
+                            </List.Item>
+                        )}
+                    />                    
                 </div>
             </Page>
         );

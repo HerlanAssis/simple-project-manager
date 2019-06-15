@@ -82,7 +82,6 @@ class Repository extends React.Component {
                 onConfirm: () => {
                     const { repo } = this.props;
                     Api.BackendServer.get('pm/stargazers/remove', { params: { repo_full_name: repo.full_name } }).then(response => {
-                        console.log("stargazers remove", response);
                         if (this.props.refresh) this.props.refresh();
                     })
                 },
@@ -92,7 +91,7 @@ class Repository extends React.Component {
 
     componentDidMount() {
         const { repo } = this.props;
-        
+
         this.setState({ loading: true });
         Api.BackendServer.get(`pm/commits/`, { params: { repo_full_name: repo.full_name } }).then(response => {
             const commits = response.data;
@@ -116,28 +115,29 @@ class Repository extends React.Component {
     render() {
         const { match, history, repo } = this.props;
         const popconfirmProps = repo.has_in_starred ? this.popconfirmPropsForRemoveMonitoring() : this.popconfirmPropsForAddMonitoring();
-
         return (
             <Card
-                title={repo.name} extra={<GerenciarOuVisualizarTarefas
+                title={<Button icon='github' target='_blank' href={repo.html_url} type="link" size={'large'}>{repo.name}</Button>} extra={<GerenciarOuVisualizarTarefas
                     repo={repo}
                     match={match}
                     history={history} />}
                 style={{ width: '100%' }}
                 actions={[
-                    <Tooltip placement="bottom" title={repo.has_in_starred ? 'Desfavoritar' : 'Favoritar'}><Button onClick={popconfirmProps.onConfirm} ghost={!repo.has_in_starred} type={'link'} icon="star" /></Tooltip>,
+                    <Tooltip placement="bottom" title={repo.has_in_starred ? 'Desfavoritar' : 'Favoritar'}><Button onClick={popconfirmProps.onConfirm} type={repo.has_in_starred ? 'primary' : 'ghost'} shape={'circle'} icon="star" /></Tooltip>,
+
                     <Tooltip placement="bottom" title={`${repo.num_contributors} Contribuidores`}><Button onClick={() =>
                         history.push({
                             pathname: `${match.url}/${repo.name}/colaboradores/`,
                             state: { repo }
                         })
-                    } type={'link'} icon="robot" /></Tooltip>,
+                    } type={'link'} icon="robot" >{`${repo.num_contributors} Contribuidore(s)`}</Button></Tooltip>,
+
                     <Tooltip placement="bottom" title={`${repo.num_commits} Commits`}><Button onClick={() => {
                         history.push({
                             pathname: `${match.url}/${repo.name}/commits/`,
                             state: { repo }
                         })
-                    }} type={'link'} icon="number" /></Tooltip>,
+                    }} type={'link'} icon="number" >{`${repo.num_commits} Commit(s)`}</Button></Tooltip>,
                 ]}
             >
                 <Spin spinning={this.state.loading} size={'large'}>

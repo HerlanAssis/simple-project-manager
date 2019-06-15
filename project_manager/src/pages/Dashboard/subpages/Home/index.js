@@ -1,12 +1,12 @@
 import React from 'react';
-import { Tooltip, Icon, Modal, Button, Typography } from 'antd';
+import { Tooltip, Icon, Modal, Button, Typography, List } from 'antd';
 import { Charts, Trend } from 'ant-design-pro';
 // * Redux imports *
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { TasksActions } from '../../../../modules/Tasks';
 // * END Redux imports *
-import { Page, List } from '../../../../components';
+import { Page } from '../../../../components';
 import './styles.css';
 
 import moment from 'moment';
@@ -40,10 +40,10 @@ class Home extends React.Component {
         return (
             <Page loading={this.props.requestTaskManagersLoading}>
                 <List
-                    items={this.props.taskmanagers}
-                    columns={1}
-                    renderItem={(taskmanager) => {
-                        return (
+                    grid={{ gutter: 16, column: 2 }}
+                    dataSource={this.props.taskmanagers}
+                    renderItem={taskmanager => (
+                        <List.Item>
                             <Charts.ChartCard
                                 title={<Title level={4}>{taskmanager.projectName}</Title>}
                                 action={
@@ -96,9 +96,8 @@ class Home extends React.Component {
                             >
                                 <Charts.MiniProgress percent={taskmanager.progress} strokeWidth={8} target={100} />
                             </Charts.ChartCard>
-                        )
-                    }}
-                    keyExtractor={(taskmanager) => taskmanager.id}
+                        </List.Item>
+                    )}
                 />
             </Page>
         );

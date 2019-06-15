@@ -28,8 +28,6 @@ class Colaboradores extends React.Component {
         this.setState({ loading: true });
         Api.BackendServer.get('pm/contributors/').then(response => {
             this.setState({ colaboradores: response.data, loading: false });
-
-            console.log(response);
         })
     }
 
@@ -74,14 +72,21 @@ class Colaboradores extends React.Component {
     _keyExtractor = (item) => `${item.id}`
 
     render() {
+        alert("TESTE")
         return (
             <Page loading={this.state.loading}>
                 <List
+                    grid={{ gutter: 16, column: 4 }}
+                    dataSource={this.state.colaboradores}
+                    renderItem={item => this.renderItem(item)}
+                />
+                {/* <List
                     columns={3}
                     items={this.state.colaboradores}
                     renderItem={(item) => this.renderItem(item)}
                     keyExtractor={this._keyExtractor}
-                />
+                /> */}
+
             </Page>
         );
     }

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Page, List, Repository } from '../../../../components';
+import { List } from 'antd';
+import { Page, Repository } from '../../../../components';
 import { Api } from '../../../../services';
 import './styles.css';
 
@@ -29,7 +30,6 @@ class ProjetosAssistidos extends React.Component {
         this.setState({ loading: true });
 
         Api.BackendServer.get('pm/stargazers/').then(response => {
-            console.log("stargazers", response);
             this.setState({ stargazers: response.data, loading: false });
         })
     }
@@ -38,7 +38,6 @@ class ProjetosAssistidos extends React.Component {
         this.setState({ loading: true });
 
         Api.BackendServer.get('pm/stargazers/').then(response => {
-            console.log("stargazers", response);
             this.setState({ stargazers: response.data, loading: false });
         })
     }
@@ -73,10 +72,13 @@ class ProjetosAssistidos extends React.Component {
                 {/* RESULTADOS DA PESQUISA  */}
                 <div style={{ flex: 9 }}>
                     <List
-                        columns={2}
-                        items={this.state.stargazers.results}
-                        renderItem={(project) => this.renderItem(project)}
-                        keyExtractor={this._keyExtractor}
+                        grid={{ gutter: 16, column: 2 }}
+                        dataSource={this.state.stargazers.results}
+                        renderItem={item => (
+                            <List.Item>
+                                {this.renderItem(item)}
+                            </List.Item>
+                        )}
                     />
                 </div>
             </Page>

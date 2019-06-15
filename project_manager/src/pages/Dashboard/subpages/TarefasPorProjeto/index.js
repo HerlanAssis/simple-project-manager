@@ -14,6 +14,13 @@ import { URLS } from '../../../../constants';
 
 const { Title } = Typography;
 
+const STATUS = {
+    'TODO':'A fazer',
+    'DOING':'Fazendo',
+    'BLOCKED':'Bloqueada',
+    'DONE':'Feito',
+}
+
 class TarefasPorProjeto extends React.Component {
 
 
@@ -22,13 +29,19 @@ class TarefasPorProjeto extends React.Component {
             title: 'Data de Criação',
             dataIndex: 'createdAt',
             render: date => moment(date).format('DD/MM/YYYY HH:mm'),
+            sorter: (a, b) => moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime(),
         }, {
             title: 'Última modificação',
             dataIndex: 'updatedAt',
-            render: date => moment(date).format('DD/MM/YYYY HH:mm')
+            render: date => moment(date).format('DD/MM/YYYY HH:mm'),
+            sorter: (a, b) => moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime(),
         }, {
             title: 'Situação',
             dataIndex: 'status',
+            render: (e) => STATUS[e],
+            filters: Object.entries(STATUS).map(([key, value]) => ({'text':value, 'value': key})),
+            // filteredValue: filteredInfo.name || null,
+            // onFilter: (value, record) => record.name.includes(value),
         },
         {
             title: 'Título',
@@ -42,7 +55,8 @@ class TarefasPorProjeto extends React.Component {
         {
             title: 'Data prevista de entrega',
             dataIndex: 'expectedDate',
-            render: date => moment(date).format('DD/MM/YYYY')
+            render: date => moment(date).format('DD/MM/YYYY'),
+            sorter: (a, b) => moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime(),
         },
         {
             title: 'Ações',
@@ -101,10 +115,10 @@ class TarefasPorProjeto extends React.Component {
 
     reloadTaskManager() {
         const { repo } = this.props.location.state;
-          this.props.getTaskManager({
-              projectId: repo.id,
-              owner: repo.is_owner,
-          });
+        this.props.getTaskManager({
+            projectId: repo.id,
+            owner: repo.is_owner,
+        });
     }
 
     showMonitoringCodes() {
@@ -191,7 +205,7 @@ class TarefasPorProjeto extends React.Component {
                         </div>
 
                         <div style={{ margin: '20px', marginBottom: '0px' }}>
-                            <Progress percent={Number(parseFloat(this.props.taskmanager.progress).toFixed(2))} status="active" />
+                            <Progress percent={this.props.taskmanager.progress} status="active" />
                         </div>
 
                     </div>

@@ -51,9 +51,7 @@ class Commits extends React.Component {
         const { repo } = this.props.location.state;
 
         Api.BackendServer.get(`pm/commits/`, { params: { repo_full_name: repo.full_name } }).then(response => {
-            const commits = response.data;
-
-            console.log('commit', commits)
+            const commits = response.data;            
 
             const data = commits.results.map((value, index) => ({
                 key: `${index}`,
@@ -104,7 +102,7 @@ class Commits extends React.Component {
                     columns={columns}
                     dataSource={this.state.data}
                     onChange={(pagination, filters, sorter) => this.onChange(pagination, filters, sorter)}
-                />,
+                />
             </Page>
         );
     }

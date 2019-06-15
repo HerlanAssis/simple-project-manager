@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, Tabs, Icon, Button, Card } from 'antd';
+import { Checkbox, Tabs, Icon, Button, List } from 'antd';
 // * Redux imports *
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -106,30 +106,29 @@ class TabResumeReport extends React.Component {
 class TabDetailReport extends React.Component {
     render() {
         return (
-            <Card style={{ margin: '60px' }}>
-                {this.props.taskmanagers.map((taskmanager) => (
-                    <Card.Grid
-                        key={taskmanager.id}
-                        style={{ width: '100%', textAlign: 'center' }}
-                    >
-                        <Button
-                            onClick={() => {
-                                Api.BackendServer.get(`r/detail/${taskmanager.id}`, { responseType: 'blob', }).then(response => {
-                                    let blob = new Blob([response.data], { type: 'application/pdf' }),
-                                        url = window.URL.createObjectURL(blob)
+            <List
+                style={{ margin: '60px' }}
+                size="large"
+                bordered
+                dataSource={this.props.taskmanagers}
+                renderItem={taskmanager => <List.Item>
+                    <Button
+                        onClick={() => {
+                            Api.BackendServer.get(`r/detail/${taskmanager.id}`, { responseType: 'blob', }).then(response => {
+                                let blob = new Blob([response.data], { type: 'application/pdf' }),
+                                    url = window.URL.createObjectURL(blob)
 
-                                    window.open(url);
-                                })
-                            }}
-                            icon={'download'}
-                            size={'large'}
-                            type={'link'}
-                        >
-                            {taskmanager.projectName}
-                        </Button>
-                    </Card.Grid>
-                ))}
-            </Card>
+                                window.open(url);
+                            })
+                        }}
+                        icon={'download'}
+                        size={'large'}
+                        type={'link'}
+                    >
+                        {taskmanager.projectName}
+                    </Button>
+                </List.Item>}
+            />
         )
     }
 }

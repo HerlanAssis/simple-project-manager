@@ -1,5 +1,6 @@
 import React from 'react';
-import { Page, List, Repository } from '../../../../components';
+import { List } from 'antd';
+import { Page, Repository } from '../../../../components';
 import { Api } from '../../../../services';
 import './styles.css';
 
@@ -28,7 +29,6 @@ class Projetos extends React.Component {
         this.setState({ loading: true });
 
         Api.BackendServer.get('pm/repos/').then(response => {
-            console.log("REPOS", response);
             this.setState({ repos: response.data, loading: false });
         })
     }
@@ -37,7 +37,6 @@ class Projetos extends React.Component {
         this.setState({ loading: true });
 
         Api.BackendServer.get('pm/repos/').then(response => {
-            console.log("REPOS", response);
             this.setState({ repos: response.data, loading: false });
         })
     }
@@ -71,10 +70,13 @@ class Projetos extends React.Component {
                 }}
             >
                 <List
-                    columns={2}
-                    items={this.state.repos.results}
-                    renderItem={(project) => this.renderItem(project)}
-                    keyExtractor={this._keyExtractor}
+                    grid={{ gutter: 16, column: 2 }}
+                    dataSource={this.state.repos.results}
+                    renderItem={item => (
+                        <List.Item>
+                            {this.renderItem(item)}
+                        </List.Item>
+                    )}
                 />
             </Page>
         );

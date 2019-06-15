@@ -1,8 +1,8 @@
 import React from 'react';
 import { Charts } from 'ant-design-pro';
-import { Avatar, Card, Spin } from 'antd';
+import { Avatar, Card, Spin, List } from 'antd';
 import moment from 'moment';
-import { Page, List } from '../../../../components';
+import { Page } from '../../../../components';
 import { Api } from '../../../../services';
 import './styles.css';
 
@@ -66,16 +66,14 @@ class Colaboradores extends React.Component {
 
     renderItem(item) {
         return (
-            <Card
-                // title={repo.name}
-                style={{ width: '100%' }}
-            >
-                <Card.Meta
-                    avatar={<Avatar src={item.avatar_url} />}
-                    title={item.name || item.login}
-                // description="This is the description"
-                />
-                <Spin spinning={!this.state.graphs[item.login]} size={'large'}>
+            <Spin spinning={!this.state.graphs[item.login]}>
+                <Card
+                    style={{ width: '100%', height: '100%' }}
+                >
+                    <Card.Meta
+                        avatar={<Avatar src={item.avatar_url} />}
+                        title={item.name || item.login}
+                    />
                     <Charts.MiniArea
                         line
                         animate={true}
@@ -83,8 +81,8 @@ class Colaboradores extends React.Component {
                         height={100}
                         data={this.state.graphs[item.login]}
                     />
-                </Spin>
-            </Card>
+                </Card>
+            </Spin>
         )
     }
 
@@ -131,10 +129,13 @@ class Colaboradores extends React.Component {
                 loading={this.state.loading}
             >
                 <List
-                    columns={3}
-                    items={this.state.colaboradores.results}
-                    renderItem={(item) => this.renderItem(item)}
-                    keyExtractor={this._keyExtractor}
+                    grid={{ gutter: 16, column: 2 }}
+                    dataSource={this.state.colaboradores.results}
+                    renderItem={item => (
+                        <List.Item>
+                            {this.renderItem(item)}
+                        </List.Item>
+                    )}
                 />
             </Page>
         );

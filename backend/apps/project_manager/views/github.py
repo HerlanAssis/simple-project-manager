@@ -33,9 +33,10 @@ def repo_totalCount(repo, attr):
 def repo_object_modeler(data, extra_args): return [
     {
         'name': repo.name, 'full_name': repo.full_name, 'id': repo.id,
+        'html_url': repo.html_url,
         'num_contributors': repo_totalCount(repo, 'get_contributors'),
         'num_commits':  repo_totalCount(repo, 'get_commits'), 'has_in_starred': extra_args['user'].has_in_starred(repo),
-        'is_owner': extra_args['user'].id == repo.owner.id
+        'is_owner': extra_args['user'].id == repo.owner.id,
     } for repo in data
 ]
 
