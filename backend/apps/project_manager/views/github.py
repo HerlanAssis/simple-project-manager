@@ -248,7 +248,7 @@ class Commits(GithubAPIView):
         author=request.GET.get('author', None)
 
         if author is not None:
-            commits = repo_secure_get(repo, 'get_commits', { 'author':author })
+            commits = repo_secure_get(repo, 'get_commits', author=author)
             key = 'repo-{}-{}-commit-page'.format(repo_full_name, author)
         else:
             key = 'repo-{}-commit-page'.format(repo_full_name)

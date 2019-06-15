@@ -96,12 +96,17 @@ class UpdateTask(graphene.Mutation):
   ok = graphene.Boolean()
   task = graphene.Field(TaskType)
 
+  
   @staticmethod
-  def mutate(root, info, id, responsible_id, input=None):              
+  def mutate(root, info, id, input=None, **kwargs):              
     ok = False
     task_instance = get_or_none(Task, pk=id)
-    responsible = get_or_none(User, pk=responsible_id)
+    responsible_id = kwargs.get('responsible_id', None)
     
+    responsible = None
+    if responsible_id is not None:
+      responsible = get_or_none(User, pk=responsible_id)
+
     if task_instance:
       context_user_is_the_task_owner = task_instance.owner.pk == info.context.user.pk      
       

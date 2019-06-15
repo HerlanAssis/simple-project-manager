@@ -52,10 +52,10 @@ class TaskManager(BaseModel):
 
     @property
     def progress(self):
-        resultado = 0
+        resultado = 0.0
 
         try:
-            resultado = self.tasks.filter(status=DONE).count()/self.tasks.all().count() * 100
+            resultado = "{0:.2f}".format(self.tasks.filter(status=DONE).count()/self.tasks.all().count() * 100)
         except ZeroDivisionError as e:
             pass
 
