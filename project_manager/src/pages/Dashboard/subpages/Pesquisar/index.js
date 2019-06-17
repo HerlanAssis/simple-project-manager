@@ -19,6 +19,7 @@ class Pesquisar extends React.Component {
             },
             last_search: null,
             loading: false,
+            done: false,
         }
 
         this.refresh = this.refresh.bind(this);
@@ -66,9 +67,9 @@ class Pesquisar extends React.Component {
                         size="large"
                         placeholder="Pesquise pelo nome do repositório"
                         onSearch={value => {
-                            this.setState({ loading: true });
+                            this.setState({ loading: true, done: false });
                             Api.BackendServer.get('pm/search/', { params: { reponame: value } }).then(response => {
-                                this.setState({ loading: false, last_search: value, search_repos: response.data })
+                                this.setState({ loading: false, done: true, last_search: value, search_repos: response.data })
                             })
                         }}
                         style={{ width: '100%' }}
@@ -78,6 +79,9 @@ class Pesquisar extends React.Component {
                 {/* RESULTADOS DA PESQUISA  */}
                 <div style={{ flex: 9 }}>
                     <List
+                        locale={{
+                            emptyText: this.state.done? 'Nenhum resultado encontrado para o termo pesquisado' : 'Não há dados'
+                        }}
                         grid={{ gutter: 16, column: 2 }}
                         dataSource={this.state.search_repos.results}
                         renderItem={item => (
@@ -85,7 +89,7 @@ class Pesquisar extends React.Component {
                                 {this.renderItem(item)}
                             </List.Item>
                         )}
-                    />                    
+                    />
                 </div>
             </Page>
         );

@@ -29,6 +29,7 @@ import {
 // * Redux imports *
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { images } from '../../styles';
 // import { AuthActions } from '../../modules/Authentication';
 // * END Redux imports *
 
@@ -102,7 +103,8 @@ class Dashboard extends React.Component {
                     collapsible={false}
                 >
                     <div style={{ height: '60px', width: '100%', padding: 10 }}>
-                        <div className="logo" style={{ display: 'flex', height: '100%', width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'gray' }} >
+                        <div className="logo" style={{ display: 'flex', height: '100%', width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center' }} >
+                            <img style={{ maxWidth: '60%', height: 'auto', }} src={images.logo["icon-green"]} alt="Logo icon" />
                         </div>
                     </div>
 

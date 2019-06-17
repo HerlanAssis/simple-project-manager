@@ -40,7 +40,7 @@ class Home extends React.Component {
         return (
             <Page loading={this.props.requestTaskManagersLoading}>
                 <List
-                    grid={{ gutter: 16, column: 2 }}
+                    grid={{ gutter: 16, column: 1 }}
                     dataSource={this.props.taskmanagers}
                     renderItem={taskmanager => (
                         <List.Item>

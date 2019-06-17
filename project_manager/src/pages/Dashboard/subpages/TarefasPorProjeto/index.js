@@ -15,54 +15,13 @@ import { URLS } from '../../../../constants';
 const { Title } = Typography;
 
 const STATUS = {
-    'TODO':'A fazer',
-    'DOING':'Fazendo',
-    'BLOCKED':'Bloqueada',
-    'DONE':'Feito',
+    'TODO': 'A fazer',
+    'DOING': 'Fazendo',
+    'BLOCKED': 'Bloqueada',
+    'DONE': 'Feito',
 }
 
 class TarefasPorProjeto extends React.Component {
-
-
-    columns = [
-        {
-            title: 'Data de Criação',
-            dataIndex: 'createdAt',
-            render: date => moment(date).format('DD/MM/YYYY HH:mm'),
-            sorter: (a, b) => moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime(),
-        }, {
-            title: 'Última modificação',
-            dataIndex: 'updatedAt',
-            render: date => moment(date).format('DD/MM/YYYY HH:mm'),
-            sorter: (a, b) => moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime(),
-        }, {
-            title: 'Situação',
-            dataIndex: 'status',
-            render: (e) => STATUS[e],
-            filters: Object.entries(STATUS).map(([key, value]) => ({'text':value, 'value': key})),
-            // filteredValue: filteredInfo.name || null,
-            // onFilter: (value, record) => record.name.includes(value),
-        },
-        {
-            title: 'Título',
-            dataIndex: 'title',
-        },
-        {
-            title: 'Responsável',
-            dataIndex: 'responsible',
-            render: responsible => responsible ? responsible.username : '-'
-        },
-        {
-            title: 'Data prevista de entrega',
-            dataIndex: 'expectedDate',
-            render: date => moment(date).format('DD/MM/YYYY'),
-            sorter: (a, b) => moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime(),
-        },
-        {
-            title: 'Ações',
-            render: (text, row) => <div><Button onClick={() => this.refs.detailTask.openModal(row)} type="link">Detalhar</Button> <Button disabled={!this.canIEditThisTask(row)} onClick={() => this.refs.createOrUpdateTask.openModal(row)} type="link">Editar</Button> </div>
-        },
-    ];
 
     constructor(props) {
         super(props);
@@ -160,6 +119,46 @@ class TarefasPorProjeto extends React.Component {
         const { taskmanager } = this.props;
         const { repo } = this.props.location.state;
 
+        const columns = [
+            {
+                title: 'Data de Criação',
+                dataIndex: 'createdAt',
+                render: date => moment(date).format('DD/MM/YYYY HH:mm'),
+                sorter: (a, b) => moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime(),
+            }, {
+                title: 'Última modificação',
+                dataIndex: 'updatedAt',
+                render: date => moment(date).format('DD/MM/YYYY HH:mm'),
+                sorter: (a, b) => moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime(),
+            }, {
+                title: 'Situação',
+                dataIndex: 'status',
+                render: (e) => STATUS[e],
+                filters: Object.entries(STATUS).map(([key, value]) => ({ 'text': value, 'value': key })),
+                // filteredValue: this.state.filteredInfo.name || null,
+                onFilter: (value, record) => record.status.includes(value),
+            },
+            {
+                title: 'Título',
+                dataIndex: 'title',
+            },
+            {
+                title: 'Responsável',
+                dataIndex: 'responsible',
+                render: responsible => responsible ? responsible.username : '-'
+            },
+            {
+                title: 'Data prevista de entrega',
+                dataIndex: 'expectedDate',
+                render: date => moment(date).format('DD/MM/YYYY'),
+                sorter: (a, b) => moment(b.createdAt).toDate().getTime() - moment(a.createdAt).toDate().getTime(),
+            },
+            {
+                title: 'Ações',
+                render: (text, row) => <div><Button onClick={() => this.refs.detailTask.openModal(row)} type="link">Detalhar</Button> <Button disabled={!this.canIEditThisTask(row)} onClick={() => this.refs.createOrUpdateTask.openModal(row)} type="link">Editar</Button> </div>
+            },
+        ];
+
         return (
             <Page loading={this.props.requestTaskManagerLoading || this.props.requestWatcherLoading}>
 
@@ -219,12 +218,13 @@ class TarefasPorProjeto extends React.Component {
                 </div>
 
                 <div>
-                    <Table rowKey="id"
+                    <Table
+                        rowKey="id"
                         pagination={{
                             hideOnSinglePage: true,
                         }}
                         dataSource={taskmanager ? taskmanager.tasks : []}
-                        columns={this.columns}
+                        columns={columns}
                     />
                 </div>
             </Page >
