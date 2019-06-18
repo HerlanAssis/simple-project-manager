@@ -183,23 +183,23 @@ class TarefasPorProjeto extends React.Component {
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                             <Card>
-                                <Statistic title="Tarefas abertas" value={taskmanager.qtdOpenTasks} />
+                                <Statistic valueStyle={{ textAlign: 'center' }} title="Tarefas abertas" value={taskmanager.qtdOpenTasks} />
                             </Card>
 
                             <Card>
-                                <Statistic title="Tarefas concluídas com atraso" value={taskmanager.qtdTasksCompletedLate} />
+                                <Statistic valueStyle={{ textAlign: 'center' }} title="Tarefas concluídas com atraso" value={taskmanager.qtdTasksCompletedLate} />
                             </Card>
 
                             <Card>
-                                <Statistic title="Tarefas concluídas" value={taskmanager.qtdCompletedTasks} />
+                                <Statistic valueStyle={{ textAlign: 'center' }} title="Tarefas concluídas" value={taskmanager.qtdCompletedTasks} />
                             </Card>
 
                             <Card>
-                                <Statistic title="Tarefas atrasadas" value={taskmanager.qtdOverdueTasks} />
+                                <Statistic valueStyle={{ textAlign: 'center' }} title="Tarefas atrasadas" value={taskmanager.qtdOverdueTasks} />
                             </Card>
 
                             <Card>
-                                <Statistic title="Tarefas bloqueadas" value={taskmanager.qtdBlockedTasks} />
+                                <Statistic valueStyle={{ textAlign: 'center' }} title="Tarefas bloqueadas" value={taskmanager.qtdBlockedTasks} />
                             </Card>
                         </div>
 

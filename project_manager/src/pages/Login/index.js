@@ -82,7 +82,6 @@ class Login extends React.Component {
             },
             {
                 'name': 'Relatórios de progresso',
-                'description': '',
                 'icon': 'file-pdf',
             },
             {
@@ -91,7 +90,6 @@ class Login extends React.Component {
             },
             {
                 'name': 'Notificações',
-                'description': '',
                 'icon': 'notification',
             },
         ]
@@ -105,7 +103,7 @@ class Login extends React.Component {
                 <div style={{ backgroundColor: 'rgba(0,0,0,0.65)', display: 'flex', flex: 1, flexDirection: "column", }}>
                     <div style={{ flex: 1, margin: '8px', display: 'flex', flexDirection: 'column' }}>
                         <div style={{ flex: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-                            <img style={{ width: '15%', height: 'auto', }} src={images.logo["icon-green"]} alt="Logo icon" />
+                            <img style={{ width: '12%', height: 'auto', }} src={images.logo["icon-green"]} alt="Logo icon" />
                             <Typography.Title style={{ textAlign: "center", color: '#25b864' }}>
                                 Simple Project Manager
                             </Typography.Title>
@@ -130,10 +128,10 @@ class Login extends React.Component {
                                 <List.Item style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: "column" }}>
                                     <div
                                         style={{
-                                            display: 'flex', height: '150px', width: '150px', borderRadius: '75px', backgroundColor: '#25b864', margin: '8px', justifyContent: "center", alignItems: 'center'
+                                            display: 'flex', height: '120px', width: '120px', borderRadius: '60px', backgroundColor: '#25b864', margin: '8px', justifyContent: "center", alignItems: 'center'
                                         }}>
                                         <Icon type={item.icon} style={{
-                                            fontSize: '75px'
+                                            fontSize: '60px'
                                         }} />
                                     </div>
 

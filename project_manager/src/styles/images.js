@@ -11,4 +11,5 @@ export default {
         'icon-black': require('../assets/logo/icon-black.svg'),
     },
     background: require('../assets/background.jpg'),
+    user: require('../assets/user.jpg'),
 }

@@ -130,14 +130,14 @@ class Repository extends React.Component {
                             pathname: `${match.url}/${repo.name}/colaboradores/`,
                             state: { repo }
                         })
-                    } type={'link'} icon="robot" >{`${repo.num_contributors} Contribuidore(s)`}</Button></Tooltip>,
+                    } type={'link'} icon="user" /></Tooltip>,
 
                     <Tooltip placement="bottom" title={`${repo.num_commits} Commits`}><Button onClick={() => {
                         history.push({
                             pathname: `${match.url}/${repo.name}/commits/`,
                             state: { repo }
                         })
-                    }} type={'link'} icon="number" >{`${repo.num_commits} Commit(s)`}</Button></Tooltip>,
+                    }} type={'link'} icon="upload" /></Tooltip>,
                 ]}
             >
                 <Spin spinning={this.state.loading} size={'large'}>

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {
-  Layout, Menu, Icon, Tooltip, Modal,
+  Layout, Menu, Icon, Tooltip, Modal, Avatar
 } from 'antd';
 
 import { URLS, KEYS } from '../../constants';
@@ -19,6 +19,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { AuthActions } from '../../modules/Authentication';
 import { TasksActions } from '../../modules/Tasks';
+import { images } from '../../styles';
 // * END Redux imports *
 
 const {
@@ -137,7 +138,7 @@ class CustomHeader extends React.Component {
                 list={task_expires_today.map(task => {
                   return { title: task.title, onClick: () => { this.refs.createOrUpdateTask.openModal(task) } }
                 })}
-                emptyText={'Nada a exibir.'}              
+                emptyText={'Nada a exibir.'}
               />
               {/* <NoticeIcon.Tab
                 title="next_releases"
@@ -152,7 +153,10 @@ class CustomHeader extends React.Component {
 
           <div style={{ marginRight: 20 }}>
             <HeaderDropdown overlay={menu}>
-              <span>{this.props.user.username}</span>
+              <span style={{ display: "flex", justifyContent: 'space-around', alignItems: "center" }}>
+                <Avatar style={{margin:'8px'}} size="large" src={this.props.user.avatar_url || images.user} alt="avatar" />
+                <span>{this.props.user.username}</span>
+              </span>
             </HeaderDropdown>
           </div>
         </div>
