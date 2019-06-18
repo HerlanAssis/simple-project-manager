@@ -1,85 +1,111 @@
 import React from 'react';
-import { Tooltip, Icon, Modal, Button, Typography, List } from 'antd';
+import { Tooltip, Icon, Button, Typography, List, Input } from 'antd';
 import { Charts, Trend } from 'ant-design-pro';
 // * Redux imports *
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { TasksActions } from '../../../../modules/Tasks';
 // * END Redux imports *
 import { Page } from '../../../../components';
 import './styles.css';
 
 import moment from 'moment';
+import { NotificationsActions } from '../../../../modules/Notifications';
+import { NotificationWindow } from '../../../../services';
 
 const { Title } = Typography;
-
-function countDown(code) {
-    let secondsToGo = 10;
-    const modal = Modal.success({
-        title: `Código de convite: ${code}`,
-        content: `Esta janela irá fechar em ${secondsToGo} segundos.`,
-    });
-    const timer = setInterval(() => {
-        secondsToGo -= 1;
-        modal.update({
-            content: `Esta janela irá fechar em ${secondsToGo} segundos.`,
-        });
-    }, 1000);
-    setTimeout(() => {
-        clearInterval(timer);
-        modal.destroy();
-    }, secondsToGo * 1000);
-}
+const { Search } = Input;
 
 class Home extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            searching: false,
+        }
+    }
+
     componentDidMount() {
-        this.props.getAllTaskManagers()
+        this.props.getAllWatchers()
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.state.searching && nextProps.requestCreateWatcherDone) {
+            this.props.getAllWatchers()
+            this.setState({ searching: false });
+        }
     }
 
     render() {
+        const { history } = this.props;
+
         return (
-            <Page loading={this.props.requestTaskManagersLoading}>
+            <Page loading={this.props.requestAllWatchersLoading || this.props.requestCreateWatcherLoading}>
                 <List
+                    header={<div style={{ display: 'flex', flex: 1, margin: '8px' }}>
+                        <Search
+                            size="large"
+                            placeholder="Digite o código de convite"
+                            enterButton="Adicionar"
+                            prefix={
+                                <Tooltip title="O código é fornecido pelo gerente do projeto">
+                                    <Icon type="info-circle" style={{ color: 'rgba(0,0,0,.45)' }} />
+                                </Tooltip>
+                            }
+                            onSearch={value => {
+                                // this.setState({ loading: true, done: false });
+                                // Api.BackendServer.get('pm/search/', { params: { reponame: value } }).then(response => {
+                                //     this.setState({ loading: false, done: true, last_search: value, search_repos: response.data })
+                                // })
+
+                                this.props.createWacherAsGuest({
+                                    invitationCode: value,
+                                });
+
+                                this.setState({ searching: true });
+                            }}
+                            style={{ width: '100%' }}
+                        />
+                    </div>}
                     grid={{ gutter: 16, column: 1 }}
-                    dataSource={this.props.taskmanagers}
-                    renderItem={taskmanager => (
+                    dataSource={this.props.watchers}
+                    renderItem={watcher => (
                         <List.Item>
                             <Charts.ChartCard
-                                title={<Title level={4}>{taskmanager.projectName}</Title>}
+                                title={<Title level={4}>{watcher.vigilant.projectName}</Title>}
                                 action={
-                                    <Tooltip title={`Gerenciado ${moment(taskmanager.createdAt).fromNow()}`}>
+                                    <Tooltip title={`Gerenciado ${moment(watcher.vigilant.createdAt).fromNow()}`}>
                                         <Icon type="info-circle-o" />
                                     </Tooltip>
                                 }
-                                total={`${taskmanager.progress}%`}
+                                total={`${watcher.vigilant.progress}%`}
                                 footer={
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <div>
                                             <span>
                                                 Atrasadas
                                                     <Trend flag="up" style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>
-                                                    {taskmanager.qtdOverdueTasks}
+                                                    {watcher.vigilant.qtdOverdueTasks}
                                                 </Trend>
                                             </span>
 
                                             <span style={{ marginLeft: 16 }}>
                                                 Bloqueadas
                                                     <Trend flag="up" style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>
-                                                    {taskmanager.qtdBlockedTasks}
+                                                    {watcher.vigilant.qtdBlockedTasks}
                                                 </Trend>
                                             </span>
 
                                             <span style={{ marginLeft: 16 }}>
                                                 Completas
                                                     <Trend flag="up" reverseColor style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>
-                                                    {taskmanager.qtdCompletedTasks}
+                                                    {watcher.vigilant.qtdCompletedTasks}
                                                 </Trend>
                                             </span>
 
                                             <span style={{ marginLeft: 16 }}>
                                                 Abertas
                                                     <Trend flag="down" style={{ marginLeft: 8, color: 'rgba(0,0,0,.85)' }}>
-                                                    {taskmanager.qtdOpenTasks}
+                                                    {watcher.vigilant.qtdOpenTasks}
                                                 </Trend>
                                             </span>
 
@@ -87,14 +113,21 @@ class Home extends React.Component {
 
                                         <div>
                                             <span>
-                                                <Button onClick={() => countDown(taskmanager.invitationCode)}>Exibir código</Button>
+                                                <Button onClick={() => {
+                                                    history.push({
+                                                        pathname: `${watcher.vigilant.projectName}/tarefas/`,
+                                                        state: { watcher }
+                                                    })
+                                                }} type="link" size="large" icon="line-chart">
+                                                    Detalhar Projeto
+                                                </Button>
                                             </span>
                                         </div>
                                     </div>
                                 }
                                 contentHeight={46}
                             >
-                                <Charts.MiniProgress percent={taskmanager.progress} strokeWidth={8} target={100} />
+                                <Charts.MiniProgress percent={watcher.vigilant.progress} strokeWidth={8} target={100} />
                             </Charts.ChartCard>
                         </List.Item>
                     )}
@@ -106,21 +139,28 @@ class Home extends React.Component {
 
 const mapStateToProps = (state) => {
     const {
-        requestTaskManagersDone,
-        requestTaskManagersLoading,
-        taskmanagers,
-    } = state.tasks;
+        requestAllWatchersDone,
+        requestAllWatchersLoading,
+        watchers,
+
+        requestCreateWatcherDone,
+        requestCreateWatcherLoading,
+    } = state.notifications;
 
     return {
-        requestTaskManagersDone,
-        requestTaskManagersLoading,
-        taskmanagers,
+        requestAllWatchersDone,
+        requestAllWatchersLoading,
+        watchers,
+
+        requestCreateWatcherDone,
+        requestCreateWatcherLoading,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
-        'getAllTaskManagers': TasksActions.getAllTaskManagers,
+        'getAllWatchers': NotificationsActions.getAllWatchers,
+        'createWacherAsGuest': NotificationsActions.createWacherAsGuest,
     }, dispatch);
 };
 

@@ -8,6 +8,9 @@ const DEFAULT_STATE = {
     requestAllWatchersDone: false,
     requestAllWatchersLoading: false,
     watchers: [],
+
+    requestCreateWatcherDone: false,
+    requestCreateWatcherLoading: false,
 };
 
 const NotificationsReducer = (state = DEFAULT_STATE, action) => {
@@ -53,6 +56,27 @@ const NotificationsReducer = (state = DEFAULT_STATE, action) => {
                 ...state,
                 requestWatcherDone: false,
                 requestWatcherLoading: false,
+            };
+        /** WATCHER REQUEST LOADING */
+
+        /**WATCHER REQUEST LOADING */
+        case NotificationsTypes.REQUEST_CREATE_WATCHER_LOADING:
+            return {
+                ...state,
+                requestCreateWatcherDone: false,
+                requestCreateWatcherLoading: true,
+            };
+        case NotificationsTypes.REQUEST_CREATE_WATCHER_SUCCESS:
+            return {
+                ...state,
+                requestCreateWatcherDone: true,
+                requestCreateWatcherLoading: false,
+            };
+        case NotificationsTypes.REQUEST_CREATE_WATCHER_ERROR:
+            return {
+                ...state,
+                requestCreateWatcherDone: false,
+                requestCreateWatcherLoading: false,
             };
         /** WATCHER REQUEST LOADING */
 

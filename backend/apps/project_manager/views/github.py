@@ -94,6 +94,14 @@ class GithubAPIView(APIView):
 class User(GithubAPIView):
     def get(self, request, format=None):
         user = CurrentUserSerializer(request.user).data
+        
+        key = '{}-avatar_url'.format(request.user.username)
+        avatar_url = cache.get(key=key, default=None)
+        if avatar_url is None:
+            avatar_url = self.get_github_instance(request).get_user().avatar_url
+            cache.set(key, avatar_url, settings.CACHE_LEVEL['THREE'])
+        
+        user['avatar_url'] = avatar_url
         return Response(user)
 
 

@@ -36,10 +36,9 @@ class TarefasPorProjeto extends React.Component {
     }
 
     componentDidMount() {
-        const { repo } = this.props.location.state;
+        const { watcher } = this.props.location.state;
         this.props.getTaskManager({
-            projectId: repo.id,
-            owner: repo.is_owner,
+            id: watcher.vigilant.id,
         });
     }
 
@@ -47,17 +46,18 @@ class TarefasPorProjeto extends React.Component {
         if (this.state.canRequestWatcher && nextProps.requestTaskManagerDone) {
             this.setState({ canRequestWatcher: false });
 
-            const { repo } = nextProps.location.state;
+            const { watcher } = nextProps.location.state;
+
             nextProps.getWacher({
-                projectId: repo.id,
+                id: watcher.id,
             });
+
 
         }
     }
 
     amIManager() {
-        const { repo } = this.props.location.state;
-        return repo.is_owner;
+        return false;
     }
 
     canIEditThisTask(task) {
@@ -73,42 +73,23 @@ class TarefasPorProjeto extends React.Component {
 
 
     reloadTaskManager() {
-        const { repo } = this.props.location.state;
+        const { watcher } = this.props.location.state;
         this.props.getTaskManager({
-            projectId: repo.id,
-            owner: repo.is_owner,
+            id: watcher.vigilant.id,
         });
     }
 
     showMonitoringCodes() {
-        const { watcher, taskmanager } = this.props;
+        const { watcher } = this.props;
         Modal.info({
-            title: 'Códigos de monitoramento',
+            title: 'Código de monitoramento TelegramBot',
             content: (
                 <div style={{ marginTop: '20px' }}>
-                    <Divider />
-
-                    <div style={{ marginTop: '10px' }}>
-                        <h3>Código de convite: </h3>
-                        <Card>
-                            <h4>
-                                {this.amIManager() ? taskmanager.invitationCode : 'xxxxxxxxxx'}
-                            </h4>
-                        </Card>
-                    </div>
-
-                    <Divider dashed />
-
-                    <div style={{ marginTop: '10px' }}>
-                        <h3>
-                            Código de monitoramento TelegramBot:
-                        </h3>
-                        <Card>
-                            <h4>
-                                <a href={URLS.TELEGRAM_BOT_URL}>@MeninoDeRecado</a> {watcher.authorizationCode}
-                            </h4>
-                        </Card>
-                    </div>
+                    <Card>
+                        <h4>
+                            <a href={URLS.TELEGRAM_BOT_URL}>@MeninoDeRecado</a> {watcher.authorizationCode}
+                        </h4>
+                    </Card>
                 </div>
             ),
             onOk() { },
@@ -117,7 +98,7 @@ class TarefasPorProjeto extends React.Component {
 
     render() {
         const { taskmanager } = this.props;
-        const { repo } = this.props.location.state;
+        const { watcher } = this.props.location.state;
 
         const columns = [
             {
@@ -168,7 +149,7 @@ class TarefasPorProjeto extends React.Component {
 
 
                 <div style={{ display: 'flex', height: '75px', alignItems: 'center', justifyContent: 'center' }}>
-                    <Title>{repo.name}</Title>
+                    <Title>{watcher.vigilant.projectName}</Title>
                 </div>
 
                 {taskmanager && <div>
@@ -210,12 +191,6 @@ class TarefasPorProjeto extends React.Component {
                     </div>
                     <Divider />
                 </div>}
-
-                <div style={{ display: 'flex', height: '50px', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    <Button disabled={!this.amIManager()} onClick={() => this.refs.createOrUpdateTask.openModal()} type="primary" icon="plus" size={'default'} >
-                        Adicionar nova tarefa
-                    </Button>
-                </div>
 
                 <div>
                     <Table

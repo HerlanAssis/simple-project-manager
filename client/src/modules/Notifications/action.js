@@ -1,6 +1,6 @@
 import * as NotifictionsTypes from './types';
 
-const getAllWachers = () => {
+const getAllWatchers = () => {
     return {
         type: NotifictionsTypes.SAGA_ALL_WATCHERS,
         params: {},
@@ -11,7 +11,16 @@ const getWacher = ({ id, projectId, authorizationCode }) => {
     return {
         type: NotifictionsTypes.SAGA_WATCHER,
         params: {
-            id, projectId: projectId, authorizationCode
+            id: Number(id), projectId: projectId, authorizationCode
+        }
+    }
+};
+
+const createWacherAsGuest = ({ invitationCode }) => {
+    return {
+        type: NotifictionsTypes.SAGA_CREATE_WATCHER,
+        params: {
+            invitationCode
         }
     }
 };
@@ -29,5 +38,6 @@ const updateWatcher = ({ id, notification }) => {
 export {
     getWacher,
     updateWatcher,
-    getAllWachers,
+    getAllWatchers,
+    createWacherAsGuest,
 }

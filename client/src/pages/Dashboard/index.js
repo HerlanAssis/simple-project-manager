@@ -12,15 +12,8 @@ import './styles.css';
 import { Route, Header } from '../../components';
 import {
     Home,
-    Pesquisar,
-    Projetos,
     Tarefas,
     Agenda,
-    // ProjetosAssistidos,
-    // Colaboradores,
-    // Relatorios,
-    // Commits,
-    // Laboratorio,
     Notificacoes,
     Page404,
     TarefasPorProjeto,
@@ -38,32 +31,17 @@ const {
 } = Layout;
 
 const repository_sub_componentes = (fatherPath) => ([
-    // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
-    // { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
-    // { key: 'Colaboradores', path: `${fatherPath}/:projectname/colaboradores/`, component: Colaboradores },
-    { key: 'TarejasProProjeto', path: `${fatherPath}/:projectname/tarefas/`, component: TarefasPorProjeto },
+    { key: 'TarejasProProjeto', path: '/:projectname/tarefas/', component: TarefasPorProjeto },
 ]);
 
 const PAGES = [
-    { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
     {
-        iconName: 'search', name: 'Pesquisar', path: '/pesquisar', component: Pesquisar,
-        subcomponents: (fatherPath) => repository_sub_componentes(fatherPath),
-    },
-    // {
-    //     iconName: 'star', name: 'Projetos Assistidos', path: '/monitorando', component: ProjetosAssistidos,
-    //     subcomponents: (fatherPath) => repository_sub_componentes(fatherPath),
-    // },
-    {
-        iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos,
+        iconName: 'pie-chart', name: 'Home', path: '/', component: Home,
         subcomponents: (fatherPath) => repository_sub_componentes(fatherPath),
     },
     { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
     { iconName: 'calendar', name: 'Agenda', path: '/agenda', component: Agenda },
-    // { iconName: 'robot', name: 'Colaboradores', path: '/colaboradores', component: Colaboradores },
-    // { iconName: 'file-pdf', name: 'Relatórios', path: '/relatorios', component: Relatorios },
     { iconName: 'notification', name: 'Notificações', path: '/notificacoes', component: Notificacoes },
-    // { iconName: 'experiment', name: 'Laboratório', path: '/laboratorio', component: Laboratorio },
 ];
 
 class Dashboard extends React.Component {

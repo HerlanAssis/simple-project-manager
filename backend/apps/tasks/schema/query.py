@@ -29,7 +29,7 @@ class Query(object):
     owner = False
 
     if id is not None:
-      return get_or_none(TaskManager, pk=id, owner=info.context.user)      
+      return get_or_none(TaskManager, pk=id)
 
     if project_id is not None:
       taskmanager = get_or_none(TaskManager, project_id=project_id)

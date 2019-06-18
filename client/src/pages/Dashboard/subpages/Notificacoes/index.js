@@ -78,7 +78,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
-        'getAllWatchers': NotificationsActions.getAllWachers,
+        'getAllWatchers': NotificationsActions.getAllWatchers,
     }, dispatch);
 };
 
