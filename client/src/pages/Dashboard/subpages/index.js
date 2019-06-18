@@ -1,6 +1,10 @@
 import Home from './Home';
+import Pesquisar from './Pesquisar';
+import ProjetosAssistidos from './ProjetosAssistidos';
 import Projetos from './Projetos';
+import Commits from './Commits';
 import Tarefas from './Tarefas';
+import TarefasPorProjeto from './TarefasPorProjeto';
 import Agenda from './Agenda';
 import Colaboradores from './Colaboradores';
 import Relatorios from './Relatorios';
@@ -10,6 +14,8 @@ import Page404 from './page404';
 
 export {
     Home,
+    Commits,
+    Pesquisar,
     Projetos,
     Tarefas,
     Agenda,
@@ -18,4 +24,6 @@ export {
     Notificacoes,
     Laboratorio,
     Page404,
+    ProjetosAssistidos,
+    TarefasPorProjeto,
 };

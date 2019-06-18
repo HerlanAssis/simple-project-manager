@@ -1,11 +1,10 @@
 import React from 'react';
 import { Charts } from 'ant-design-pro';
-import { Avatar } from 'antd';
+import { Avatar, Card, Spin, List } from 'antd';
 import moment from 'moment';
-import { Page, List } from '../../../../components';
+import { Page } from '../../../../components';
 import { Api } from '../../../../services';
 import './styles.css';
-
 
 const visitData = [];
 const beginDay = new Date().getTime();
@@ -19,74 +18,125 @@ for (let i = 0; i < 50; i += 1) {
 
 class Colaboradores extends React.Component {
 
-    state = {
-        loading: false,
-        colaboradores: [],
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            loading: false,
+            colaboradores: {
+                per_page: 0,
+                total_itens: 0,
+                current_page: 1,
+                results: [],
+            },
+            graphs: {},
+        }
+
     }
 
     componentDidMount() {
         this.setState({ loading: true });
-        Api.BackendServer.get('pm/contributors/').then(response => {
-            this.setState({ colaboradores: response.data, loading: false });
+
+        const { repo } = this.props.location.state;
+
+        Api.BackendServer.get('pm/contributors/', { params: { repo_full_name: repo.full_name } }).then(response => {
+            const colaboradores = response.data;
+            const graphs = {};
+
+            colaboradores.results.forEach(colaborador => {
+                Api.BackendServer.get(`pm/commits/`, { params: { author: colaborador.login, repo_full_name: repo.full_name } }).then(response => {
+                    const commits = response.data;
+                    const graphData = commits.results.map((value, index) => ({
+                        x: `Churn de ${moment(value.commit.author.date || value.committer.author.date).format('LLLL')}`,
+                        y: value.stats.total,
+                    }));
+
+                    graphs[colaborador.login] = graphData;
+
+                    this.setState({
+                        graphs: { ...this.state.graphs, ...graphs }
+                    });
+
+                });
+            });
+
+            this.setState({ colaboradores, loading: false });
         })
     }
 
     renderItem(item) {
         return (
-            <div style={{ display: 'flex', flex: 1, flexDirection: 'column', overflow: 'hidden' }}>
-
-                <span className='contributors-p-one-line'>{item.name || item.login}</span>
-
-                <div style={{ height: 150, display: 'flex', flex: 1, flexDirection: 'column' }}>
-                    {/* <p>{item.name || item.login}</p> */}
-                    <div style={{ flex: 1, display: 'flex', }}>
-
-                        <div style={{ display: 'flex', margin: 5, justifyContent: 'center', alignItems: 'center' }}>
-                            <Avatar size={64} src={item.avatar_url} />
-                        </div>
-
-                        <div style={{ display: 'flex', flex: 1 }}>
-                            <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'pink' }} />
-
-                            <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'purple' }} />
-
-                            <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'blue' }} />
-                        </div>
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                        <Charts.MiniArea
-                            line
-                            animate={true}
-                            color="#cceafe"
-                            height={60}
-                            data={visitData}
-                        />
-                    </div>
-                </div>
-            </div>
-
+            <Spin spinning={!this.state.graphs[item.login]}>
+                <Card
+                    style={{ width: '100%', height: '100%' }}
+                >
+                    <Card.Meta
+                        avatar={<Avatar src={item.avatar_url} />}
+                        title={item.name || item.login}
+                    />
+                    <Charts.MiniArea
+                        line
+                        animate={true}
+                        color="#cceafe"
+                        height={100}
+                        data={this.state.graphs[item.login]}
+                    />
+                </Card>
+            </Spin>
         )
+    }
+
+    onChange(page, pageSize) {
+        this.setState({ loading: true });
+        const { repo } = this.props.location.state;
+        Api.BackendServer.get('pm/contributors/', { params: { repo_full_name: repo.full_name, page: page - 1 } }).then(response => {
+            const colaboradores = response.data;
+            const graphs = {};
+
+            colaboradores.results.forEach(colaborador => {
+                Api.BackendServer.get(`pm/commits/`, { params: { author: colaborador.login, repo_full_name: repo.full_name } }).then(response => {
+                    const commits = response.data;
+                    const graphData = commits.results.map((value, index) => ({
+                        x: `Churn de ${moment(value.commit.author.date || value.committer.author.date).format('LLLL')}`,
+                        y: value.stats.total,
+                    }));
+
+                    graphs[colaborador.login].data = graphData;
+
+                    this.setState({
+                        graphs: { ...this.state.graphs, ...graphs }
+                    });
+
+                });
+            });
+
+            this.setState({ colaboradores, loading: false });
+        })
     }
 
     _keyExtractor = (item) => `${item.id}`
 
     render() {
-        alert("TESTE")
         return (
-            <Page loading={this.state.loading}>
+            <Page
+                pagination={{
+                    pageSize: Number(this.state.colaboradores.per_page),
+                    total: Number(this.state.colaboradores.total_itens),
+                    current: Number(this.state.colaboradores.current_page) + 1,
+                    onChange: (page, pageSize) => this.onChange(page, pageSize),
+                    hideOnSinglePage: true,
+                }}
+                loading={this.state.loading}
+            >
                 <List
-                    grid={{ gutter: 16, column: 4 }}
-                    dataSource={this.state.colaboradores}
-                    renderItem={item => this.renderItem(item)}
+                    grid={{ gutter: 16, column: 2 }}
+                    dataSource={this.state.colaboradores.results}
+                    renderItem={item => (
+                        <List.Item>
+                            {this.renderItem(item)}
+                        </List.Item>
+                    )}
                 />
-                {/* <List
-                    columns={3}
-                    items={this.state.colaboradores}
-                    renderItem={(item) => this.renderItem(item)}
-                    keyExtractor={this._keyExtractor}
-                /> */}
-
             </Page>
         );
     }

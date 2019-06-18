@@ -1,20 +1,8 @@
 import React from 'react';
-import { Charts } from 'ant-design-pro';
-import moment from 'moment';
-import { Page, List } from '../../../../components';
+import { List } from 'antd';
+import { Page, Repository } from '../../../../components';
 import { Api } from '../../../../services';
 import './styles.css';
-
-
-const visitData = [];
-const beginDay = new Date().getTime();
-for (let i = 0; i < 50; i += 1) {
-    const random = Math.random();
-    visitData.push({
-        x: moment(new Date(beginDay + (1000 * 60 * 60 * 24 * i))).format('DD/MM/YYYY'),
-        y: Math.floor(random * 100) + 10,
-    });
-}
 
 class Projetos extends React.Component {
 
@@ -22,63 +10,73 @@ class Projetos extends React.Component {
         super(props);
         this.state = {
             projetos: [],
+            repos: {
+                // prev: '',
+                // next: '',
+                // limit: '',
+                per_page: 0,
+                total_itens: 0,
+                current_page: 1,
+                results: [],
+            },
             loading: false,
         }
+
+        this.refresh = this.refresh.bind(this);
     }
 
     componentDidMount() {
         this.setState({ loading: true });
-        Api.BackendServer.get('pm/projects/').then(response => {
-            console.log(response);
-            this.setState({ projetos: response.data, loading: false });
+
+        Api.BackendServer.get('pm/repos/').then(response => {
+            this.setState({ repos: response.data, loading: false });
         })
     }
 
-    _keyExtractor = (item) => `${item.repo.id}`
+    refresh() {
+        this.setState({ loading: true });
+
+        Api.BackendServer.get('pm/repos/').then(response => {
+            this.setState({ repos: response.data, loading: false });
+        })
+    }
+
+    _keyExtractor = (item) => `${item.id}`
+
+    renderItem(repo) {
+        return (
+            <Repository repo={repo} match={this.props.match} history={this.props.history} refresh={this.refresh} />
+        );
+    }
+
+    onChange(page, pageSize) {
+        this.setState({ loading: true });
+        Api.BackendServer.get('pm/repos/', { params: { page: page - 1 } }).then(response => {
+            console.log("REPOS", response);
+            this.setState({ repos: response.data, loading: false });
+        })
+    }
 
     render() {
         return (
-            <Page loading={this.state.loading}>
+            <Page
+                loading={this.state.loading}
+                pagination={{
+                    pageSize: Number(this.state.repos.per_page),
+                    total: Number(this.state.repos.total_itens),
+                    current: Number(this.state.repos.current_page) + 1,
+                    onChange: (page, pageSize) => this.onChange(page, pageSize),
+                    hideOnSinglePage: true,
+                }}
+            >
                 <List
-                    columns={2}
-                    items={this.state.projetos}
-                    renderItem={(project) => (
-                        <div style={{ display: 'flex', flex: 1, flexDirection: 'column', height: '150px', width: '100%', marginBottom: '30px' }}>
-                            {/* Nome do projeto */}
-                            <div className='project-head'>
-                                <p className='one-line'>{project.repo.name}</p>
-                            </div>
-
-                            {/* Dados de gráfico */}
-                            <div style={{ display: 'flex', flex: 9, flexDirection: 'row' }}>
-                                <div style={{ flex: 8 }}>
-                                    <Charts.MiniArea
-                                        line
-                                        animate={true}
-                                        color="#cceafe"
-                                        height={60}
-                                        data={visitData}
-                                    />
-                                </div>
-
-                                <div style={{ display: 'flex', flex: 2, flexDirection:'column' }}>
-                                    <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'pink' }} />
-
-                                    <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'purple' }} />
-
-                                    <div style={{ display: 'flex', flex: 1, margin: 5, backgroundColor: 'blue' }} />
-                                </div>
-                            </div>
-
-                            {/* Rodapé
-                            <div style={{ display: 'flex', flex: 2 }}>
-                                <div style={{ position: 'relative', flex: 1, width: 'auto', height: 'auto', backgroundColor: 'green' }}></div>
-                                <div style={{ position: 'relative', flex: 1, width: 'auto', height: 'auto', backgroundColor: 'blue' }}></div>
-                            </div> */}
-
-                        </div>
+                    grid={{ gutter: 16, column: 2 }}
+                    dataSource={this.state.repos.results}
+                    renderItem={item => (
+                        <List.Item>
+                            {this.renderItem(item)}
+                        </List.Item>
                     )}
-                    keyExtractor={this._keyExtractor}
                 />
             </Page>
         );

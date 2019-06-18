@@ -1,13 +1,16 @@
 import axios from 'axios';
-import { KEYS } from '../constants';
+import ErrorResponseHandler from './ErrorResponseHandler';
+import {KEYS, URLS} from '../constants';
 
 const BackendServer = axios.create({
-    baseURL: 'http://localhost:8080/api',
+    baseURL: URLS.API_BASE_URL,    
     headers: {
         "content-type": "application/json",
         "Authorization": window.localStorage.getItem(KEYS.TOKEN_KEY),
     }
 });
+
+BackendServer.interceptors.response.use(null, (error) => ErrorResponseHandler(error));
 
 export default {
     BackendServer,

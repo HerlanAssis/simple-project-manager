@@ -1,6 +1,5 @@
 import React from 'react';
-import { Exception } from '../../../../components';
-
+import { Exception } from 'ant-design-pro';
 
 class Page404 extends React.Component {
     render() {
@@ -8,11 +7,8 @@ class Page404 extends React.Component {
             <Exception
                 type={'404'}
                 title={'Página não encontrada!'}
-                description={'Desculpe, a página que você visitou não existe'}
-                actions={{
-                    name: 'Voltar a home',
-                    path: '/',
-                }}
+                desc={'Desculpe, a página que você visitou não existe'}
+                backText={'Voltar ao início'}
             />
         )
     }

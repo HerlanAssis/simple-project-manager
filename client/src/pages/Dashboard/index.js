@@ -1,72 +1,100 @@
 import React from 'react';
 
 import {
-    Layout, Menu, Icon, Progress
+    Layout, Menu, Icon
 } from 'antd';
+
 import {
     Switch,
 } from 'react-router-dom'
 
 import './styles.css';
-import { Route } from '../../components';
+import { Route, Header } from '../../components';
 import {
     Home,
+    Pesquisar,
     Projetos,
     Tarefas,
     Agenda,
-    Colaboradores,
-    Relatorios,
+    // ProjetosAssistidos,
+    // Colaboradores,
+    // Relatorios,
+    // Commits,
+    // Laboratorio,
     Notificacoes,
-    Laboratorio,
     Page404,
+    TarefasPorProjeto,
 } from './subpages';
-import { Api } from '../../services';
-import moment from 'moment';
+
+// * Redux imports *
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { images } from '../../styles';
+// import { AuthActions } from '../../modules/Authentication';
+// * END Redux imports *
 
 const {
-    Header, Footer, Sider,
+    Footer, Sider,
 } = Layout;
 
+const repository_sub_componentes = (fatherPath) => ([
+    // { key: 'Detalhes', path: '/projetos/detalhes/:name', component: Detalhes },
+    // { key: 'Projeto', path: `${fatherPath}/:projectname/commits/`, component: Commits },
+    // { key: 'Colaboradores', path: `${fatherPath}/:projectname/colaboradores/`, component: Colaboradores },
+    { key: 'TarejasProProjeto', path: `${fatherPath}/:projectname/tarefas/`, component: TarefasPorProjeto },
+]);
 
 const PAGES = [
     { iconName: 'pie-chart', name: 'Home', path: '/', component: Home },
-    // { iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos },
-    // { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
-    // { iconName: 'calendar', name: 'Agenda', path: '/agenda', component: Agenda },
+    {
+        iconName: 'search', name: 'Pesquisar', path: '/pesquisar', component: Pesquisar,
+        subcomponents: (fatherPath) => repository_sub_componentes(fatherPath),
+    },
+    // {
+    //     iconName: 'star', name: 'Projetos Assistidos', path: '/monitorando', component: ProjetosAssistidos,
+    //     subcomponents: (fatherPath) => repository_sub_componentes(fatherPath),
+    // },
+    {
+        iconName: 'project', name: 'Projetos', path: '/projetos', component: Projetos,
+        subcomponents: (fatherPath) => repository_sub_componentes(fatherPath),
+    },
+    { iconName: 'ordered-list', name: 'Tarefas', path: '/tarefas', component: Tarefas },
+    { iconName: 'calendar', name: 'Agenda', path: '/agenda', component: Agenda },
     // { iconName: 'robot', name: 'Colaboradores', path: '/colaboradores', component: Colaboradores },
     // { iconName: 'file-pdf', name: 'Relatórios', path: '/relatorios', component: Relatorios },
-    // { iconName: 'notification', name: 'Notificações', path: '/notificacoes', component: Notificacoes },
+    { iconName: 'notification', name: 'Notificações', path: '/notificacoes', component: Notificacoes },
     // { iconName: 'experiment', name: 'Laboratório', path: '/laboratorio', component: Laboratorio },
 ];
 
 class Dashboard extends React.Component {
-    state = {
-        collapsed: true,
-        rate_limit: 0,
-        reset: new Date().getTime(),
-    };
-
-    componentDidMount() {
-        this.getLimits()
+    constructor(props) {
+        super(props);
+        this.state = {
+            collapsed: true,
+            rate_limit: 0,
+            reset: new Date().getTime(),
+        };
     }
 
-    getLimits() {
-        Api.BackendServer.get('c/user/').then(response => {
+    getPages(pages) {
+        let builded_pages = []
 
-            console.log('user', response);
-            // const rate_limit = response.data;
-            // this.setState({
-            //     rate_limit: parseInt((rate_limit.core.remaining / rate_limit.core.limit) * 100),
-            //     reset: rate_limit.core.reset,
-            // });
+        pages.forEach(value => {
+            builded_pages.push(
+                <Route.Custom exact={true} key={value.path} path={value.path} component={value.component} />
+            )
 
-            // setTimeout(() => {
-            //     this.getLimits()
-            // }, 5000);
-        })
+            if (value.subcomponents) {
+                builded_pages = [...builded_pages, ...this.getPages(value.subcomponents(value.path))];
+            }
+        });
+
+        return builded_pages;
     }
 
     render() {
+        const pages = this.getPages(PAGES);
+        pages.push(<Route.Custom key={'page404'} component={Page404} />);
 
         return (
             <Layout style={{ minHeight: '100vh' }}>
@@ -75,11 +103,13 @@ class Dashboard extends React.Component {
                     collapsible={false}
                 >
                     <div style={{ height: '60px', width: '100%', padding: 10 }}>
-                        <div className="logo" style={{ display: 'flex', height: '100%', width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'gray' }} >
+                        <div className="logo" style={{ display: 'flex', height: '100%', width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center' }} >
+                            <img style={{ maxWidth: '60%', height: 'auto', }} src={images.logo["icon-green"]} alt="Logo icon" />
                         </div>
                     </div>
 
-                    <Menu theme="dark" defaultSelectedKeys={[this.props.location.pathname]} mode="inline">
+                    <Menu theme="dark" defaultSelectedKeys={[this.props.location.pathname]} mode="vertical">
+
                         {PAGES.map(value => (
                             <Menu.Item
                                 onClick={() => this.props.history.push(value.path)}
@@ -89,37 +119,20 @@ class Dashboard extends React.Component {
                                 <span>{value.name}</span>
                             </Menu.Item>
                         ))}
-
                     </Menu>
                 </Sider>
 
                 <Layout style={{ flex: 1 }} >
-                    <Header style={{ background: '#fff', padding: 10 }}>
-                        <div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
-
-                            {/* <div style={{ flex: 1 }}>
-                                <Progress width={100} successPercent={0} percent={this.state.rate_limit} showInfo />
-                            </div>
-
-                            <div style={{ width: 'auto', marginLeft:10, textAlign: 'center' }}>
-                                <p>Atualiza {moment.unix(this.state.reset).fromNow()}</p>
-                            </div> */}
-
-                        </div>
+                    <Header >
 
                     </Header>
 
-
                     <Switch>
-                        {PAGES.map(value => (
-                            <Route.Custom exact={true} key={value.path} path={value.path} component={value.component} />
-                        ))}
-
-                        <Route.Custom component={Page404} />
+                        {pages}
                     </Switch>
 
                     <Footer style={{ textAlign: 'center' }}>
-                        Ant Design ©2018 Created by Ant UED
+                        Simple Project Manager ©2019
                     </Footer>
 
                 </Layout>
@@ -128,4 +141,19 @@ class Dashboard extends React.Component {
     }
 }
 
-export default Dashboard;
+const mapStateToProps = (state) => {
+    // const {
+
+    // } = state.authentication;
+
+    return {
+
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({
+    }, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
