@@ -14,17 +14,24 @@ services:
       # Scripts
       - ./database/scripts:/scripts
       - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
-    # ports:
-    #  - "5432:5432"
   
   # Cache Machines
   cache:
     build: cache/
     restart: always
     command: memcached -m 64
-    # ports:
-    #  - "11211:11211"
   
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+    restart: always
+    privileged: true
+
   # Backend Machines
   backend:
     build: backend/
@@ -37,26 +44,6 @@ services:
       - cache
     expose:
       - "8000"
-    environment:
-      - CACHE_HOST=cache
-      - CACHE_PORT=11211
-      - CACHE_KEY_PREFIX=backend
-      - PG_NAME=postgres
-      - PG_USER=postgres
-      - PG_HOST=database
-      - PG_PORT=5432
-      - SOCIAL_AUTH_GITHUB_KEY=c3f39f63ffb0d5ca5b9d
-      - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=868259763295-0h7tcmihv8l91nlfkk2pu60m2o976ck5.apps.googleusercontent.com
-      - TELEGRAM_BOT_API_URL=https://api.telegram.org/bot
-      - MAIL_USER=simpleprojectmanager.site@gmail.com
-      - MAIL_HOST=smtp.gmail.com
-      - MAIL_PORT=587
-      # - MAIL_PASS=""
-      # - SECRET_KEY=""
-      # - PG_PASSWORD=""
-      # - SOCIAL_AUTH_GITHUB_SECRET=""
-      # - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=""      
-      # - TELEGRAM_BOT_TOKEN=""
     env_file:
       - secrets.env
 
@@ -64,24 +51,24 @@ services:
     build: server/
     restart: always
     volumes:
-      - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/      
-    ports:
-      - "8080:8080"      
+      - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/    
+    environment:
+      VIRTUAL_HOST: server.simpleprojectmanager.site
     depends_on:
       - backend
 
   # Frontend Machines
   project_manager:
     build: project_manager/
-    restart: always
-    ports:
-      - "80:80"
+    restart: always    
     depends_on:
-      - server      
-  #client:
-  #  build: client/
-  #  restart: always    
-  #  ports:
-  #    - "8081:80"
-  #  depends_on:
-  #    - server
+      - server
+    environment:
+      VIRTUAL_HOST: manager.simpleprojectmanager.site
+  client:
+    build: client/
+    restart: always
+    depends_on:
+      - server
+    environment:
+      VIRTUAL_HOST: client.simpleprojectmanager.site
