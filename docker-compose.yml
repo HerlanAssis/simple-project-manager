@@ -1,5 +1,11 @@
 version: '3'
 
+networks:
+  dockprom_monitor-net:
+    external: true
+  spm:
+    driver: bridge
+
 volumes:
   data:
 
@@ -14,6 +20,8 @@ services:
       # Scripts
       - ./database/scripts:/scripts
       - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - spm
   
   # Cache Machines
   cache:
@@ -31,6 +39,8 @@ services:
 
     restart: always
     privileged: true
+    networks:
+      - spm
 
   # Backend Machines
   backend:
@@ -46,6 +56,8 @@ services:
       - "8000"
     env_file:
       - secrets.env
+    networks:
+      - spm
 
   server:
     build: server/
@@ -56,6 +68,8 @@ services:
       VIRTUAL_HOST: server.simpleprojectmanager.site
     depends_on:
       - backend
+    networks:
+      - spm
 
   # Frontend Machines
   project_manager:
@@ -65,6 +79,8 @@ services:
       - server
     environment:
       VIRTUAL_HOST: manager.simpleprojectmanager.site
+    networks:
+      - spm
   client:
     build: client/
     restart: always
@@ -72,3 +88,16 @@ services:
       - server
     environment:
       VIRTUAL_HOST: client.simpleprojectmanager.site
+    networks:
+      - spm
+
+
+  # Monitoring  
+  monitoring:
+    build: monitoring/
+    restart: always    
+    environment:
+      VIRTUAL_HOST: monitoring.simpleprojectmanager.site    
+    networks:
+      - spm
+      - dockprom_monitor-net
