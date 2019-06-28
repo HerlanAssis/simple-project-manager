@@ -13,6 +13,7 @@ services:
   # Database Machines
   database:
     build: database/
+    container_name: database
     restart: always
     volumes:
       # Volume dos dados
@@ -28,11 +29,13 @@ services:
   # Cache Machines
   cache:
     build: cache/
+    container_name: cache
     restart: always
     command: memcached -m 64
   
   nginx-proxy:
     image: jwilder/nginx-proxy
+    container_name: nginx-proxy
     ports:
       - "80:80"
       - "443:443"
@@ -47,6 +50,7 @@ services:
   # Backend Machines
   backend:
     build: backend/
+    container_name: backend
     restart: always
     command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python telegram_bot.py && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"
     volumes:
@@ -63,6 +67,7 @@ services:
 
   server:
     build: server/
+    container_name: server
     restart: always
     volumes:
       - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/    
@@ -76,6 +81,7 @@ services:
   # Frontend Machines
   project_manager:
     build: project_manager/
+    container_name: project_manager
     restart: always    
     depends_on:
       - server
@@ -85,6 +91,7 @@ services:
       - spm
   client:
     build: client/
+    container_name: client
     restart: always
     depends_on:
       - server
@@ -93,10 +100,10 @@ services:
     networks:
       - spm
 
-
   # Monitoring  
   monitoring:
     build: monitoring/
+    container_name: monitoring
     restart: always    
     environment:
       VIRTUAL_HOST: monitoring.simpleprojectmanager.site    
