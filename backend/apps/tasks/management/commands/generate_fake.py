@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
     for taskmanager in TaskManager.objects.all():
       
-      for _ in range(min_tasks, max_tasks):
+      for _ in range(random.randint(min_tasks, max_tasks)):
         
         if taskmanager.tasks.all().count() >= max_tasks:
           print("maximum number of tasks reached")
@@ -31,7 +31,7 @@ class Command(BaseCommand):
         responsible=random.choice(taskmanager.vigilantes.all())
         status=random.choice(PROGRESS)
 
-        task = Task(title=title, description=description, status=status, expected_date=expected_date, task_manager=taskmanager)
+        task = Task(title=title, description=description, status=status, expected_date=expected_date, responsible=responsible, task_manager=taskmanager, owner=taskmanager.owner)
         task.save()
 
         print("Task {} saved!".format(title))
