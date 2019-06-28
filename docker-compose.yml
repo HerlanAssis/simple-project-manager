@@ -22,6 +22,8 @@ services:
       - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - spm
+    ports:
+      - "3000:5432"
   
   # Cache Machines
   cache:
