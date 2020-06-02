@@ -1,8 +1,6 @@
-version: '3'
+version: "3"
 
 networks:
-  dockprom_monitor-net:
-    external: true
   spm:
     driver: bridge
 
@@ -23,16 +21,19 @@ services:
       - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - spm
-    ports:
-      - "3000:5432"
-  
+    # ports:
+    #   - "3000:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
   # Cache Machines
   cache:
     build: cache/
     container_name: cache
     restart: always
     command: memcached -m 64
-  
+
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx-proxy
@@ -58,10 +59,10 @@ services:
     depends_on:
       - database
       - cache
-    expose:
-      - "8000"
+    # expose:
+    #   - "8000"
     env_file:
-      - secrets.env
+      - ./secrets.env
     networks:
       - spm
 
@@ -70,9 +71,9 @@ services:
     container_name: server
     restart: always
     volumes:
-      - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/    
+      - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/
     environment:
-      VIRTUAL_HOST: server.simpleprojectmanager.site
+      VIRTUAL_HOST: avila.ifrn.edu.br
     depends_on:
       - backend
     networks:
@@ -82,31 +83,21 @@ services:
   project_manager:
     build: project_manager/
     container_name: project_manager
-    restart: always    
+    restart: always
     depends_on:
       - server
-    environment:
-      VIRTUAL_HOST: manager.simpleprojectmanager.site
     networks:
       - spm
+    environment:
+      VIRTUAL_HOST: manager.avila.ifrn.edu.br
+
   client:
     build: client/
     container_name: client
     restart: always
     depends_on:
       - server
-    environment:
-      VIRTUAL_HOST: client.simpleprojectmanager.site
     networks:
       - spm
-
-  # Monitoring  
-  monitoring:
-    build: monitoring/
-    container_name: monitoring
-    restart: always    
     environment:
-      VIRTUAL_HOST: monitoring.simpleprojectmanager.site    
-    networks:
-      - spm
-      - dockprom_monitor-net
+      VIRTUAL_HOST: client.avila.ifrn.edu.br
