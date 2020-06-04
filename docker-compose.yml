@@ -1,28 +1,20 @@
 version: "3"
 
-networks:
-  spm:
-    driver: bridge
-
 volumes:
   data:
 
 services:
   # Database Machines
   database:
-    build: database/
+    build: backend/
+    image: herlanassis/postgres:9.6
     container_name: database
-    restart: always
     volumes:
       # Volume dos dados
       - data:/var/lib/postgresql/data
       # Scripts
       - ./database/scripts:/scripts
       - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - spm
-    # ports:
-    #   - "3000:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -30,74 +22,65 @@ services:
   # Cache Machines
   cache:
     build: cache/
+    image: herlanassis/cache:1.5
     container_name: cache
-    restart: always
     command: memcached -m 64
-
-  nginx-proxy:
-    image: jwilder/nginx-proxy
-    container_name: nginx-proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-
-    restart: always
-    privileged: true
-    networks:
-      - spm
 
   # Backend Machines
   backend:
     build: backend/
+    image: herlanassis/spm.backend:latest
     container_name: backend
-    restart: always
     command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python telegram_bot.py && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"
     volumes:
       - ./backend:/simple_project_manager
     depends_on:
       - database
       - cache
-    # expose:
-    #   - "8000"
     env_file:
       - ./secrets.env
-    networks:
-      - spm
 
   server:
     build: server/
+    image: herlanassis/spm.server:latest
     container_name: server
-    restart: always
     volumes:
       - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/
     environment:
       VIRTUAL_HOST: avila.ifrn.edu.br
     depends_on:
       - backend
-    networks:
-      - spm
 
   # Frontend Machines
   project_manager:
     build: project_manager/
+    image: herlanassis/spm.project_manager:latest
     container_name: project_manager
-    restart: always
     depends_on:
       - server
-    networks:
-      - spm
     environment:
       VIRTUAL_HOST: manager.avila.ifrn.edu.br
 
   client:
     build: client/
+    image: herlanassis/spm.client:latest
     container_name: client
-    restart: always
     depends_on:
       - server
-    networks:
-      - spm
     environment:
       VIRTUAL_HOST: client.avila.ifrn.edu.br
+
+  nginx-proxy:
+    build: nginx-proxy/
+    image: herlanassis/nginx-proxy:latest
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: always
+    privileged: true
+    depends_on:
+      - project_manager
+      - client
