@@ -6,8 +6,7 @@ volumes:
 services:
   # Database Machines
   database:
-    build: backend/
-    image: herlanassis/postgres:9.6
+    image: postgres:9.6
     container_name: database
     volumes:
       # Volume dos dados
@@ -21,8 +20,7 @@ services:
 
   # Cache Machines
   cache:
-    build: cache/
-    image: herlanassis/cache:1.5
+    image: memcached:1.5
     container_name: cache
     command: memcached -m 64
 
@@ -71,8 +69,7 @@ services:
       VIRTUAL_HOST: client.avila.ifrn.edu.br
 
   nginx-proxy:
-    build: nginx-proxy/
-    image: herlanassis/nginx-proxy:latest
+    image: jwilder/nginx-proxy:latest
     container_name: nginx-proxy
     ports:
       - "80:80"

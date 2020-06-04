@@ -1,1 +1,0 @@
-from memcached:1.5
