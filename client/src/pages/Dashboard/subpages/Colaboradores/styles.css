@@ -1,0 +1,9 @@
+.contributors-p-one-line {
+    display: inline-block;    
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: capitalize;
+    text-align: center;        
+    min-width: 0; 
+}

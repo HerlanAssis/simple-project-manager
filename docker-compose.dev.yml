@@ -1,0 +1,124 @@
+version: "3"
+
+volumes:
+  data:
+
+services:
+  # Database Machines
+  database:
+    image: postgres:9.6
+    container_name: database
+    volumes:
+      # Volume dos dados
+      - data:/var/lib/postgresql/data
+      # Scripts
+      - ./database/scripts:/scripts
+      - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+
+  # Cache Machines
+  cache:
+    image: memcached:1.5
+    container_name: cache
+    command: memcached -m 64
+
+  # Backend Machines
+  backend:
+    build: backend/
+    image: herlanassis/spm.backend:latest
+    container_name: backend
+    command: ./scripts/wait-for-it.sh -t 0 database:5432 -- bash -c "python telegram_bot.py && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn simple_project_manager.wsgi -b 0.0.0.0:8000 -w 3"
+    volumes:
+      - ./backend:/simple_project_manager
+    depends_on:
+      - database
+      - cache
+    environment:
+      DEBUG: "True"
+      SECRET_KEY: ${SECRET_KEY}
+      CACHE_HOST: ${CACHE_HOST}
+      CACHE_PORT: ${CACHE_PORT}
+      CACHE_KEY_PREFIX: ${CACHE_KEY_PREFIX}
+      PG_NAME: ${PG_NAME}
+      PG_HOST: ${PG_HOST}
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_PORT: ${PG_PORT}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASS: ${MAIL_PASS}
+      SOCIAL_AUTH_GITHUB_KEY: ${SOCIAL_AUTH_GITHUB_KEY}
+      SOCIAL_AUTH_GITHUB_SECRET: ${SOCIAL_AUTH_GITHUB_SECRET}
+      SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: ${SOCIAL_AUTH_GOOGLE_OAUTH2_KEY}
+      SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: ${SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+
+  server:
+    build: server/
+    image: herlanassis/spm.server:latest
+    container_name: server
+    volumes:
+      - ./backend/simple_project_manager/staticfiles:/simple_project_manager/staticfiles/
+    environment:
+      VIRTUAL_HOST: ${VIRTUAL_HOST_SERVER}
+    depends_on:
+      - backend
+
+  # Frontend Machines
+  project_manager:
+    build:
+      context: project_manager/
+      dockerfile: Dockerfile.dev
+      args:
+        PORT: ${REACT_PORT}
+        REACT_APP_TELEGRAM_BOT_URL: ${TELEGRAM_BOT_URL}
+        REACT_APP_API_BASE_URL: ${API_BASE_URL}
+        REACT_APP_GITHUB_REPO_URL: ${GITHUB_REPO_URL}
+        REACT_APP_GITHUB_REDIRECT_URL: ${GITHUB_REDIRECT_URL}
+        REACT_APP_GITHUB_AUTHORIZE: ${GITHUB_AUTHORIZE}
+        REACT_APP_GITHUB_CLIENT_ID: ${SOCIAL_AUTH_GITHUB_KEY}
+        REACT_APP_GITHUB_SCOPE: ${GITHUB_SCOPE}
+    image: herlanassis/spm.project_manager:latest
+    container_name: project_manager
+    depends_on:
+      - server
+    environment:
+      VIRTUAL_HOST: ${VIRTUAL_HOST_MANAGER}
+    command: yarn run start
+
+  client:
+    build:
+      context: client/
+      dockerfile: Dockerfile.dev
+      args:
+        PORT: ${REACT_PORT}
+        REACT_APP_TELEGRAM_BOT_URL: ${TELEGRAM_BOT_URL}
+        REACT_APP_API_BASE_URL: ${API_BASE_URL}
+        REACT_APP_GOOGLE_REDIRECT_URL: ${GOOGLE_REDIRECT_URL}
+        REACT_APP_GOOGLE_AUTHORIZE: ${GOOGLE_AUTHORIZE}
+        REACT_APP_GOOGLE_CLIENT_ID: ${SOCIAL_AUTH_GOOGLE_OAUTH2_KEY}
+        REACT_APP_GOOGLE_SCOPE: ${GOOGLE_SCOPE}
+    image: herlanassis/spm.client:latest
+    container_name: client
+    depends_on:
+      - server
+    environment:
+      VIRTUAL_HOST: ${VIRTUAL_HOST_CLIENT}
+    command: yarn run start
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy:latest
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: always
+    privileged: true
+    depends_on:
+      - project_manager
+      - client
