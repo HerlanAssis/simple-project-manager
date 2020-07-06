@@ -98,6 +98,7 @@ Como alternativa, consulte a documentação do GitHub em [criando uma pull reque
 Agradeço às seguintes pessoas que contribuíram para este projeto:
 
 - [@herlanassis](https://github.com/herlanassis)
+- [@joaohelis](https://github.com/joaohelis)
 
 ## Contato
 
