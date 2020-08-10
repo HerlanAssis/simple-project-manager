@@ -38,7 +38,7 @@ git clone https://github.com/HerlanAssis/simple-project-manager;
 cd simple-project-manager;
 ```
 
-1. Copie o arquivo `.env.examples` para `.env` e substituia às seguintes variáveis:
+2. Copie o arquivo `.env.examples` para `.env` e substituia às seguintes variáveis:
 
 ```
 SECRET_KEY=<sua_variavel>
@@ -59,7 +59,7 @@ TELEGRAM_BOT_TOKEN=<sua_credencial>
 
 ```
 
-1. Crie os seguintes hosts na sua máquina:
+3. Crie os seguintes hosts na sua máquina:
 
 ```
 server.simpleprojectmanager.site    = 127.0.0.1
@@ -67,7 +67,7 @@ manager.simpleprojectmanager.site   = 127.0.0.1
 client.simpleprojectmanager.site    = 127.0.0.1
 ```
 
-1. Por fim execute:
+4. Por fim execute:
 
 ```shell
 docker-compose up -d --build;
