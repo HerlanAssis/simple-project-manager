@@ -8,7 +8,7 @@ rest-social-auth==2.0.2
 django-cors-headers==2.4.0
 django-rest-framework-social-oauth2==1.1.0
 python-memcached==1.59
-django-debug-toolbar==1.11
+django-debug-toolbar==1.11.1
 PyGithub==1.43.5
 django-multiselectfield==0.1.8
 python-telegram-bot==11.1.0
